@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema elementFormDefault="qualified"
+	targetNamespace="http://www.san.beniculturali.it/icar-import"
+	xmlns="http://www.san.beniculturali.it/icar-import" 
+	
+	xmlns:dc="http://purl.org/dc/elements/1.1/" 
+	xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	xmlns:ead="http://ead3.archivists.org/schema/"
+	xmlns:scons="http://www.san.beniculturali.it/scons2" 
+	xmlns:eac-cpf="urn:isbn:1-931666-33-4"
+	xmlns:mets="http://www.loc.gov/METS/"
+	xmlns:metsrights="http://cosimo.stanford.edu/sdr/metsrights/"
+	xmlns:mix="http://www.loc.gov/mix/v20">
+
+  <xs:import namespace="urn:isbn:1-931666-33-4" schemaLocation="cpf-sia.xsd"/>
+  <!--
+  <xs:import namespace="urn:isbn:1-931666-33-4" schemaLocation="https://eac.staatsbibliothek-berlin.de/schema/cpf.xsd"/>
+  -->
+	<xs:import namespace="http://www.loc.gov/METS/"	schemaLocation="https://www.loc.gov/standards/mets/mets.xsd"/>
+	<xs:import namespace="http://cosimo.stanford.edu/sdr/metsrights/" schemaLocation="https://www.loc.gov/standards/rights/METSRights.xsd"/>
+  <xs:import namespace="http://www.loc.gov/mix/v20" schemaLocation="https://www.loc.gov/standards/mix/mix20/mix20.xsd"/>
+  <xs:import namespace="http://ead3.archivists.org/schema/" schemaLocation="ead3-sia.xsd"/>
+  <!--
+  <xs:import namespace="http://ead3.archivists.org/schema/" schemaLocation="https://www.loc.gov/ead/ead3.xsd"/>
+  -->
+	<xs:import namespace="http://www.san.beniculturali.it/scons2" schemaLocation="https://san.beniculturali.it/tracciato/scons2.xsd"/>
+	<xs:import namespace="http://purl.org/dc/elements/1.1/"	schemaLocation="https://dublincore.org/schemas/xmls/simpledc20021212.xsd"/>
+	
+	<xs:simpleType name="emailAddress">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[^@]+@[^\.]+\..+"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="agentTypeVoc">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="human"/>
+			<xs:pattern value="software"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="eventTypeVoc">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="creation"/>
+			<xs:pattern value="update"/>
+			<xs:pattern value="other"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:element name="icar-import">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="header" type="header"/>
+				<xs:element name="listRecords" type="listRecords"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:complexType name="header">
+		<xs:sequence>
+			<xs:element name="systemId" type="xs:string"/>
+			<xs:element name="systemTitle" type="xs:string"/>
+			<xs:element name="contact" type="contact" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="event" type="event" minOccurs="1" maxOccurs="unbounded"/>
+			<xs:element name="fileDesc" type="filedesc"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="contact">
+		<xs:sequence>
+			<xs:element name="name" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="url" type="xs:anyURI" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="mail" type="emailAddress" minOccurs="1" maxOccurs="unbounded"/>
+			<xs:element name="phone" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="event">
+		<xs:sequence>
+			<xs:element name="agent" minOccurs="0">
+				<xs:complexType mixed="true">
+					<xs:attribute type="xs:string" name="id" use="optional"/>
+					<xs:attribute type="agentTypeVoc" name="agentType" use="required"/>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute type="eventTypeVoc" name="eventType" use="required"/>
+		<xs:attribute type="xs:dateTime" name="eventDate" use="required"/>
+	</xs:complexType>
+
+	<xs:complexType name="filedesc">
+		<xs:sequence>
+			<xs:element name="title" type="xs:string"/>
+			<xs:element name="abstract" type="xs:string" minOccurs="0"/>
+			<xs:element name="date" type="xs:dateTime"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="listRecords">
+		<xs:sequence>
+			<xs:element name="record" type="Record" minOccurs="1" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="Record">
+		<xs:sequence>
+			<xs:element name="recordHeader" type="recordHeader" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="recordBody" type="recordBody" minOccurs="1" maxOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="recordHeader">
+		<xs:sequence>
+			<xs:element name="id" type="xs:NMTOKEN" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="lastUpdate" type="xs:dateTime" minOccurs="1" maxOccurs="1"/>
+		</xs:sequence>
+		<xs:attribute name="action" use="required">
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="insert"/>
+					<xs:enumeration value="update"/>
+					<xs:enumeration value="delete"/>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
+		<xs:attribute name="cascade" use="optional">
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="true"/>
+					<xs:enumeration value="false"/>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
+		<xs:attribute name="groupEad" use="optional">
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="single"/>
+					<xs:enumeration value="multiple"/>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
+
+		<xs:attribute name="type" use="required">
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="ead3"/>
+					<xs:enumeration value="eac-cpf"/>
+					<xs:enumeration value="scons"/>
+					<xs:enumeration value="mets"/>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
+	</xs:complexType>
+
+	<xs:complexType name="recordBody">
+		<xs:choice>
+			<xs:element ref="ead:ead"/>
+			<xs:element ref="eac-cpf:eac-cpf"/>
+			<xs:element ref="scons:scons"/>
+			<xs:element ref="mets:mets"/>
+		</xs:choice>
+	</xs:complexType>
+</xs:schema>

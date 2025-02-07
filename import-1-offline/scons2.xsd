@@ -1,0 +1,350 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema 
+  xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+  xmlns="http://www.san.beniculturali.it/scons2"
+  targetNamespace="http://www.san.beniculturali.it/scons2"
+  elementFormDefault="qualified">
+
+  <xs:simpleType name="emailAddress">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="[^@]+@[^\.]+\..+"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="lingua">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="[a-z]{3}"/>
+    </xs:restriction>
+  </xs:simpleType>
+  
+  <xs:simpleType name="scrittura">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="[A-Z][a-z]{3}"/>
+    </xs:restriction>
+  </xs:simpleType>
+  
+  <xs:simpleType name="relazioneConservatore">
+    <xs:restriction base="xs:string">
+    <xs:enumeration value="identita"/> 
+      <xs:enumeration value="gerarchica" />
+      <xs:enumeration value="gerarchicaPadre"/>
+      <xs:enumeration value="gerarchicaFiglio" />
+      <xs:enumeration value="temporale"/>
+      <xs:enumeration value="temporalePrecedente" />
+      <xs:enumeration value="temporaleSuccessiva" />
+      <xs:enumeration value="associativa"/>
+    </xs:restriction>
+  </xs:simpleType>
+  
+  <xs:simpleType name="qualificaDenominazione">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="principale"/>
+      <xs:enumeration value="parallela"/>
+      <xs:enumeration value="altraDenominazione"/>
+      <xs:enumeration value="acronimo"/>
+      <xs:enumeration value="uniformata"/>
+      <xs:enumeration value="altro"/>
+    </xs:restriction>
+  </xs:simpleType>
+  
+  <xs:simpleType name="tipologiaContatto">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="telefono"/>
+      <xs:enumeration value="fax"/>
+      <xs:enumeration value="sitoweb"/>
+      <xs:enumeration value="mail"/>
+      <xs:enumeration value="pec"/>
+      <xs:enumeration value="altro"/>
+    </xs:restriction>
+  </xs:simpleType>
+  
+  <xs:simpleType name="tipologiaRelazione">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="CONS"/>
+      <xs:enumeration value="URL"/>
+      <xs:enumeration value="COMPL"/>
+      <xs:enumeration value="BIBTEXT"/>
+      <xs:enumeration value="BIBURI"/>
+      <xs:enumeration value="BIBSBN"/>
+      <xs:enumeration value="TEMATISMO"/>
+      <xs:enumeration value="FONTETEXT"/>
+      <xs:enumeration value="FONTEURI"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="consultazione">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="si"/>
+      <xs:enumeration value="no"/>
+      <xs:enumeration value="nonRilevato"/>
+    </xs:restriction>
+  </xs:simpleType>
+  
+  <!-- I valori dell'attributo sono quelli delle denominazioni ISTAT delle regioni.
+  Per uniformarci al modello, per questo specifico attributo non si e' adottata la sintassi CamelCase-->
+  <xs:simpleType name="regione">
+    <xs:restriction base="xs:string">
+    <xs:enumeration value="Abruzzo"/>
+    <xs:enumeration value="Basilicata"/>
+    <xs:enumeration value="Calabria"/>
+    <xs:enumeration value="Campania"/>
+    <xs:enumeration value="Emilia-Romagna"/>
+    <xs:enumeration value="Friuli-Venezia Giulia"/>
+    <xs:enumeration value="Lazio"/>
+    <xs:enumeration value="Liguria"/>
+    <xs:enumeration value="Lombardia"/>
+    <xs:enumeration value="Marche"/>
+    <xs:enumeration value="Molise"/>
+    <xs:enumeration value="Piemonte"/>
+    <xs:enumeration value="Puglia"/>
+    <xs:enumeration value="Sardegna"/>
+    <xs:enumeration value="Sicilia"/>
+    <xs:enumeration value="Toscana"/>
+    <xs:enumeration value="Trentino-Alto Adige/Südtirol"/>
+    <xs:enumeration value="Umbria"/>
+    <xs:enumeration value="Valle d'Aosta/Vallée d'Aoste"/>
+    <xs:enumeration value="Veneto"/>
+    </xs:restriction>
+  </xs:simpleType> 
+  
+  <xs:simpleType name="flag">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="S"/>
+      <xs:enumeration value="N"/>
+    </xs:restriction>
+  </xs:simpleType>
+  
+  <xs:simpleType name="CAP">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="\d{5}"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="codIstat">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="\d{6}"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="comune">
+    <xs:restriction base="xs:string"> </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="nazione">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="[A-Za-z]{3}"/>
+    </xs:restriction>
+  </xs:simpleType>
+    
+  <xs:simpleType name="provincia">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="[A-Za-z]{2}"/>
+    </xs:restriction>
+  </xs:simpleType>
+  
+  <xs:simpleType name="tipoAgente">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="organizzazione"/>
+      <xs:pattern value="persona"/>
+      <xs:pattern value="software"/>
+    </xs:restriction>
+  </xs:simpleType>
+  
+  <xs:simpleType name="tipoEvento">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="creazione"/>
+      <xs:pattern value="modifica"/>
+      <xs:pattern value="cancellazione"/>
+      <xs:pattern value="altro"/>
+    </xs:restriction>
+  </xs:simpleType>
+  
+  <xs:element name="nome" type="xs:string"/>
+  
+  <xs:element name="cognome" type="xs:string"/>
+  
+  <xs:element name="evento">
+    <xs:complexType>
+      <xs:sequence>
+          <xs:element name="agente">
+          <xs:complexType>
+                <xs:choice minOccurs="1">
+                  <xs:element type="xs:string" name="denominazione" minOccurs="0"/>             
+                  <xs:sequence>
+                    <xs:element type="xs:string" name="nome" minOccurs="0"/>
+                    <xs:element type="xs:string" name="cognome" minOccurs="0"/>
+                  </xs:sequence>          
+                </xs:choice>
+            <xs:attribute type="xs:string" name="id" use="optional"/>
+            <xs:attribute type="tipoAgente" name="tipo" use="optional"/>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+      <xs:attribute type="tipoEvento" name="tipoEvento" use="required"/>
+      <xs:attribute type="xs:dateTime" name="dataEvento" use="required"/>
+      <xs:attribute type="xs:string" name="tipologia" use="optional"/>
+      </xs:complexType>
+  </xs:element>
+  
+  <xs:element name="altroidentificativo">
+    <xs:complexType>
+      <xs:simpleContent>
+        <xs:extension base="xs:string">
+          <xs:attribute type="xs:string" name="tipo" use="required"/>
+          <xs:attribute type="xs:string" name="altroTipo" use="optional"/>
+          <xs:attribute type="xs:anyURI" name="href" use="optional"/>
+        </xs:extension>
+      </xs:simpleContent>
+    </xs:complexType>
+  </xs:element>
+  
+  <xs:element name="identificativo">
+  <xs:complexType>
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute type="xs:string" name="tipo" use="required"/>
+        <xs:attribute type="xs:anyURI" name="href" use="optional"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  </xs:element>
+  
+  <xs:element name="indirizzo">
+    <xs:complexType>
+      <xs:simpleContent>
+        <xs:extension base="xs:string">
+          <xs:attribute type="lingua" name="lingua" use="optional"/>
+          <xs:attribute type="nazione" name="paese" use="optional"/>
+          <xs:attribute type="regione" name="regione" use="optional"/>
+          <xs:attribute type="provincia" name="provincia" use="optional"/>
+          <xs:attribute type="comune" name="comune" use="required"/>
+          <xs:attribute type="codIstat" name="codIstat" use="optional"/>
+          <xs:attribute type="xs:string" name="denominazioneStradale" use="optional"/>
+          <xs:attribute type="xs:string" name="numeroCivico" use="optional"/>
+          <xs:attribute type="xs:string" name="frazione" use="optional"/>
+          <xs:attribute type="CAP" name="cap" use="optional"/>
+          </xs:extension>
+      </xs:simpleContent>
+    </xs:complexType>
+  </xs:element>
+  
+  <xs:element name="identificativosistema" type="xs:string"/>
+  
+  <xs:element name="status" type="xs:string"/>
+  
+  <xs:element name="contatto">
+    <xs:complexType>
+      <xs:simpleContent>
+        <xs:extension base="xs:string">
+          <xs:attribute type="tipologiaContatto" name="tipo" use="required"/>
+          <xs:attribute type="xs:string" name="altroTipo" use="optional"/>
+          <xs:attribute type="xs:string" name="label" use="optional"/>
+        </xs:extension>
+      </xs:simpleContent>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="orario" type="xs:string"/>
+  
+  <xs:element name="consultazione" type="consultazione"/>
+  
+  <xs:element name="accesso" type="xs:string"/>
+  
+  <xs:element name="localizzazione">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="denominazione"/>
+        <xs:element ref="indirizzo" maxOccurs="unbounded" minOccurs="1"/>
+        <xs:element ref="contatto" maxOccurs="unbounded" minOccurs="0"/>
+        <xs:element ref="orario" minOccurs="0"/>
+        <xs:element ref="accesso" minOccurs="0"/>
+      </xs:sequence>
+      <xs:attribute type="xs:string" name="identificativo" use="required"/>
+      <xs:attribute type="flag" name="principale" use="required"/>
+      <xs:attribute type="flag" name="consultazione" use="required"/>
+      <xs:attribute type="flag" name="privato" use="required"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="relazione">
+    <xs:complexType>
+      <xs:simpleContent>
+        <xs:extension base="xs:string">
+          <xs:attribute type="tipologiaRelazione" name="tipo" use="required"/>
+          <xs:attribute type="relazioneConservatore" name="tipoRelSC" use="optional"/>
+          <xs:attribute type="xs:string" name="conservatoIn" use="optional"/>
+          <xs:attribute type="xs:anyURI" name="href" use="optional"/>
+          <xs:attribute type="xs:string" name="qualifica" use="optional"/>
+          <xs:attribute type="xs:string" name="label" use="optional"/>
+          <xs:attribute type="xs:token" name="data" use="optional"/>
+        </xs:extension>
+      </xs:simpleContent>
+    </xs:complexType>
+  </xs:element>
+ 
+  <xs:element name="info">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="evento" maxOccurs="unbounded" minOccurs="1"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  
+  <xs:element name="denominazione">
+    <xs:complexType>
+      <xs:simpleContent>
+        <xs:extension base="xs:string">
+          <xs:attribute type="qualificaDenominazione" name="qualifica" use="optional"/>
+          <xs:attribute type="xs:string" name="altraQualifica" use="optional"/>
+          <xs:attribute type="xs:token" name="data" use="optional"/>         
+          <xs:attribute type="lingua" name="lingua" use="optional"/>   
+          <xs:attribute type="scrittura" name="scrittura" use="optional"/> 
+        </xs:extension>
+      </xs:simpleContent>
+    </xs:complexType>   
+    </xs:element>
+  
+  <xs:element name="identificativi">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="identificativosistema" minOccurs="1"/>
+        <xs:element ref="identificativo" minOccurs="1"/>
+        <xs:element ref="altroidentificativo" maxOccurs="unbounded" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="localizzazioni">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="localizzazione" maxOccurs="unbounded" minOccurs="1"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="tipologia" type="xs:string"/>
+  <xs:element name="descrizione" type="xs:string"/>
+  <xs:element name="servizi" type="xs:string"/>
+  <xs:element name="relazioni">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="relazione" maxOccurs="unbounded" minOccurs="0"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="scons">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="info" minOccurs="0"/>
+        <xs:element ref="identificativi" minOccurs="1"/>
+        <xs:element ref="denominazione" maxOccurs="unbounded" minOccurs="1"/>
+        <xs:element ref="tipologia"/>
+        <xs:element ref="localizzazioni" minOccurs="0"/>
+        <xs:element ref="descrizione" minOccurs="0"/>
+        <xs:element ref="servizi" minOccurs="0"/>
+        <xs:element ref="relazioni" minOccurs="0"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>
+

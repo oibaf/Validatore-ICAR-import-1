@@ -1,0 +1,2808 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://ead3.archivists.org/schema/"
+  elementFormDefault="qualified" targetNamespace="http://ead3.archivists.org/schema/"
+  xmlns:xa="http://xerces.apache.org"
+  xmlns:e3="http://ead3.archivists.org/schema/"
+  xmlns:vr="http://www.w3.org/2007/XMLSchema-versioning" vr:minVersion="1.1">
+  <!--
+           Encoded Archival Description
+       	Version: EAD3
+       	Release: 1.1.1
+       	Date: 2019-12-16
+
+       	Hosted by the Library of Congress at http://www.loc.gov/ead/.
+
+       	Developed by the Society of American Archivists'
+       	Technical Subcommittee for Encoded Archival Description (TS-EAD)
+       	and Schema Development Team, 2010-2015.
+
+       	Adopted by SAA Council, July 2015.
+
+       	Lead schema developer: Terry Catapano
+
+       	EAD3 was possible because of the generous support of the
+       	Society of American Archivists, the Gladys Krieble Delmas Foundation,
+       	the National Endowment for the Humanities, the Nationaal Archief of the
+       	Netherlands, the Beinecke Rare Book and Manuscript Library,
+       	the Institute for Advanced Technology in the Humanities at the
+       	University of Virginia, and OCLC Research.
+
+       	EAD3 Deliverables
+
+       	ead3.dtd	ead3_undeprecated.dtd
+       	ead3.rng	ead3_undeprecated.rng
+       	ead3.xsd	ead3_undeprecated.xsd
+       	ead3.sch
+
+       	Notes:
+       	-EAD3 is available as DTD, Relax NG Schema, and W3C Schema.
+       	-The EAD3 DTD does not support the <objectxmlwrap> element.
+       	-In the EAD3 DTD, attributes with anyURI, token, and string
+       	data types are converted to CDATA.
+       	-Deprecated EAD 2002 elements are available in the undprecated
+       	versions of EAD3.
+       	-A Schematron schema (ead3.sch) is available to validate external code lists
+       	not maintained within EAD, standard attribute value patterns,
+       	attribute or element co-ocurrence not enforcable in the schema,
+       	and some encoding practices recommended for future migration.
+           -->
+
+  <!--
+           ***************************************************
+           Changes in version 1.1.1:
+           1. The foreign element is now available as a child of the ref element.
+              See https://github.com/SAA-SDT/EAD3/issues/522
+
+           2. Fixed a bug in the XSD schemas that resulted in empty-only c12 elements being valid.
+              See https://github.com/SAA-SDT/EAD3/issues/523
+
+           ***************************************************
+
+
+           ***************************************************
+           Changes in version 1.1:
+
+           1. The @render attribute can now be used with the quote element.
+              See https://github.com/SAA-SDT/EAD3/issues/485
+
+           2. The objectxmlwrap element can now be validated properly in the XSD schemas.
+              See https://github.com/SAA-SDT/EAD3/issues/499
+              (bug fix)
+
+           3. Manually fixed a bug that was causing the descgrp element not to validate correctly in the undeprecated DTD.
+              See https://github.com/SAA-SDT/EAD3/issues/503
+              (bug fix)
+
+           4. The date element is now a valid child of the part element.
+              See https://github.com/SAA-SDT/EAD3/issues/505
+
+           5. rightsdeclaration, a new element, has been added to the control section.
+              See https://github.com/SAA-SDT/EAD3/issues/506
+              (new element)
+
+           6. The @localtype attribute can now be used with the conventiondeclaration element.
+              See https://github.com/SAA-SDT/EAD3/issues/507
+
+           7. The datatype associated with the @containerid attribute has been relaxed to xsd:string (in EAD3 version 1.0, the datatype for this attribute was restricted to xsd:NMTOKEN).
+              See https://github.com/SAA-SDT/EAD3/issues/512
+
+           *****************************************************
+           -->
+  <!-- include "ead_revised_defs.rng" -->
+  
+  <!-- begin ICAR extra types -->
+
+  <!-- M001: versione base di "archdesc" -->
+  <xs:complexType name="archdesc.base">
+    <xs:sequence>
+      <xs:element name="did" type="did"/>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:group ref="m.desc.base"/>
+        <xs:element name="dsc" type="dsc"/>
+      </xs:choice>
+    </xs:sequence>
+    <xs:attributeGroup ref="am.common"/>
+    <xs:attribute name="localtype" type="xs:token"/>
+    <xs:attribute name="relatedencoding" type="xs:token"/>
+    <xs:attributeGroup ref="am.desc.base"/>
+    <xs:attributeGroup ref="a.level"/>
+    <xs:attribute name="base" type="xs:anyURI"/>
+    <xs:assert xa:message="[&#x0a;&#x0a;
+M001: in &lt;archdesc>, @level non può assumere il valore &quot;item&quot;
+      &#x0a;&#x0a;]"
+      test="not(@level = 'item')"/>
+    <xs:assert xa:message="[&#x0a;&#x0a;
+M014: in &lt;archdesc>, nel caso /did/unitid contenga un @identifier, deve essere&#x0a;
+      presente anche @localtype
+      &#x0a;&#x0a;]"
+      xpathDefaultNamespace="##targetNamespace" 
+      test="not(did/unitid[not(@localtype) and @identifier])"/>
+    <xs:assert xa:message="[&#x0a;&#x0a;
+M016: in &lt;archdesc>, non può essere presente più di un processinfo/p dove&#x0a;
+      &lt;processinfo> è privo di @localtype
+      &#x0a;&#x0a;]"
+      xpathDefaultNamespace="##targetNamespace" 
+      test="1 >= count(processinfo[not(@localtype)]/p)"/>
+    <xs:assert xa:message="[&#x0a;&#x0a;
+M034: &lt;archdesc> non può contenere più di un &lt;processinfo> con @localtype&#x0a;
+      pari a &quot;compilatori&quot;
+      &#x0a;&#x0a;]"
+      xpathDefaultNamespace="##targetNamespace" 
+      test="1 >= count(processinfo[@localtype = 'compilatori'])"/>
+    <xs:assert xa:message="[&#x0a;&#x0a;
+M035: &lt;archdesc> non può contenere un &lt;processinfo> con @localtype pari a&#x0a;
+      &quot;compilatore&quot;
+      &#x0a;&#x0a;]"
+      xpathDefaultNamespace="##targetNamespace" 
+      test="not(processinfo[@localtype = 'compilatore'])"/>
+    <xs:assert xa:message="[&#x0a;&#x0a;
+M015: nel caso degli &lt;archdesc> non minimali, ovvero quando non siamo nel&#x0a;
+      caso di uno strumento di ricerca, deve essere presente almeno un&#x0a;
+      /did/unitid sia con @localtype che con @identifier
+      &#x0a;&#x0a;]"
+      xpathDefaultNamespace="##targetNamespace" 
+      test="if (    (0 = count(*[not(local-name() = ('did', 'odd'))]))
+                and (1 = count(did))
+                and (2 > count(odd))
+                and (1 = count(did/*))
+                and (1 = count(did/unittitle)))
+            then true()
+            else did/unitid[@localtype and @identifier]"/>
+  </xs:complexType>
+
+  <!-- M001: versione di "archdesc" specializzata per le unita'
+             archivistiche -->
+  <xs:complexType name="archdesc.arch">
+    <xs:complexContent>
+      <xs:extension base="archdesc.base">
+        <xs:assert xa:message="[&#x0a;&#x0a;
+M020: in &lt;archdesc>, nel caso rappresenti un'unità archivistica, non deve&#x0a;
+      essere presente @otherlevel
+      &#x0a;&#x0a;]"
+          test="not(@otherlevel)"/>
+        <xs:assert xa:message="[&#x0a;&#x0a;
+M022: in &lt;archdesc>, nel caso rappresenti un'unità archivistica, non deve&#x0a;
+      essere presente uno did/unittitle con @localtype pari a &quot;denominazione&quot;
+      &#x0a;&#x0a;]"
+          xpathDefaultNamespace="##targetNamespace" 
+          test="not(did/unittitle[@localtype = 'denominazione'])"/>
+        <xs:assert xa:message="[&#x0a;&#x0a;
+M044: in &lt;archdesc>, nel caso rappresenti un'unità archivistica, eventuali&#x0a;
+      did/unitid, dove @label in &lt;uinit> vale &quot;numeroOrdinamento&quot; o&#x0a;
+      &quot;segnaturaAttuale&quot; o &quot;segnaturaPrecedente&quot; o &quot;codiceClassificazione&quot; non possono&#x0a;
+      avere contenuto nullo
+      &#x0a;&#x0a;]"
+          xpathDefaultNamespace="##targetNamespace" 
+          test="every $id in (did/unitid[@label = ('numeroOrdinamento', 'segnaturaAttuale',
+                                                   'segnaturaPrecedente', 'codiceClassificazione')])
+                satisfies $id/text() != ''"/>
+        <xs:assert xa:message="[&#x0a;&#x0a;
+M049: dobbiamo considerare che &lt;archdesc>, nel caso costituisca apparentemente&#x0a;
+      un'unità archivistica, possa fare parte di un &lt;ead> che rappresenta uno&#x0a;
+      strumento di ricerca; nel caso &lt;archdesc> sia quindi la versione&#x0a;
+      minimale associata a uno strumento di ricerca, il did/unititle presente&#x0a;
+      deve essere privo di @localtype in &lt;unititle>; nel caso &lt;archdesc>&#x0a;
+      rappresenti invece una vera e propria unità archivistica, deve contenere&#x0a;
+      o un did/unititle (ma solo uno) dove il @localtype di &lt;unittitle> vale&#x0a;
+      &quot;titolo&quot;, o un did/unititle (ma solo uno) dove il @localtype di&#x0a;
+      &lt;unittitle> vale &quot;titoloAttribuito&quot;, o entrambi
+      &#x0a;&#x0a;]"
+          xpathDefaultNamespace="##targetNamespace" 
+          test="if (    (0 = count(*[not(local-name() = ('did', 'odd'))]))
+                    and (1 = count(did))
+                    and (2 > count(odd))
+                    and (1 = count(did/*))
+                    and (1 = count(did/unittitle)))
+                then not(did/unittitle[@localtype])
+                else     did/unittitle[@localtype = ('titolo', 'titoloAttribuito')]
+                     and (1 >= count(did/unittitle[@localtype = 'titolo']))
+                     and (1 >= count(did/unittitle[@localtype = 'titoloAttribuito']))"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <!-- M001: versione di "archdesc" specializzata per i complessi
+             archivistici -->
+  <xs:complexType name="archdesc.comp">
+    <xs:complexContent>
+      <xs:extension base="archdesc.base">
+        <xs:assert xa:message="[&#x0a;&#x0a;
+M018: in &lt;archdesc>, se @level è pari a &quot;otherlevel&quot;, allora deve essere&#x0a;
+      presente anche @otherlevel
+      &#x0a;&#x0a;]"
+          test="if (@level = 'otherlevel')
+                then @otherlevel
+                else true()"/>
+        <xs:assert xa:message="[&#x0a;&#x0a;
+M019: in &lt;archdesc>, nel caso sia presente @otherlevel, il valore di @level&#x0a;
+      deve essere pari a &quot;otherlevel&quot; e il valore di @otherlevel deve essere&#x0a;
+      uno di quelli presenti in una precisa lista chiusa
+      &#x0a;&#x0a;]"
+          test="if (@otherlevel)
+                then     (@level = 'otherlevel')
+                     and (@otherlevel = ('articolo', 'categoria', 'classe', 'parte', 'rubrica', 'sottoclasse',
+                                         'sottosezione', 'sottotitolo', 'sottovoce', 'titolo', 'voce'))
+                else true()"/>
+        <xs:assert xa:message="[&#x0a;&#x0a;
+M045: in &lt;archdesc>, nel caso rappresenti un complesso archivistico, non sono&#x0a;
+      ammessi dei did/unitid dove il @label in &lt;uinit> vale&#x0a;
+      &quot;numeroOrdinamento&quot; o &quot;segnaturaAttuale&quot; o &quot;segnaturaPrecedente&quot; o&#x0a;
+      &quot;codiceClassificazione&quot;
+      &#x0a;&#x0a;]"
+          xpathDefaultNamespace="##targetNamespace" 
+          test="not(did/unitid[@label = ('numeroOrdinamento', 'segnaturaAttuale',
+                                         'segnaturaPrecedente', 'codiceClassificazione')])"/>
+        <xs:assert xa:message="[&#x0a;&#x0a;
+M050: in &lt;archdesc>, nel caso rappresenti un complesso archivistico, non sono&#x0a;
+      ammessi dei did/unittitle dove il @localtype in &lt;uinititle> vale&#x0a;
+      &quot;titolo&quot; o &quot;titoloAttribuito&quot;
+      &#x0a;&#x0a;]"
+          xpathDefaultNamespace="##targetNamespace" 
+          test="not(did/unittitle[@localtype = ('titolo', 'titoloAttribuito')])"/>
+        <xs:assert xa:message="[&#x0a;&#x0a;
+M024: in &lt;archdesc>, nel caso sia la versione minimale associata a uno&#x0a;
+      strumento di ricerca, lo &lt;unittitle> non deve contenere un @localtype;&#x0a;
+      altrimenti, quando rappresenta un complesso archivistico, il valore di&#x0a;
+      @localtype deve essere pari a &quot;denominazione&quot;
+      &#x0a;&#x0a;]"
+          xpathDefaultNamespace="##targetNamespace" 
+          test="if (    (0 = count(*[not(local-name() = ('did', 'odd'))]))
+                    and (1 = count(did))
+                    and (2 > count(odd))
+                    and (1 = count(did/*))
+                    and (1 = count(did/unittitle)))
+                then not(did/unittitle[@localtype])
+                else 1 = count(did/unittitle[@localtype = 'denominazione'])"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <!-- M002: versione base di "c" -->
+  <!-- M137: riscritta la versione base di "c" in maniera semplificata -->
+  <xs:complexType name="c.base">
+    <xs:sequence>
+      <xs:element name="did" type="did"/>
+      <xs:group minOccurs="0" maxOccurs="unbounded" ref="m.desc.base"/>
+      <xs:element name="c" minOccurs="0" maxOccurs="unbounded">
+        <xs:alternative type="c.arch" test="@level = 'file'"/>
+        <xs:alternative type="c.docu" test="@level = 'item'"/>
+        <xs:alternative type="c.comp"/>
+      </xs:element>
+    </xs:sequence>
+    <xs:attributeGroup ref="am.desc.c"/>
+    <xs:assert xa:message="[&#x0a;&#x0a;
+M013: in &lt;c> deve essere presente almeno un /did/unitid sia con @localtype&#x0a;
+      che con @identifier
+      &#x0a;&#x0a;]"
+      xpathDefaultNamespace="##targetNamespace" 
+      test="did/unitid[@localtype and @identifier]"/>
+    <xs:assert xa:message="[&#x0a;&#x0a;
+M014: in &lt;c>, nel caso /did/unitid contenga un @identifier, deve essere&#x0a;
+      presente anche @localtype
+      &#x0a;&#x0a;]"
+      xpathDefaultNamespace="##targetNamespace" 
+      test="not(did/unitid[not(@localtype) and @identifier])"/>
+    <xs:assert xa:message="[&#x0a;&#x0a;
+M016: in &lt;c>, non può essere presente più di un processinfo/p dove&#x0a;
+      &lt;processinfo> è privo di @localtype
+      &#x0a;&#x0a;]"
+      xpathDefaultNamespace="##targetNamespace" 
+      test="1 >= count(processinfo[not(@localtype)]/p)"/>
+    <xs:assert xa:message="[&#x0a;&#x0a;
+M034: &lt;c> non può contenere più di un &lt;processinfo> con @localtype pari a&#x0a;
+      &quot;compilatori&quot;
+      &#x0a;&#x0a;]"
+      xpathDefaultNamespace="##targetNamespace" 
+      test="1 >= count(processinfo[@localtype = 'compilatori'])"/>
+    <xs:assert xa:message="[&#x0a;&#x0a;
+M035: &lt;c> non può contenere un &lt;processinfo> con @localtype pari a&#x0a;
+      &quot;compilatore&quot;
+      &#x0a;&#x0a;]"
+      xpathDefaultNamespace="##targetNamespace" 
+      test="not(processinfo[@localtype = 'compilatore'])"/>
+  </xs:complexType>
+
+  <!-- M002: versione di "c" specializzata per le unita' archivistiche -->
+  <xs:complexType name="c.arch">
+    <xs:complexContent>
+      <xs:extension base="c.base">
+        <xs:assert xa:message="[&#x0a;&#x0a;
+M022: in &lt;c>, nel caso rappresenti un'unità archivistica, non deve essere&#x0a;
+      presente uno did/unittitle con @localtype pari a &quot;denominazione&quot;
+      &#x0a;&#x0a;]"
+          xpathDefaultNamespace="##targetNamespace" 
+          test="not(did/unittitle[@localtype = 'denominazione'])"/>
+        <xs:assert xa:message="[&#x0a;&#x0a;
+M020: in &lt;c>, nel caso rappresenti un'unità archivistica, non deve essere&#x0a;
+      presente @otherlevel
+      &#x0a;&#x0a;]"
+          test="not(@otherlevel)"/>
+        <xs:assert xa:message="[&#x0a;&#x0a;
+M044: in &lt;c>, nel caso rappresenti un'unità archivistica, eventuali&#x0a;
+      did/unitid, dove @label in &lt;uinit> vale &quot;numeroOrdinamento&quot; o&#x0a;
+      &quot;segnaturaAttuale&quot; o &quot;segnaturaPrecedente&quot; o &quot;codiceClassificazione&quot;,&#x0a;
+      non possono avere contenuto nullo
+      &#x0a;&#x0a;]"
+          xpathDefaultNamespace="##targetNamespace" 
+          test="every $id in (did/unitid[@label = ('numeroOrdinamento', 'segnaturaAttuale',
+                                                   'segnaturaPrecedente', 'codiceClassificazione')])
+                satisfies $id/text() != ''"/>
+        <xs:assert xa:message="[&#x0a;&#x0a;
+M046: in &lt;c>, nel caso rappresenti un'unità archivistica, deve essere&#x0a;
+      presente un did/unittitle dove @loclatype in &lt;uintitle> vale &quot;titolo&quot; o&#x0a;
+      &quot;titoloAttribuito&quot;
+      &#x0a;&#x0a;]"
+          xpathDefaultNamespace="##targetNamespace" 
+          test="did/unittitle[@localtype = ('titolo', 'titoloAttribuito')]"/>
+        <xs:assert xa:message="[&#x0a;&#x0a;
+M047: in &lt;c>, nel caso rappresenti un'unità archivistica, non può essere&#x0a;
+      presente più di un did/unittitle dove @loclatype in &lt;uintitle> vale&#x0a;
+      &quot;titolo&quot;
+      &#x0a;&#x0a;]"
+          xpathDefaultNamespace="##targetNamespace" 
+          test="1 >= count(did/unittitle[@localtype = 'titolo'])"/>
+        <xs:assert xa:message="[&#x0a;&#x0a;
+M048: in &lt;c>, nel caso rappresenti un'unità archivistica, non può essere&#x0a;
+      presente più di un did/unittitle dove @loclatype in &lt;uintitle> vale&#x0a;
+      &quot;titoloAttribuito&quot;
+      &#x0a;&#x0a;]"
+          xpathDefaultNamespace="##targetNamespace" 
+          test="1 >= count(did/unittitle[@localtype = 'titoloAttribuito'])"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <!-- M002: versione di "c" specializzata per le unita' documentali -->
+  <xs:complexType name="c.docu">
+    <xs:complexContent>
+      <xs:extension base="c.base">
+        <xs:assert xa:message="[&#x0a;&#x0a;
+M022: in &lt;c>, nel caso rappresenti un'unità documentale, non deve essere&#x0a;
+      presente uno did/unittitle con @localtype pari a &quot;denominazione&quot;
+      &#x0a;&#x0a;]"
+          xpathDefaultNamespace="##targetNamespace" 
+          test="not(did/unittitle[@localtype = 'denominazione'])"/>
+        <xs:assert xa:message="[&#x0a;&#x0a;
+M020: in &lt;c>, nel caso rappresenti un'unità documentale, non deve essere&#x0a;
+      presente @otherlevel
+      &#x0a;&#x0a;]"
+          test="not(@otherlevel)"/>
+        <xs:assert xa:message="[&#x0a;&#x0a;
+M044: in &lt;c>, nel caso rappresenti un'unità documentale, eventuali&#x0a;
+      did/unitid, dove @label in &lt;uinit> vale &quot;numeroOrdinamento&quot; o&#x0a;
+      &quot;segnaturaAttuale&quot; o &quot;segnaturaPrecedente&quot; o &quot;codiceClassificazione&quot;,&#x0a;
+      non possono avere contenuto nullo
+      &#x0a;&#x0a;]"
+          xpathDefaultNamespace="##targetNamespace" 
+          test="every $id in (did/unitid[@label = ('numeroOrdinamento', 'segnaturaAttuale',
+                                                   'segnaturaPrecedente', 'codiceClassificazione')])
+                satisfies $id/text() != ''"/>
+        <xs:assert xa:message="[&#x0a;&#x0a;
+M046: in &lt;c>, nel caso rappresenti un'unità documentale, deve essere&#x0a;
+      presente un did/unittitle dove @loclatype in &lt;uintitle> vale &quot;titolo&quot; o&#x0a;
+      &quot;titoloAttribuito&quot;
+      &#x0a;&#x0a;]"
+          xpathDefaultNamespace="##targetNamespace" 
+          test="did/unittitle[@localtype = ('titolo', 'titoloAttribuito')]"/>
+        <xs:assert xa:message="[&#x0a;&#x0a;
+M047: in &lt;c>, nel caso rappresenti un'unità documentale, non può essere&#x0a;
+      presente più di un did/unittitle dove @loclatype in &lt;uintitle> vale&#x0a;
+      &quot;titolo&quot;
+      &#x0a;&#x0a;]"
+          xpathDefaultNamespace="##targetNamespace" 
+          test="1 >= count(did/unittitle[@localtype = 'titolo'])"/>
+        <xs:assert xa:message="[&#x0a;&#x0a;
+M048: in &lt;c>, nel caso rappresenti un'unità documentale, non può essere&#x0a;
+      presente più di un did/unittitle dove @loclatype in &lt;uintitle> vale&#x0a;
+      &quot;titoloAttribuito&quot;
+      &#x0a;&#x0a;]"
+          xpathDefaultNamespace="##targetNamespace" 
+          test="1 >= count(did/unittitle[@localtype = 'titoloAttribuito'])"/>
+        <xs:assert xa:message="[&#x0a;&#x0a;
+M051: in &lt;c>, nel caso rappresenti un'unità documentale, nel caso siano&#x0a;
+      presenti dei /controlaccess/genreform/part, il contenuto di &lt;part> deve&#x0a;
+      soddisfare una lista chiusa di valori
+      &#x0a;&#x0a;]"
+          xpathDefaultNamespace="##targetNamespace" 
+          test="every $part in controlaccess/genreform/part
+                satisfies $part/text() = ('Corrispondenza', 'Documenti', 'Verbale', 'Manoscritto',
+                                          'Delibera', 'Allegato', 'Iconografica', 'Imago', 'Disegni',
+                                          'Fotografia', 'Pergamene', 'Grafica', 'Audiovisivo',
+                                          'Cartografia')"/>
+        <xs:assert xa:message="[&#x0a;&#x0a;
+M052: in &lt;c>, nel caso rappresenti un'unità documentale, può essere&#x0a;
+      presente, al più, un unico /controlaccess/genreform/part contenente uno&#x0a;
+      dei valori che specifica la tipologia di unità documentale
+      &#x0a;&#x0a;]"
+          xpathDefaultNamespace="##targetNamespace" 
+          test="1 >= count(controlaccess/genreform/part[
+                             text() = ('Manoscritto', 'Grafica', 'Audiovisivo',
+                                       'Cartografia', 'Fotografia', 'Pergamene')
+                           ])"/>
+        <xs:assert xa:message="[&#x0a;&#x0a;
+M053: in &lt;c>, nel caso rappresenti un'unità documentale, se si tratta di un&#x0a;
+      &quot;Manoscritto&quot;, il &lt;quote> di ogni&#x0a;
+      did/physdescstructured/descriptivenote/p/quote deve avere contenuto non&#x0a;
+      vuoto e @localtype pari a &quot;incipit&quot; o a &quot;explicit&quot;; se, invece, non si&#x0a;
+      non si tratta di un &quot;Manoscritto&quot;, il &lt;quote> di ogni&#x0a;
+      did/physdescstructured/descriptivenote/p/quote non può avere @localtype&#x0a;
+      pari a &quot;incipit&quot; o &quot;explicit&quot;
+      &#x0a;&#x0a;]"
+          xpathDefaultNamespace="##targetNamespace" 
+          test="if (controlaccess/genreform/part[text() = 'Manoscritto'])
+                then every $quote in did/physdescstructured/descriptivenote/p/quote
+                     satisfies     $quote/@localtype = ('incipit', 'explicit')
+                               and $quote/text() != ''
+                else not(did/physdescstructured/descriptivenote/p/quote[
+                           @localtype = ('incipit', 'explicit')
+                         ])"/>
+        <xs:assert xa:message="[&#x0a;&#x0a;
+M054: in &lt;c>, nel caso rappresenti un'unità documentale, se si tratta di una&#x0a;
+      &quot;Grafica&quot;, o di una &quot;Cartografia&quot;, o di una &quot;Fotografia&quot;, o di&#x0a;
+      &quot;Pergamene&quot;, allora gli eventuali&#x0a;
+      did/physdescstructured/dimensions devono avere il &lt;dimension> che (1)&#x0a;
+      ha contenuto non vuoto, (2) ha @unit con contenuto non vuoto e (3) ha&#x0a;
+      @localtype che vale &quot;altezza&quot; oppure &quot;larghezza&quot;
+      &#x0a;&#x0a;]"
+          xpathDefaultNamespace="##targetNamespace" 
+          test="if (controlaccess/genreform/part[
+                      text() = ('Grafica', 'Cartografia', 'Fotografia', 'Pergamene')
+                    ])
+                then every $dim in did/physdescstructured/dimensions
+                     satisfies     $dim/@unit != ''
+                               and $dim/@localtype = ('altezza', 'larghezza')
+                               and $dim/text() != ''
+                else true()"/>
+        <xs:assert xa:message="[&#x0a;&#x0a;
+M055: in &lt;c>, nel caso rappresenti un'unità documentale, se si tratta di un&#x0a;
+      &quot;Audiovisivo&quot;, allora gli eventuali did/physdescstructured/dimensions&#x0a;
+      devono avere il &lt;dimension> che (1) ha contenuto non vuoto, (2) ha&#x0a;
+      @unit con contenuto non vuoto e (3) ha @localtype che vale &quot;durata&quot;
+      &#x0a;&#x0a;]"
+          xpathDefaultNamespace="##targetNamespace" 
+          test="if (controlaccess/genreform/part[text() = 'Audiovisivo'])
+                then every $dim in did/physdescstructured/dimensions
+                     satisfies     $dim/@unit != ''
+                               and $dim/@localtype = 'durata'
+                               and $dim/text() != ''
+                else true()"/>
+        <xs:assert xa:message="[&#x0a;&#x0a;
+M056: in &lt;c>, nel caso rappresenti un'unità documentale, se si tratta di una&#x0a;
+      &quot;Grafica&quot;, allora gli eventuali did/physdescstructured/physfacet dove&#x0a;
+      &lt;physfacet> è provvisto di @localtype, devono avere il &lt;physfacet> che&#x0a;
+      (1) ha contenuto non vuoto, e (2) ha @localtype pari a &quot;materiaTecnica&quot;, o a&#x0a;
+      &quot;caratteristicheTecniche&quot;, o a &quot;BN/colore&quot;, o a &quot;tipologia&quot;
+      &#x0a;&#x0a;]"
+          xpathDefaultNamespace="##targetNamespace" 
+          test="if (controlaccess/genreform/part[text() = 'Grafica'])
+                then every $phys in did/physdescstructured/physfacet[@localtype]
+                     satisfies     $phys/@localtype = ('materiaTecnica', 'caratteristicheTecniche',
+                                                       'BN/colore', 'tipologia')
+                               and $phys/text() != ''
+                else true()"/>
+        <xs:assert xa:message="[&#x0a;&#x0a;
+M057: in &lt;c>, nel caso rappresenti un'unità documentale, se si tratta di un&#x0a;
+      &quot;Audiovisivo&quot;, allora gli eventuali did/physdescstructured/physfacet&#x0a;
+      dove &lt;physfacet> è provvisto di @localtype, devono avere il &lt;physfacet>&#x0a;
+      che (1) ha contenuto non vuoto, e (2) ha @localtype pari a &quot;tecnica&quot;, o&#x0a;
+      a &quot;sonoro&quot;, o a &quot;BN/colore&quot;
+      &#x0a;&#x0a;]"
+          xpathDefaultNamespace="##targetNamespace" 
+          test="if (controlaccess/genreform/part[text() = 'Audiovisivo'])
+                then every $phys in did/physdescstructured/physfacet[@localtype]
+                     satisfies     $phys/@localtype = ('tecnica', 'sonoro', 'BN/colore')
+                               and $phys/text() != ''
+                else true()"/>
+        <xs:assert xa:message="[&#x0a;&#x0a;
+M058: in &lt;c>, nel caso rappresenti un'unità documentale, se si tratta di una&#x0a;
+      &quot;Cartografia&quot;, allora gli eventuali did/physdescstructured/physfacet&#x0a;
+      dove &lt;physfacet> è provvisto di @localtype, devono avere il &lt;physfacet>&#x0a;
+      che (1) ha contenuto non vuoto, e (2) ha @localtype pari a &quot;tecnica&quot;, o&#x0a;
+      a &quot;esecuzione&quot;, o a &quot;tipoRappresentazione&quot;
+      &#x0a;&#x0a;]"
+          xpathDefaultNamespace="##targetNamespace" 
+          test="if (controlaccess/genreform/part[text() = 'Cartografia'])
+                then every $phys in did/physdescstructured/physfacet[@localtype]
+                     satisfies     $phys/@localtype = ('tecnica', 'esecuzione',
+                                                       'tipoRappresentazione')
+                               and $phys/text() != ''
+                else true()"/>
+        <xs:assert xa:message="[&#x0a;&#x0a;
+M059: in &lt;c>, nel caso rappresenti un'unità documentale, se si tratta di una&#x0a;
+      &quot;Fotografia&quot;, allora gli eventuali did/physdescstructured/physfacet dove&#x0a;
+      &lt;physfacet> è provvisto di @localtype, devono avere il &lt;physfacet> che&#x0a;
+      (1) ha contenuto non vuoto, e (2) ha @localtype pari a &quot;tecnica&quot;, o a&#x0a;
+      &quot;BN/colore&quot;
+      &#x0a;&#x0a;]"
+          xpathDefaultNamespace="##targetNamespace" 
+          test="if (controlaccess/genreform/part[text() = 'Fotografia'])
+                then every $phys in did/physdescstructured/physfacet[@localtype]
+                     satisfies     $phys/@localtype = ('tecnica', 'BN/colore')
+                               and $phys/text() != ''
+                else true()"/>
+        <xs:assert xa:message="[&#x0a;&#x0a;
+M060: in &lt;c>, nel caso rappresenti un'unità documentale, se si tratta di&#x0a;
+      &quot;Pergamene&quot;, allora gli eventuali did/physdescstructured/physfacet dove&#x0a;
+      &lt;physfacet> è provvisto di @localtype, devono avere il &lt;physfacet> che&#x0a;
+      (1) ha contenuto non vuoto, e (2) ha @localtype pari a &quot;scrittura&quot;, o a&#x0a;
+      &quot;sigillo&quot;, o a &quot;materialeSigillo&quot;
+      &#x0a;&#x0a;]"
+          xpathDefaultNamespace="##targetNamespace" 
+          test="if (controlaccess/genreform/part[text() = 'Pergamene'])
+                then every $phys in did/physdescstructured/physfacet[@localtype]
+                     satisfies     $phys/@localtype = ('scrittura', 'sigillo',
+                                                       'materialeSigillo')
+                               and $phys/text() != ''
+                else true()"/>
+        <xs:assert xa:message="[&#x0a;&#x0a;
+M061: in &lt;c>, nel caso rappresenti un'unità documentale, se si tratta di una&#x0a;
+      &quot;Grafica&quot; o di una una &quot;Fotografia&quot;, allora gli eventuali&#x0a;
+      controlaccess/geogname/part dove &lt;part> è provvisto di @localtype,&#x0a;
+      devono avere il &lt;part> che (1) ha contenuto non vuoto, e (2) ha&#x0a;
+      @localtype pari a &quot;luogoRappresentato&quot;
+      &#x0a;&#x0a;]"
+          xpathDefaultNamespace="##targetNamespace" 
+          test="if (controlaccess/genreform/part[text() = ('Grafica', 'Fotografia')])
+                then every $part in controlaccess/geogname/part[@localtype]
+                     satisfies     $part/@localtype = 'luogoRappresentato'
+                               and $part/text() != ''
+                else true()"/>
+        <xs:assert xa:message="[&#x0a;&#x0a;
+M062: in &lt;c>, nel caso rappresenti un'unità documentale, se si tratta di una&#x0a;
+      &quot;Grafica&quot;, allora per ogni eventuale&#x0a;
+      did/physdescstructured/descriptivenote, l'elemento &lt;descriptivenote>&#x0a;
+      deve avere un figlio il &lt;p> che ha contenuto non vuoto
+      &#x0a;&#x0a;]"
+          xpathDefaultNamespace="##targetNamespace" 
+          test="if (controlaccess/genreform/part[text() = 'Grafica'])
+                then every $note in did/physdescstructured/descriptivenote
+                     satisfies $note/p[text() != '']
+                else true()"/>
+        <xs:assert xa:message="[&#x0a;&#x0a;
+M063: in &lt;c>, nel caso rappresenti un'unità documentale, se si tratta di una&#x0a;
+      &quot;Cartografia&quot;, allora gli eventuali did/materialspec devono avere il&#x0a;
+      &lt;materialspec> che (1) ha contenuto non vuoto, e (2) ha @label pari a&#x0a;
+      &quot;Scala&quot; (ma con controllo case-insensitive)
+      &#x0a;&#x0a;]"
+          xpathDefaultNamespace="##targetNamespace" 
+          test="if (controlaccess/genreform/part[text() = 'Cartografia'])
+                then every $spec in did/materialspec
+                     satisfies $spec[(lower-case(@label) = 'scala') and (text() != '')]
+                else true()"/>
+        <xs:assert xa:message="[&#x0a;&#x0a;
+M064: in &lt;c>, nel caso rappresenti un'unità documentale, se si tratta di una&#x0a;
+      &quot;Cartografia&quot;, allora gli eventuali&#x0a;
+      did/physdescstructured/descriptivenote/p/geogname devono avere il&#x0a;
+      &lt;geogname> che (1) ha un figlio &lt;part> con contenuto non vuoto, e (2)&#x0a;
+      ha @localtype pari a &quot;luogoRappresentato&quot;
+      &#x0a;&#x0a;]"
+          xpathDefaultNamespace="##targetNamespace" 
+          test="if (controlaccess/genreform/part[text() = 'Cartografia'])
+                then every $name in did/physdescstructured/descriptivenote/p/geogname
+                     satisfies     $name[@localtype = 'luogoRappresentato']
+                               and $name/part[text() != '']
+                else true()"/>
+        <xs:assert xa:message="[&#x0a;&#x0a;
+M065: in &lt;c>, nel caso rappresenti un'unità documentale, se si tratta di una&#x0a;
+      &quot;Fotografia&quot;, allora gli eventuali controlaccess/genreform/part, dove&#x0a;
+      &lt;part> ha @localtype pari a &quot;dataRipresa&quot;, devono avere il medesimo&#x0a;
+      elemento con contenuto non vuoto; altrimento (se non si tratta di una&#x0a;
+      &quot;Fotografia&quot;) non devono esserci dei controlaccess/genreform/part dove&#x0a;
+      &lt;part> ha @localtype pari a &quot;dataRipresa&quot; 
+      &#x0a;&#x0a;]"
+          xpathDefaultNamespace="##targetNamespace" 
+          test="if (controlaccess/genreform/part[text() = 'Fotografia'])
+                then every $date in did/unitdatestructured//datesingle[@localtype = 'dataRipresa']
+                     satisfies $date/text() != ''
+                else not(did/unitdatestructured//datesingle[@localtype = 'dataRipresa'])"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <!-- M002: versione di "c" specializzata per i complessi archivistici -->
+  <xs:complexType name="c.comp">
+    <xs:complexContent>
+      <xs:extension base="c.base">
+        <xs:assert xa:message="[&#x0a;&#x0a;
+M017: in &lt;c> è necessario sia presente level
+      &#x0a;&#x0a;]"
+          test="@level"/>
+        <xs:assert xa:message="[&#x0a;&#x0a;
+M018: in &lt;c>, se @level è pari a &quot;otherlevel&quot;, allora deve essere presente&#x0a;
+      anche @otherlevel
+      &#x0a;&#x0a;]"
+          test="if (@level = 'otherlevel')
+                then @otherlevel
+                else true()"/>
+        <xs:assert xa:message="[&#x0a;&#x0a;
+M019: in &lt;c>, nel caso sia presente @otherlevel, il valore di @level deve&#x0a;
+      essere pari a &quot;otherlevel&quot; e il valore di @otherlevel deve essere uno di&#x0a;
+      quelli presenti in una precisa lista chiusa
+      &#x0a;&#x0a;]"
+          test="if (@otherlevel)
+                then     (@level = 'otherlevel')
+                     and (@otherlevel = ('articolo', 'categoria', 'classe', 'parte', 'rubrica', 'sottoclasse',
+                                         'sottosezione', 'sottotitolo', 'sottovoce', 'titolo', 'voce'))
+                else true()"/>
+        <xs:assert xa:message="[&#x0a;&#x0a;
+M021: in &lt;c>, nel caso rappresenti un complesso archivistico, deve essere&#x0a;
+      presente uno (e un solo) did/unittitle con @localtype pari a&#x0a;
+      &quot;denominazione&quot;
+      &#x0a;&#x0a;]"
+          xpathDefaultNamespace="##targetNamespace" 
+          test="1 = count(did/unittitle[@localtype = 'denominazione'])"/>
+        <xs:assert xa:message="[&#x0a;&#x0a;
+M045: in &lt;c>, nel caso rappresenti un complesso archivistico, non sono ammessi&#x0a;
+      dei did/unitid dove il @label in &lt;uinit> vale &quot;numeroOrdinamento&quot; o&#x0a;
+      &quot;segnaturaAttuale&quot; o &quot;segnaturaPrecedente&quot; o &quot;codiceClassificazione&quot;
+      &#x0a;&#x0a;]"
+          xpathDefaultNamespace="##targetNamespace" 
+          test="not(did/unitid[@label = ('numeroOrdinamento', 'segnaturaAttuale',
+                                         'segnaturaPrecedente', 'codiceClassificazione')])"/>
+        <xs:assert xa:message="[&#x0a;&#x0a;
+M050: in &lt;c>, nel caso rappresenti un complesso archivistico, non sono ammessi&#x0a;
+      dei did/unittitle dove il @localtype in &lt;uinititle> vale &quot;titolo&quot; o&#x0a;
+      &quot;titoloAttribuito&quot;
+      &#x0a;&#x0a;]"
+          xpathDefaultNamespace="##targetNamespace" 
+          test="not(did/unittitle[@localtype = ('titolo', 'titoloAttribuito')])"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <!-- M036: specializzazione di "p" quando @localtype vale "compilatore" -->
+  <xs:complexType name="p.compilatore">
+    <xs:sequence>
+      <xs:element name="persname" type="persname"/>
+      <xs:element name="date" type="date" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attributeGroup ref="am.common"/>
+    <!-- disattivato per l'importazione SIAS e SIUSA
+    <xs:assert xa:message="[&#x0a;&#x0a;
+M036: i &lt;p>, discendenti di un &lt;processinfo> con @localtype pari a&#x0a;
+      &quot;compilatore&quot;, devono contenere esattamente un persname/part dove il&#x0a;
+      @localtype di &lt;part> è pari a &quot;compilatore&quot;
+      &#x0a;&#x0a;]"
+      xpathDefaultNamespace="##targetNamespace" 
+      test="1  = count(persname/part[@localtype = 'compilatore'])"/>
+      -->
+    <xs:assert xa:message="[&#x0a;&#x0a;
+M036: i &lt;p>, discendenti di un &lt;processinfo> con @localtype pari a&#x0a;
+      &quot;compilatore&quot;, possono contenere al più un persname/part dove il&#x0a;
+      @localtype di &lt;part> è pari a &quot;qualifica&quot;
+      &#x0a;&#x0a;]"
+      xpathDefaultNamespace="##targetNamespace" 
+      test="1 >= count(persname/part[@localtype = 'qualifica'])"/>
+    <!-- disattivato per l'importazione SIAS e SIUSA
+    <xs:assert xa:message="[&#x0a;&#x0a;
+M036: i &lt;p>, discendenti di un &lt;processinfo> con @localtype pari a&#x0a;
+      &quot;compilatore&quot;, devono contenere esattamente un persname/part dove il&#x0a;
+      @localtype di &lt;part> è pari a &quot;tipoIntervento&quot;
+      &#x0a;&#x0a;]"
+      xpathDefaultNamespace="##targetNamespace" 
+      test="1  = count(persname/part[@localtype = 'tipoIntervento'])"/>
+      -->
+    <xs:assert xa:message="[&#x0a;&#x0a;
+M036: i &lt;p>, discendenti di un &lt;processinfo> con @localtype pari a&#x0a;
+      &quot;compilatore&quot;, possono contenere dei persname/part dove il @localtype di&#x0a;
+      &lt;part> può essere solamente pari a &quot;compilatore&quot;, a &quot;qualifica&quot;, o a&#x0a;
+      &quot;tipoIntervento&quot;
+      &#x0a;&#x0a;]"
+      xpathDefaultNamespace="##targetNamespace" 
+      test="every $part in persname/part
+            satisfies $part/@localtype = ('compilatore', 'qualifica', 'tipoIntervento')"/>
+    <xs:assert xa:message="[&#x0a;&#x0a;
+M036: nei &lt;p>, discendenti di un &lt;processinfo> con @localtype pari a&#x0a;
+      &quot;compilatore&quot;, possono contenere solamente dei &lt;date> (al più uno) con&#x0a;
+      @localtype pari a &quot;dataIntervento&quot;
+      &#x0a;&#x0a;]"
+      xpathDefaultNamespace="##targetNamespace" 
+      test="every $date in date
+            satisfies $date[@localtype = 'dataIntervento']"/>
+  </xs:complexType>
+
+  <!-- M037: specializzazione di "processinfo" quando @localtype vale
+             "compilatore" -->
+  <xs:complexType name="processinfo.compilatore">
+    <xs:sequence>
+      <xs:element name="p" type="p.compilatore"/>
+    </xs:sequence>
+    <xs:attributeGroup ref="am.common"/>
+    <xs:attribute name="localtype" type="xs:token"/>
+    <xs:attribute name="encodinganalog" type="xs:token"/>
+    <xs:assert xa:message="[&#x0a;&#x0a;
+M037: i &lt;processinfo>, figli di un &lt;processinfo> con @localtype pari a&#x0a;
+      &quot;compilatori&quot;, devono avere @localtype pari a &quot;compilatore&quot;
+      &#x0a;&#x0a;]"
+      test="@localtype = 'compilatore'"/>
+  </xs:complexType>
+
+  <!-- M038: specializzazione di "processinfo" quando @localtype vale
+             "compilatori" -->
+  <xs:complexType name="processinfo.compilatori">
+    <xs:sequence>
+      <xs:element name="processinfo" type="processinfo.compilatore" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attributeGroup ref="am.common"/>
+    <xs:attribute name="localtype" type="xs:token"/>
+    <xs:attribute name="encodinganalog" type="xs:token"/>
+  </xs:complexType>
+
+  <!-- end ICAR extra types -->
+
+  <!-- ELEMENTS -->
+  <xs:element name="ead">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="control" type="control"/>
+        <!-- M001: "archdesc" riscritto tramite un tipo base e due
+                   specializzazioni -->
+        <xs:element name="archdesc">
+          <xs:alternative type="archdesc.arch" test="@level = 'file'"/>
+          <xs:alternative type="archdesc.comp"/>
+        </xs:element>
+      </xs:sequence>
+      <xs:attributeGroup ref="am.common"/>
+      <xs:attribute name="relatedencoding" type="xs:token"/>
+      <xs:attribute name="base" type="xs:anyURI"/>
+      <xs:assert xa:message="[&#x0a;&#x0a;
+M066: &lt;ead> può contenere uno o più control/otherrecordid (e, in tal caso,&#x0a;
+      &lt;otherrecordid> deve avere (1) contenuto non nullo e (2) @localtype non&#x0a;
+      nullo) se, e solo se, descrive uno strumento di ricerca
+      &#x0a;&#x0a;]"
+        xpathDefaultNamespace="##targetNamespace" 
+        test="if (    (0 = count(archdesc/*[not(local-name() = ('did', 'odd'))]))
+                  and (1 = count(archdesc/did))
+                  and (2 > count(archdesc/odd))
+                  and (1 = count(archdesc/did/*))
+                  and (1 = count(archdesc/did/unittitle)))
+              then every $id in control/otherrecordid
+                   satisfies $id[(@localtype != '') and (text() != '')]
+              else not(control/otherrecordid)"/>
+      <!-- rimosso M067 poiché il relativo controllo è risultato errato -->
+      <xs:assert xa:message="[&#x0a;&#x0a;
+M069: &lt;ead> può contenere un eventuale control/filedesc/editionstmt/edition&#x0a;
+      (e, in tal caso, &lt;edition> deve avere (1) contenuto non nullo, e (2)&#x0a;
+      @localtype pari a &quot;typology&quot;, o a &quot;support&quot;, o a &quot;published&quot;) se, e solo&#x0a;
+      se, descrive uno strumento di ricerca
+      &#x0a;&#x0a;]"
+        xpathDefaultNamespace="##targetNamespace" 
+        test="if (    (0 = count(archdesc/*[not(local-name() = ('did', 'odd'))]))
+                  and (1 = count(archdesc/did))
+                  and (2 > count(archdesc/odd))
+                  and (1 = count(archdesc/did/*))
+                  and (1 = count(archdesc/did/unittitle)))
+              then every $edit in control/filedesc/editionstmt/edition
+              satisfies $edit[    (@localtype = ('typology', 'support', 'published'))
+                              and (text() != '')]
+              else not(control/filedesc/editionstmt/edition)"/>
+      <xs:assert xa:message="[&#x0a;&#x0a;
+M070: &lt;ead> può contenere, al più, un unico&#x0a;
+      control/filedesc/editionstmt/edition quando il @localtype di &lt;edition> è&#x0a;
+      pari a &quot;typology&quot;
+      &#x0a;&#x0a;]"
+        xpathDefaultNamespace="##targetNamespace" 
+        test="1 >= count(control/filedesc/editionstmt/edition[@localtype = 'typology'])"/>
+      <xs:assert xa:message="[&#x0a;&#x0a;
+M071: &lt;ead> può contenere, al più, un unico&#x0a;
+      control/filedesc/editionstmt/edition quando il @localtype di &lt;edition> è&#x0a;
+      pari a &quot;support&quot;
+      &#x0a;&#x0a;]"
+        xpathDefaultNamespace="##targetNamespace" 
+        test="1 >= count(control/filedesc/editionstmt/edition[@localtype = 'support'])"/>
+      <xs:assert xa:message="[&#x0a;&#x0a;
+M072: &lt;ead> può contenere, al più, un unico&#x0a;
+      control/filedesc/editionstmt/edition quando il @localtype di &lt;edition> è&#x0a;
+      è pari a &quot;published&quot;
+      &#x0a;&#x0a;]"
+        xpathDefaultNamespace="##targetNamespace" 
+        test="1 >= count(control/filedesc/editionstmt/edition[@localtype = 'published'])"/>
+      <xs:assert xa:message="[&#x0a;&#x0a;
+M074: &lt;ead> può contenere un eventuale control/filedesc/publicationstmt solo&#x0a;
+      se descrive uno strumento di ricerca
+      &#x0a;&#x0a;]"
+        xpathDefaultNamespace="##targetNamespace" 
+        test="if (    (0 = count(archdesc/*[not(local-name() = ('did', 'odd'))]))
+                  and (1 = count(archdesc/did))
+                  and (2 > count(archdesc/odd))
+                  and (1 = count(archdesc/did/*))
+                  and (1 = count(archdesc/did/unittitle)))
+              then true()
+              else not(control/filedesc/publicationstmt)"/>
+      <xs:assert xa:message="[&#x0a;&#x0a;
+M075: &lt;ead> può contenere un eventuale control/filedesc/notestmt/controlnote&#x0a;
+      solo se descrive uno strumento di ricerca
+      &#x0a;&#x0a;]"
+        xpathDefaultNamespace="##targetNamespace" 
+        test="if (    (0 = count(archdesc/*[not(local-name() = ('did', 'odd'))]))
+                  and (1 = count(archdesc/did))
+                  and (2 > count(archdesc/odd))
+                  and (1 = count(archdesc/did/*))
+                  and (1 = count(archdesc/did/unittitle)))
+              then true()
+              else not(control/filedesc/notestmt/controlnote)"/>
+      <xs:assert xa:message="[&#x0a;&#x0a;
+M083: &lt;ead> può contenere eventuali control/filedesc/titlestmt/author, dove&#x0a;
+      &lt;author> contiene @localtype (e, in tal caso, il @localtype deve essere&#x0a;
+      pari a &quot;autore&quot;, o a &quot;curatore&quot;) se, e solo se, descrive uno strumento&#x0a;
+      di ricerca
+      &#x0a;&#x0a;]"
+        xpathDefaultNamespace="##targetNamespace" 
+        test="if (    (0 = count(archdesc/*[not(local-name() = ('did', 'odd'))]))
+                  and (1 = count(archdesc/did))
+                  and (2 > count(archdesc/odd))
+                  and (1 = count(archdesc/did/*))
+                  and (1 = count(archdesc/did/unittitle)))
+              then every $auth in control/filedesc/titlestmt/author[@localtype]
+                   satisfies $auth/@localtype = ('autore', 'curatore')
+              else not(control/filedesc/titlestmt/author)"/>
+      <xs:assert xa:message="[&#x0a;&#x0a;
+M084: &lt;ead> può contenere eventuali control/localcontrol (e, in tal caso,&#x0a;
+      &lt;localcontrol> deve (1) avere @localtype pari a &quot;complArchCollegato&quot;,&#x0a;
+      o a &quot;tematismoCollegato&quot;, e (2) un figlio &lt;term> tale che (2a) il suo&#x0a;
+      contenuto non sia vuoto e (2b) abbia l'attributo @identifier con valore&#x0a;
+      non vuoto) se, e solo se, descrive uno strumento di ricerca
+      &#x0a;&#x0a;]"
+        xpathDefaultNamespace="##targetNamespace" 
+        test="if (    (0 = count(archdesc/*[not(local-name() = ('did', 'odd'))]))
+                  and (1 = count(archdesc/did))
+                  and (2 > count(archdesc/odd))
+                  and (1 = count(archdesc/did/*))
+                  and (1 = count(archdesc/did/unittitle)))
+              then every $ctrl in control/localcontrol
+                   satisfies     $ctrl/@localtype = ('complArchCollegato',
+                                                     'tematismoCollegato')
+                             and $ctrl/term[(@identifier != '') and (text() != '')]
+              else not(control/localcontrol)"/>
+      <xs:assert xa:message="[&#x0a;&#x0a;
+M085: &lt;ead> può contenere eventuali control/representation (e, in tal caso,&#x0a;
+      &lt;representation> deve avere contenuto non vuoto) se, e solo se, descrive&#x0a;
+      uno strumento di ricerca
+      &#x0a;&#x0a;]"
+        xpathDefaultNamespace="##targetNamespace" 
+        test="if (    (0 = count(archdesc/*[not(local-name() = ('did', 'odd'))]))
+                  and (1 = count(archdesc/did))
+                  and (2 > count(archdesc/odd))
+                  and (1 = count(archdesc/did/*))
+                  and (1 = count(archdesc/did/unittitle)))
+              then every $repr in control/representation
+                   satisfies $repr/text() != ''
+              else not(control/representation)"/>
+      <xs:assert xa:message="[&#x0a;&#x0a;
+M086: &lt;ead> può contenere eventuali&#x0a;
+      control/maintenancehistory/maintenanceevent (e, in tal caso,&#x0a;
+      &lt;maintenanceevent> deve avere un figlio &lt;agent> con contenuto non vuoto)&#x0a;
+      se, e solo se, descrive uno strumento di ricerca
+      &#x0a;&#x0a;]"
+        xpathDefaultNamespace="##targetNamespace" 
+        test="if (    (0 = count(archdesc/*[not(local-name() = ('did', 'odd'))]))
+                  and (1 = count(archdesc/did))
+                  and (2 > count(archdesc/odd))
+                  and (1 = count(archdesc/did/*))
+                  and (1 = count(archdesc/did/unittitle)))
+              then every $evnt in control/maintenancehistory/maintenanceevent
+                   satisfies $evnt/agent/text() != ''
+              else true()"/>
+    </xs:complexType>
+  </xs:element>
+  <!-- control -->
+  <xs:complexType name="control">
+    <xs:sequence>
+      <!-- M087: rimossi "rightsdeclaration" e "localtypedeclaration" -->
+      <xs:element name="recordid" type="recordid"/>
+      <xs:element name="otherrecordid" type="otherrecordid" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="representation" type="representation" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="filedesc" type="filedesc"/>
+      <xs:element name="maintenancestatus" type="maintenancestatus"/>
+      <xs:element name="publicationstatus" type="publicationstatus" minOccurs="0"/>
+      <xs:element name="maintenanceagency" type="maintenanceagency"/>
+      <!-- M007: rimosso minOccurs="0" e maxOccurs="unbounded" per
+                 "languagedeclaration" per renderlo sia obbligatorio che non
+                 ripetibile -->
+      <xs:element name="languagedeclaration" type="languagedeclaration"/>
+      <!-- M009: rimosso minOccurs="0" e maxOccurs="unbounded" per
+                 "conventiondeclaration" per renderlo sia obbligatorio che non
+                 ripetibile -->
+      <xs:element name="conventiondeclaration" type="conventiondeclaration"/>
+      <xs:element name="localcontrol" type="localcontrol" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="maintenancehistory" type="maintenancehistory"/>
+      <xs:element name="sources" type="sources" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attributeGroup ref="am.common"/>
+    <xs:attribute name="encodinganalog" type="xs:token"/>
+    <xs:attribute name="relatedencoding" type="xs:token"/>
+    <xs:attribute name="base" type="xs:anyURI"/>
+    <xs:attribute name="langencoding">
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="iso639-1"/>
+          <xs:enumeration value="iso639-2b"/>
+          <xs:enumeration value="iso639-3"/>
+          <xs:enumeration value="otherlangencoding"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="scriptencoding">
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="iso15924"/>
+          <xs:enumeration value="otherscriptencoding"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="dateencoding">
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="iso8601"/>
+          <xs:enumeration value="otherdateencoding"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="countryencoding">
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="iso3166-1"/>
+          <xs:enumeration value="othercountryencoding"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="repositoryencoding">
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="iso15511"/>
+          <xs:enumeration value="otherrepositoryencoding"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:complexType>
+  <xs:complexType name="recordid" mixed="true">
+    <xs:attributeGroup ref="am.common"/>
+    <xs:attribute name="encodinganalog" type="xs:token"/>
+    <xs:attribute name="instanceurl" type="xs:anyURI"/>
+    <xs:assert xa:message="[&#x0a;&#x0a;
+M003: il contenuto di &lt;recordid> non può essere nullo
+      &#x0a;&#x0a;]"
+      test="text() != ''"/>
+  </xs:complexType>
+  <xs:complexType name="otherrecordid" mixed="true">
+    <xs:attributeGroup ref="am.common"/>
+    <xs:attribute name="encodinganalog" type="xs:token"/>
+    <xs:attribute name="localtype" type="xs:token"/>
+  </xs:complexType>
+  <xs:complexType name="representation" mixed="true">
+    <xs:attributeGroup ref="am.common"/>
+    <xs:attribute name="encodinganalog" type="xs:token"/>
+    <xs:attributeGroup ref="am.simplelink"/>
+    <xs:attribute name="localtype" type="xs:token"/>
+  </xs:complexType>
+  <xs:complexType name="filedesc">
+    <xs:sequence>
+      <!-- M088: rimosso "seriesstmt" -->
+      <xs:element name="titlestmt" type="titlestmt"/>
+      <xs:element name="editionstmt" type="editionstmt" minOccurs="0"/>
+      <xs:element name="publicationstmt" type="publicationstmt" minOccurs="0"/>
+      <xs:element name="notestmt" type="notestmt" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attributeGroup ref="am.common"/>
+    <xs:attribute name="encodinganalog" type="xs:token"/>
+  </xs:complexType>
+  <xs:complexType name="titlestmt">
+    <xs:sequence>
+      <!-- M089: rimossi "subtitle" e "sponsor" -->
+      <!-- M004: rimosso maxOccurs="unbounded" per "titlestmt" per renderlo
+                 non ripetibile -->
+      <xs:element name="titleproper" type="titleproper"/>
+      <xs:element name="author" type="author" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attributeGroup ref="am.common"/>
+    <xs:attribute name="encodinganalog" type="xs:token"/>
+  </xs:complexType>
+  <!-- M092: riscritto "editionstmt" in forma semplificata -->
+  <xs:complexType name="editionstmt">
+    <xs:sequence>
+      <xs:element name="edition" type="edition" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attributeGroup ref="am.common"/>
+    <xs:attribute name="encodinganalog" type="xs:token"/>
+  </xs:complexType>
+  <xs:complexType name="publicationstmt">
+    <xs:choice maxOccurs="unbounded">
+      <!-- M095: cancellati i non utilizzati "num" e "p" -->
+      <xs:element name="publisher" type="publisher"/>
+      <xs:element name="date" type="date"/>
+      <xs:element name="address" type="address"/>
+    </xs:choice>
+    <xs:attributeGroup ref="am.common"/>
+    <xs:attribute name="encodinganalog" type="xs:token"/>
+    <xs:assert xa:message="[&#x0a;&#x0a;
+M077: i &lt;date>, dotati di @localtype, contenuti in &lt;publicationstmt> devono,&#x0a;
+      obbligatoriamente, avere (1) contenuto non nullo e (2) un @localtype con&#x0a;
+      valori vincolati da una precisa lista di valori ammessi
+      &#x0a;&#x0a;]"
+        xpathDefaultNamespace="##targetNamespace" 
+        test="every $date in date[@localtype]
+              satisfies     ($date/@localtype = ('singleDate', 'rangeDate',
+                                                 'singleSec', 'rangeSec',
+                                                 'specificaDellaData'))
+                        and ($date/text() != '')"/>
+
+    <!-- M078 disattivato per presenza di molti controesempi con @local
+              in formato AAAA0101/AAAA1231 
+    <xs:assert xa:message="[&#x0a;&#x0a;
+M078: i &lt;date> con @localtype pari a &quot;singleDate&quot;, contenuti in &lt;notestmt>,&#x0a;
+        devono, obbligatoriamente, avere @normal nel formato &quot;AAAA&quot; o, in&#x0a;
+        alternativa, nel formato &quot;AAAAMMGG&quot;
+        &#x0a;&#x0a;]"
+        xpathDefaultNamespace="##targetNamespace" 
+        test="every $date in date[@localtype = 'singleDate']
+              satisfies matches($date/@normal, '^([0-9]{4}((0[1-9]|1[0-2])(0[1-9]|[12][0-9]|3[0-1]))??)$')"/>
+      -->
+
+    <!-- il terzo parametro, 'x', nel primo matches() serve a spezzare il secondo argomento su piu' linee
+         ignorando gli spazi intermedi -->
+    <xs:assert xa:message="[&#x0a;&#x0a;
+M079: i &lt;date> con @localtype pari a &quot;rangeDate&quot;, contenuti in&#x0a;
+      &lt;publicationstmt>, devono, obbligatoriamente, avere @normal nel formato&#x0a;
+      &quot;AAAA/AAAA&quot; o, in alternativa, nel formato &quot;AAAAMMGG/AAAAMMGG&quot;; sono&#x0a;
+      ammessi, come valori speciali, &quot;00000000&quot;, per indicare il primo estremo&#x0a;
+      aperto, e &quot;99999999&quot;, per indicare il secondo estremo aperto
+      &#x0a;&#x0a;]"
+        xpathDefaultNamespace="##targetNamespace" 
+        test="every $date in date[@localtype = 'rangeDate']
+              satisfies    matches($date/@normal, '^([0-9]{4}(0[1-9]|1[0-2])(0[1-9]|[12][0-9]|3[0-1])|0{8})
+                                                   /([0-9]{4}(0[1-9]|1[0-2])(0[1-9]|[12][0-9]|3[0-1])|9{8})$', 'x')
+                        or matches($date/@normal, '^[0-9]{4}/[0-9]{4}$')"/>
+    <!-- soppresso M080 poiche' il "singlesec" e' risultato piu' complesso di quanto
+         inizialmente inteso -->
+    <!-- soppresso M081 poiche' il "rangeSec" e' risultato piu' complesso di quanto
+         inizialmente inteso -->
+  </xs:complexType>
+  <!-- M187: rimosso il tipo "seriesstmt" -->  
+  <xs:complexType name="notestmt">
+    <xs:sequence>
+      <xs:element name="controlnote" type="controlnote" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attributeGroup ref="am.common"/>
+    <xs:attribute name="encodinganalog" type="xs:token"/>
+    <xs:assert xa:message="[&#x0a;&#x0a;
+M076: &lt;notestmt> può contenere al massimo un unico &lt;controlnote> privo di&#x0a;
+      @localtype
+      &#x0a;&#x0a;]"
+        xpathDefaultNamespace="##targetNamespace" 
+        test="1 >= count(controlnote[not(@localtype)])"/>
+    <xs:assert xa:message="[&#x0a;&#x0a;
+M082: eventuali &lt;controlnote>, figli di &lt;notestmt>, se hanno @localtype,&#x0a;
+      questo può essere pari solamente a &quot;descrizioneIntrinseca&quot;
+      &#x0a;&#x0a;]"
+        xpathDefaultNamespace="##targetNamespace" 
+        test="every $note in controlnote[@localtype]
+              satisfies $note/@localtype = ('noteStoriche',
+                                            'descrizioneIntrinseca')"/>
+  </xs:complexType>
+  <xs:complexType name="maintenancestatus" mixed="true">
+    <xs:attributeGroup ref="am.common"/>
+    <xs:attribute name="encodinganalog" type="xs:token"/>
+    <xs:attribute name="value" use="required">
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="revised"/>
+          <xs:enumeration value="deleted"/>
+          <xs:enumeration value="new"/>
+          <xs:enumeration value="deletedsplit"/>
+          <xs:enumeration value="deletedmerged"/>
+          <xs:enumeration value="deletedreplaced"/>
+          <xs:enumeration value="cancelled"/>
+          <xs:enumeration value="derived"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:complexType>
+  <xs:complexType name="publicationstatus" mixed="true">
+    <xs:attributeGroup ref="am.common"/>
+    <xs:attribute name="encodinganalog" type="xs:token"/>
+    <xs:attribute name="value" use="required">
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="inprocess"/>
+          <xs:enumeration value="approved"/>
+          <xs:enumeration value="published"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:complexType>
+  <xs:complexType name="languagedeclaration">
+    <xs:sequence>
+      <!-- M103: rimosso "descriptivenote" -->
+      <xs:element name="language" type="language"/>
+      <xs:element name="script" type="script"/>
+    </xs:sequence>
+    <xs:attributeGroup ref="am.common"/>
+    <xs:attribute name="encodinganalog" type="xs:token"/>
+    <xs:assert xa:message="[&#x0a;&#x0a;
+M008: in languagedeclaration/language, @langcode non può essere nullo e deve&#x0a;
+      essere conforme a ISO 639-2 (tre caratteri alfabetici)
+      &#x0a;&#x0a;]"
+      xpathDefaultNamespace="##targetNamespace" 
+      test="matches(language/@langcode, '^[a-zA-Z]{3}$')"/>
+  </xs:complexType>
+  <xs:complexType name="conventiondeclaration">
+    <xs:sequence>
+      <!-- M104: rimossi "abbr" e "descriptivenote" -->
+      <xs:element name="citation" type="citation"/>
+    </xs:sequence>
+    <xs:attributeGroup ref="am.common"/>
+    <xs:attribute name="encodinganalog" type="xs:token"/>
+    <xs:attribute name="localtype" type="xs:token"/>
+    <xs:assert xa:message="[&#x0a;&#x0a;
+M010: in &lt;conventiondeclaration>, il contenuto di &lt;citation> non può essere&#x0a;
+      nullo
+      &#x0a;&#x0a;]"
+      xpathDefaultNamespace="##targetNamespace" 
+      test="citation/text() != ''"/>
+  </xs:complexType>
+  <!-- M184: rimosso il tipo "rightsdeclaration" -->
+  <!-- M168: rimosso il tipo "localtypedeclaration" -->
+  <xs:complexType name="localcontrol">
+    <xs:sequence>
+      <xs:element name="term" type="term" minOccurs="0"/>
+      <!-- M106: rimossi gli elementi "datesingle" e "daterange" e, di
+                 conseguenza, il choice, ormai vuoto, che li conteneva -->
+    </xs:sequence>
+    <xs:attributeGroup ref="am.common"/>
+    <xs:attribute name="encodinganalog" type="xs:token"/>
+    <xs:attribute name="localtype" type="xs:token"/>
+  </xs:complexType>
+  <xs:complexType name="term" mixed="true">
+    <xs:attributeGroup ref="am.common"/>
+    <xs:attribute name="encodinganalog" type="xs:token"/>
+    <xs:attribute name="transliteration" type="xs:NMTOKEN"/>
+    <xs:attribute name="lastdatetimeverified">
+      <xs:simpleType>
+        <xs:union>
+          <xs:simpleType>
+            <xs:restriction base="xs:date">
+              <xs:maxInclusive value="2099-12-31"/>
+            </xs:restriction>
+          </xs:simpleType>
+          <xs:simpleType>
+            <xs:restriction base="xs:gYear">
+              <xs:maxInclusive value="2099"/>
+            </xs:restriction>
+          </xs:simpleType>
+          <xs:simpleType>
+            <xs:restriction base="xs:gYearMonth">
+              <xs:maxInclusive value="2099-12"/>
+            </xs:restriction>
+          </xs:simpleType>
+          <xs:simpleType>
+            <xs:restriction base="xs:dateTime">
+              <xs:maxInclusive value="2099-12-31T23:59:59"/>
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:union>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attributeGroup ref="am.access.no.normal"/>
+  </xs:complexType>
+  <xs:complexType name="maintenancehistory">
+    <xs:sequence>
+      <xs:element name="maintenanceevent" type="maintenanceevent" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attributeGroup ref="am.common"/>
+    <xs:attribute name="encodinganalog" type="xs:token"/>
+  </xs:complexType>
+  <xs:complexType name="maintenanceevent">
+    <xs:sequence>
+      <xs:element name="eventtype" type="eventtype"/>
+      <xs:element name="eventdatetime" type="eventdatetime"/>
+      <xs:element name="agenttype" type="agenttype"/>
+      <xs:element name="agent" type="agent"/>
+      <!-- M012: rimosso maxOccurs="unbounded" per <eventdescription> per
+                 renderlo non ripetibile -->
+      <xs:element name="eventdescription" type="eventdescription" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attributeGroup ref="am.common"/>
+    <xs:attribute name="encodinganalog" type="xs:token"/>
+  </xs:complexType>
+  <xs:complexType name="eventtype" mixed="true">
+    <xs:attributeGroup ref="am.common"/>
+    <xs:attribute name="encodinganalog" type="xs:token"/>
+    <xs:attribute name="value" use="required">
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="created"/>
+          <xs:enumeration value="revised"/>
+          <xs:enumeration value="deleted"/>
+          <xs:enumeration value="cancelled"/>
+          <xs:enumeration value="derived"/>
+          <xs:enumeration value="updated"/>
+          <xs:enumeration value="unknown"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:complexType>
+  <xs:complexType name="eventdatetime" mixed="true">
+    <xs:attributeGroup ref="am.common"/>
+    <xs:attribute name="encodinganalog" type="xs:token"/>
+    <xs:attribute name="standarddatetime">
+      <xs:simpleType>
+        <xs:union>
+          <xs:simpleType>
+            <xs:restriction base="xs:date">
+              <xs:maxInclusive value="2099-12-31"/>
+            </xs:restriction>
+          </xs:simpleType>
+          <xs:simpleType>
+            <xs:restriction base="xs:gYear">
+              <xs:maxInclusive value="2099"/>
+            </xs:restriction>
+          </xs:simpleType>
+          <xs:simpleType>
+            <xs:restriction base="xs:gYearMonth">
+              <xs:maxInclusive value="2099-12"/>
+            </xs:restriction>
+          </xs:simpleType>
+          <!-- M011: rimossa la possibilita, per @standarddatetime di essere
+                     in formato xs:dateTime -->
+        </xs:union>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:complexType>
+  <xs:complexType name="agenttype" mixed="true">
+    <xs:attributeGroup ref="am.common"/>
+    <xs:attribute name="encodinganalog" type="xs:token"/>
+    <xs:attribute name="value" use="required">
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="human"/>
+          <xs:enumeration value="machine"/>
+          <xs:enumeration value="unknown"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:complexType>
+  <xs:complexType name="agent" mixed="true">
+    <xs:attributeGroup ref="am.common"/>
+    <xs:attribute name="encodinganalog" type="xs:token"/>
+  </xs:complexType>
+  <xs:complexType name="eventdescription" mixed="true">
+    <xs:attributeGroup ref="am.common"/>
+    <xs:attribute name="encodinganalog" type="xs:token"/>
+    <xs:attribute name="localtype" type="xs:token"/>
+  </xs:complexType>
+  <xs:complexType name="sources">
+    <xs:sequence>
+      <xs:element name="source" type="source" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attributeGroup ref="am.common"/>
+    <xs:attribute name="encodinganalog" type="xs:token"/>
+    <xs:attribute name="localtype" type="xs:token"/>
+    <xs:attribute name="base" type="xs:anyURI"/>
+  </xs:complexType>
+  <xs:complexType name="source">
+    <xs:sequence>
+      <!-- M107: rimossi "objectxmlwrap" e "descriptivenote" -->
+      <xs:element name="sourceentry" type="sourceentry" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attributeGroup ref="am.common"/>
+    <xs:attribute name="encodinganalog" type="xs:token"/>
+    <xs:attribute name="lastdatetimeverified">
+      <xs:simpleType>
+        <xs:union>
+          <xs:simpleType>
+            <xs:restriction base="xs:date">
+              <xs:maxInclusive value="2099-12-31"/>
+            </xs:restriction>
+          </xs:simpleType>
+          <xs:simpleType>
+            <xs:restriction base="xs:gYear">
+              <xs:maxInclusive value="2099"/>
+            </xs:restriction>
+          </xs:simpleType>
+          <xs:simpleType>
+            <xs:restriction base="xs:gYearMonth">
+              <xs:maxInclusive value="2099-12"/>
+            </xs:restriction>
+          </xs:simpleType>
+          <xs:simpleType>
+            <xs:restriction base="xs:dateTime">
+              <xs:maxInclusive value="2099-12-31T23:59:59"/>
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:union>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attributeGroup ref="am.simplelink"/>
+  </xs:complexType>
+  <xs:complexType name="sourceentry" mixed="true">
+    <xs:attributeGroup ref="am.common"/>
+    <xs:attribute name="encodinganalog" type="xs:token"/>
+    <xs:attribute name="transliteration" type="xs:NMTOKEN"/>
+  </xs:complexType>
+  <!-- M090: riscritto il tipo "titleproper" come tipo solo attibuti -->
+  <xs:complexType name="titleproper" mixed="true">
+    <xs:attributeGroup ref="am.common"/>
+    <xs:attribute name="localtype" type="xs:token"/>
+    <xs:attribute name="render">
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="altrender"/>
+          <xs:enumeration value="bold"/>
+          <xs:enumeration value="bolddoublequote"/>
+          <xs:enumeration value="bolditalic"/>
+          <xs:enumeration value="boldsinglequote"/>
+          <xs:enumeration value="boldsmcaps"/>
+          <xs:enumeration value="boldunderline"/>
+          <xs:enumeration value="doublequote"/>
+          <xs:enumeration value="italic"/>
+          <xs:enumeration value="nonproport"/>
+          <xs:enumeration value="singlequote"/>
+          <xs:enumeration value="smcaps"/>
+          <xs:enumeration value="sub"/>
+          <xs:enumeration value="super"/>
+          <xs:enumeration value="underline"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="encodinganalog" type="xs:token"/>
+    <xs:assert xa:message="[&#x0a;&#x0a;
+M068: nel caso sia presente @lang in &lt;titleproper>, il suo valore deve essere&#x0a;
+      conforme a ISO 639-2 (deve essere costutito da tre caratteri alfabetici)
+      &#x0a;&#x0a;]"
+      test="if (@lang)
+            then matches(@lang, '^[a-zA-Z]{3}$')
+            else true()"/>
+  </xs:complexType>
+  <!-- M189: rimosso il tipo "subtitle" -->
+  <!-- M091: riscritto il tipo "author" come tipo solo attibuti -->
+  <xs:complexType name="author" mixed="true">
+    <xs:attributeGroup ref="am.common"/>
+    <xs:attribute name="localtype" type="xs:token"/>
+    <xs:attribute name="encodinganalog" type="xs:token"/>
+  </xs:complexType>
+  <!-- M188: rimosso il tipo "sponsor" -->
+  <!-- M093: riscritto il tipo "edition" in forma semplificata -->
+  <xs:complexType name="edition" mixed="true">
+    <xs:sequence>
+      <xs:element name="ref" type="ref" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attributeGroup ref="am.common"/>
+    <xs:attribute name="localtype" type="xs:token"/>
+    <xs:attribute name="encodinganalog" type="xs:token"/>
+    <xs:assert xa:message="[&#x0a;&#x0a;
+M073: il contenuto dell'elemento &lt;edition>, quando il suo @localtype vale&#x0a;
+      &quot;published&quot;, può essere solo &quot;sì&quot;, oppure &quot;si&quot;, oppure &quot;no&quot;
+      &#x0a;&#x0a;]"
+      test="if (@localtype = 'published')
+            then text() = ('si', 'sì', 'no')
+            else true()"/>
+  </xs:complexType>
+  <!-- M096: riscritto il tipo "publisher" in forma semplificata -->
+  <xs:complexType name="publisher" mixed="true">
+    <xs:attributeGroup ref="am.common"/>
+    <xs:attribute name="localtype" type="xs:token"/>
+    <xs:attribute name="encodinganalog" type="xs:token"/>
+  </xs:complexType>
+  <xs:complexType name="controlnote">
+    <!-- M099: degli elementi di "m.blocks", solo "p" viene utilizzato;
+               sostituito quindi il riferimento al gruppo con una sequence del
+               solo "p" -->
+    <xs:sequence>
+      <xs:element name="p" type="p" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attributeGroup ref="am.common"/>
+    <xs:attribute name="localtype" type="xs:token"/>
+    <xs:attribute name="encodinganalog" type="xs:token"/>
+  </xs:complexType>
+  <xs:complexType name="maintenanceagency">
+    <xs:sequence>
+      <!-- M102: cancellati "agencycode", "otheragencycode" e
+                 "descriptivenote" -->
+      <!-- M005: rimosso maxOccurs="unbounded" per "agencyname" per renderlo
+                 non ripetibile -->
+      <xs:element name="agencyname" type="agencyname"/>
+    </xs:sequence>
+    <xs:attributeGroup ref="am.common"/>
+    <xs:attribute name="encodinganalog" type="xs:token"/>
+    <xs:attributeGroup ref="am.countrycode"/>
+  </xs:complexType>
+  <!-- M142: rimosso il tipo "agencycode" -->
+  <!-- M179: rimosso il tipo "otheragencycode" -->
+  <xs:complexType name="agencyname" mixed="true">
+    <xs:attributeGroup ref="am.common"/>
+    <xs:attribute name="encodinganalog" type="xs:token"/>
+    <xs:attribute name="localtype" type="xs:token"/>
+    <xs:assert xa:message="[&#x0a;&#x0a;
+M006: il contenuto di &lt;agencyname> non può essere nullo
+      &#x0a;&#x0a;]"
+      test="text() != ''"/>
+  </xs:complexType>
+  <!-- M105: riscritto il tipo "citation" in forma semplificata -->
+  <xs:complexType name="citation" mixed="true">
+    <xs:attributeGroup ref="am.common"/>
+    <xs:attribute name="encodinganalog" type="xs:token"/>
+    <xs:attributeGroup ref="am.simplelink"/>
+    <xs:attribute name="lastdatetimeverified">
+      <xs:simpleType>
+        <xs:union>
+          <xs:simpleType>
+            <xs:restriction base="xs:date">
+              <xs:maxInclusive value="2099-12-31"/>
+            </xs:restriction>
+          </xs:simpleType>
+          <xs:simpleType>
+            <xs:restriction base="xs:gYear">
+              <xs:maxInclusive value="2099"/>
+            </xs:restriction>
+          </xs:simpleType>
+          <xs:simpleType>
+            <xs:restriction base="xs:gYearMonth">
+              <xs:maxInclusive value="2099-12"/>
+            </xs:restriction>
+          </xs:simpleType>
+          <xs:simpleType>
+            <xs:restriction base="xs:dateTime">
+              <xs:maxInclusive value="2099-12-31T23:59:59"/>
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:union>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:complexType>
+
+  <!-- ARCHDESC -->
+  <!-- M001: rimosso il tipo "archdesc" -->
+  <!-- did -->
+  <xs:complexType name="did">
+    <xs:sequence>
+      <!-- M110: rimosso "head" -->
+      <xs:group maxOccurs="unbounded" ref="m.did"/>
+    </xs:sequence>
+    <xs:attributeGroup ref="am.common"/>
+    <xs:attribute name="encodinganalog" type="xs:token"/>
+  </xs:complexType>
+  <!-- M121: riscritto il tipo "abstract" in forma semplificata -->
+  <xs:complexType name="abstract" mixed="true">
+    <xs:attributeGroup ref="am.common"/>
+    <xs:attribute name="localtype" type="xs:token"/>
+    <xs:attribute name="label" type="xs:string"/>
+    <xs:attribute name="encodinganalog" type="xs:token"/>
+  </xs:complexType>
+  <!-- M154: rimosso il tipo "container" -->
+  <xs:complexType name="dao">
+    <!-- M111: rimosso "descriptivenote" e il sequence che lo conteneva -->
+    <xs:attributeGroup ref="am.common"/>
+    <xs:attribute name="encodinganalog" type="xs:token"/>
+    <xs:attribute name="localtype" type="xs:token"/>
+    <xs:attribute name="label" type="xs:string"/>
+    <xs:attributeGroup ref="am.simplelink"/>
+    <xs:attribute name="identifier" type="xs:token"/>
+    <xs:attribute name="xpointer" type="xs:token"/>
+    <xs:attribute name="entityref" type="xs:ENTITY"/>
+    <xs:attribute name="daotype" use="required">
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="borndigital"/>
+          <xs:enumeration value="derived"/>
+          <xs:enumeration value="unknown"/>
+          <xs:enumeration value="otherdaotype"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="otherdaotype" type="xs:token"/>
+    <xs:attribute name="coverage">
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="whole"/>
+          <xs:enumeration value="part"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:assert xa:message="[&#x0a;&#x0a;
+M041: in &lt;dao> è obbligatorio @href
+      &#x0a;&#x0a;]"
+      test="@href"/>
+    <xs:assert xa:message="[&#x0a;&#x0a;
+M042: in &lt;dao>, se è presente @otherdaotype, @daotype deve valere&#x0a;
+      &quot;otherdaotype&quot;
+      &#x0a;&#x0a;]"
+      test="not(@otherdaotype) or (@daotype = 'otherdaotype')"/>
+    <xs:assert xa:message="[&#x0a;&#x0a;
+M043: in &lt;dao>, se @daotype vale &quot;otherdaotype&quot;, allora deve essere presente&#x0a;
+      anche @otherdaotype
+      &#x0a;&#x0a;]"
+      test="if (@daotype = 'otherdaotype')
+            then @otherdaotype
+            else true()"/>
+  </xs:complexType>
+  <xs:complexType name="daoset">
+    <xs:sequence>
+      <xs:element name="dao" type="dao"/>
+      <xs:element name="dao" type="dao" maxOccurs="unbounded"/>
+      <xs:element name="descriptivenote" type="descriptivenote" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attributeGroup ref="am.common"/>
+    <xs:attribute name="localtype" type="xs:token"/>
+    <xs:attribute name="encodinganalog" type="xs:token"/>
+    <xs:attribute name="label" type="xs:string"/>
+    <xs:attribute name="coverage">
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="whole"/>
+          <xs:enumeration value="part"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="base" type="xs:anyURI"/>
+  </xs:complexType>
+  <!-- M155: rimosso il tipo "didnote" -->
+  <!-- M164: rimosso il tipo "langmaterial" -->
+  <!-- M112: riscritto il tipo "materialspec" in forma semplificata -->
+  <xs:complexType name="materialspec" mixed="true">
+    <xs:attributeGroup ref="am.common"/>
+    <xs:attribute name="label" type="xs:string"/>
+    <xs:attribute name="encodinganalog" type="xs:token"/>
+    <xs:attribute name="localtype" type="xs:token"/>
+  </xs:complexType>
+  <xs:complexType name="physdescset">
+    <xs:sequence>
+      <xs:element name="physdescstructured" type="physdescstructured"/>
+      <xs:element name="physdescstructured" type="physdescstructured" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attributeGroup ref="am.common"/>
+    <xs:attribute name="label" type="xs:string"/>
+    <xs:attribute name="encodinganalog" type="xs:token"/>
+    <xs:attribute name="parallel" type="av.boolean"/>
+    <xs:attribute name="coverage">
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="whole"/>
+          <xs:enumeration value="part"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:complexType>
+  <!-- M122: riscritto il tipo "physdesc" in forma semplificata -->
+  <xs:complexType name="physdesc" mixed="true">
+    <xs:attributeGroup ref="am.common"/>
+    <xs:attribute name="localtype" type="xs:token"/>
+    <xs:attribute name="label" type="xs:string"/>
+    <xs:attribute name="encodinganalog" type="xs:token"/>
+  </xs:complexType>
+  <!-- M138: riscritto in tipo "physloc" in forma semplificata -->
+  <xs:complexType name="physloc" mixed="true">
+    <xs:sequence>
+      <xs:element name="ref" type="ref" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attributeGroup ref="am.common"/>
+    <xs:attribute name="localtype" type="xs:token"/>
+    <xs:attribute name="label" type="xs:string"/>
+    <xs:attribute name="encodinganalog" type="xs:token"/>
+    <xs:attribute name="parent" type="xs:IDREFS"/>
+  </xs:complexType>
+  <xs:complexType name="origination">
+    <xs:choice maxOccurs="unbounded">
+      <!-- M113: rimosso "name" -->
+      <xs:element name="corpname" type="corpname"/>
+      <xs:element name="famname" type="famname"/>
+      <xs:element name="persname" type="persname"/>
+    </xs:choice>
+    <xs:attributeGroup ref="am.common"/>
+    <xs:attribute name="localtype" type="xs:token"/>
+    <xs:attribute name="label" type="xs:string"/>
+    <xs:attribute name="encodinganalog" type="xs:token"/>
+    <xs:assert xa:message="[&#x0a;&#x0a;
+M026: in &lt;origination>, eventuali figli &lt;corpname>, &lt;persname>, o &lt;famname>,&#x0a;
+      devono obbligatioriamente avere @identifier
+      &#x0a;&#x0a;]"
+      xpathDefaultNamespace="##targetNamespace" 
+      test="every $elem in (corpname, persname, famname)
+            satisfies $elem/@identifier"/>
+  </xs:complexType>
+  <xs:complexType name="physdescstructured">
+    <xs:sequence>
+      <xs:element name="quantity" type="quantity"/>
+      <xs:element name="unittype" type="unittype"/>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element name="physfacet" type="physfacet"/>
+        <xs:element name="dimensions" type="dimensions"/>
+      </xs:choice>
+      <xs:element name="descriptivenote" type="descriptivenote" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attributeGroup ref="am.common"/>
+    <xs:attribute name="label" type="xs:string"/>
+    <xs:attribute name="encodinganalog" type="xs:token"/>
+    <xs:attribute name="physdescstructuredtype" use="required">
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="carrier"/>
+          <xs:enumeration value="materialtype"/>
+          <xs:enumeration value="spaceoccupied"/>
+          <xs:enumeration value="otherphysdescstructuredtype"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="otherphysdescstructuredtype" type="xs:token"/>
+    <xs:attributeGroup ref="a.coverage"/>
+  </xs:complexType>
+  <xs:complexType name="quantity" mixed="true">
+    <xs:attributeGroup ref="am.common"/>
+    <xs:attribute name="encodinganalog" type="xs:token"/>
+    <xs:attribute name="approximate" type="av.boolean"/>
+  </xs:complexType>
+  <xs:complexType name="unittype" mixed="true">
+    <xs:attributeGroup ref="am.common"/>
+    <xs:attribute name="encodinganalog" type="xs:token"/>
+    <xs:attributeGroup ref="am.access.no.normal"/>
+  </xs:complexType>
+  <xs:complexType name="repository">
+    <xs:sequence>
+      <xs:choice maxOccurs="unbounded">
+        <!-- M116: rimosso "name" -->
+        <xs:element name="corpname" type="corpname"/>
+        <xs:element name="famname" type="famname"/>
+        <xs:element name="persname" type="persname"/>
+      </xs:choice>
+      <xs:element name="address" type="address" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attributeGroup ref="am.common"/>
+    <xs:attribute name="localtype" type="xs:token"/>
+    <xs:attribute name="label" type="xs:string"/>
+    <xs:attribute name="encodinganalog" type="xs:token"/>
+    <xs:assert xa:message="[&#x0a;&#x0a;
+M026: in &lt;repository>, eventuali figli &lt;corpname>, &lt;persname>, o &lt;famname>,&#x0a;
+      devono obbligatioriamente avere @identifier
+      &#x0a;&#x0a;]"
+      xpathDefaultNamespace="##targetNamespace" 
+      test="every $elem in (corpname, persname, famname)
+            satisfies $elem/@identifier"/>
+  </xs:complexType>
+  <!-- M117: riscritto il tipo "unitdate" in forma semplificata -->
+  <xs:complexType name="unitdate" mixed="true">
+    <xs:attributeGroup ref="am.common"/>
+    <xs:attribute name="label" type="xs:string"/>
+    <xs:attributeGroup ref="a.unitdatetype"/>
+    <xs:attribute name="datechar" type="xs:token"/>
+    <xs:attribute name="certainty" type="xs:NMTOKEN"/>
+    <xs:attributeGroup ref="am.dates.era"/>
+    <xs:attributeGroup ref="am.dates.calendar"/>
+    <xs:attributeGroup ref="am.date.normal"/>
+    <xs:attribute name="encodinganalog" type="xs:token"/>
+  </xs:complexType>
+  <xs:complexType name="unitdatestructured">
+    <xs:choice>
+      <xs:element name="datesingle" type="datesingle"/>
+      <xs:element name="daterange" type="daterange"/>
+      <xs:element name="dateset" type="dateset"/>
+    </xs:choice>
+    <xs:attributeGroup ref="am.common"/>
+    <xs:attribute name="label" type="xs:string"/>
+    <xs:attributeGroup ref="a.unitdatetype"/>
+    <xs:attribute name="datechar" type="xs:token"/>
+    <xs:attribute name="certainty" type="xs:NMTOKEN"/>
+    <xs:attribute name="encodinganalog" type="xs:token"/>
+    <xs:attributeGroup ref="am.dates.era"/>
+    <xs:attributeGroup ref="am.dates.calendar"/>
+  </xs:complexType>
+  <!-- M120: riscritto il tipo "unittitle" in forma semplificata -->
+  <xs:complexType name="unittitle" mixed="true">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="date" type="date"/>
+      <xs:element name="genreform" type="genreform"/>
+    </xs:choice>
+    <xs:attributeGroup ref="am.common"/>
+    <xs:attribute name="label" type="xs:string"/>
+    <xs:attribute name="encodinganalog" type="xs:token"/>
+    <xs:attribute name="localtype" type="xs:token"/>
+    <xs:attribute name="normal" type="xs:token"/>
+    <xs:assert xa:message="[&#x0a;&#x0a;
+M023: in &lt;unittitle>, il contenuto di un eventuale @lang deve soddisfare lo&#x0a;
+      standard ISO 639-2 (ovvero: deve essere costituito da tre caratteri&#x0a;
+      alfabetici)
+      &#x0a;&#x0a;]"
+      test="not(@lang) or matches(@lang, '^[a-zA-Z]{3}$')"/>
+  </xs:complexType>
+  <!-- M119: riscritto il tipo "unitid" in forma semplificata -->
+  <xs:complexType name="unitid" mixed="true">
+    <xs:attributeGroup ref="am.common"/>
+    <xs:attribute name="localtype" type="xs:token"/>
+    <xs:attribute name="label" type="xs:string"/>
+    <xs:attributeGroup ref="am.countrycode"/>
+    <xs:attribute name="repositorycode" type="xs:token"/>
+    <xs:attribute name="identifier"/>
+    <xs:attribute name="encodinganalog" type="xs:token"/>
+  </xs:complexType>
+  <!-- archdesc notes -->
+  <xs:complexType name="accessrestrict">
+    <xs:sequence>
+      <!-- M123: rimossi tutti gli elementi ("head", "accessrestrict",
+                 "blockquote", "chronlist", "list", "table") tranne "p" -->
+      <xs:element name="p" type="p" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attributeGroup ref="am.common"/>
+    <xs:attribute name="encodinganalog" type="xs:token"/>
+    <xs:attribute name="localtype" type="xs:token"/>
+  </xs:complexType>
+  <!-- M140: rimosso il tipo "accruals" -->
+  <!-- M141: rimosso il tipo "acqinfo" -->
+  <!-- M143: rimosso il tipo "altformavail" -->
+  <!-- M144: rimosso il tipo "appraisal" -->
+  <xs:complexType name="arrangement">
+    <xs:sequence>
+      <!-- M124: rimossi tutti gli elementi ("head", "arrangement",
+                 "blockquote", "chronlist", "list", "table") tranne "p" -->
+      <xs:element name="p" type="p" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attributeGroup ref="am.common"/>
+    <xs:attribute name="localtype" type="xs:token"/>
+    <xs:attribute name="encodinganalog" type="xs:token"/>
+  </xs:complexType>
+  <!-- M145: rimosso il tipo "bibliography" -->
+  <!-- M147: rimosso il tipo "bioghist" -->
+  <xs:complexType name="controlaccess">
+    <!-- M125: rimossi "head", la ricorsione di "controlaccess" e gli elementi
+               di "m.blocks" ("blockquote", "chronlist", "list", "table",
+               "p") -->
+    <xs:choice maxOccurs="unbounded">
+      <xs:group ref="m.access"/>
+    </xs:choice>
+    <xs:attributeGroup ref="am.common"/>
+    <xs:attribute name="localtype" type="xs:token"/>
+    <xs:attribute name="encodinganalog" type="xs:token"/>
+    <xs:assert xa:message="[&#x0a;&#x0a;
+M040: in &lt;controlaccess>, ogni &lt;subject> con @localtype pari a&#x0a;
+      &quot;tematismoCollegato&quot; deve avere un figlio &lt;part> con contenuto non vuoto
+      &#x0a;&#x0a;]"
+      xpathDefaultNamespace="##targetNamespace" 
+      test="every $subj in subject[@localtype = 'tematismoCollegato']
+            satisfies $subj/part/text() != ''"/>
+    <!--  
+    <xs:assert test="every $elem in e3:subject
+                     satisfies $elem/e3:part[@localtype = 'voceIndice']"/>
+                     -->
+    <!--                 
+    <xs:assert test="every $elem in e3:geogname
+                     satisfies $elem/e3:part[@localtype = 'voceIndice']"/>
+                     -->
+  </xs:complexType>
+  <xs:complexType name="custodhist">
+    <xs:sequence>
+      <!-- M126: rimossi "head", la ricorsione di "custodhist", "blockquote",
+                 "chronlist", "list", e "table" -->
+      <xs:element name="p" type="p" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attributeGroup ref="am.common"/>
+    <xs:attribute name="localtype" type="xs:token"/>
+    <xs:attribute name="encodinganalog" type="xs:token"/>
+  </xs:complexType>
+  <xs:complexType name="fileplan">
+    <xs:sequence>
+      <xs:element name="head" type="head" minOccurs="0"/>
+      <xs:choice maxOccurs="unbounded">
+        <!-- M127: cancellati "fileplan" (in ricorsione), "blockquote",
+                   "chronlist", e "table" -->
+        <xs:element name="list" type="list"/>
+        <xs:element name="p" type="p"/>
+      </xs:choice>
+    </xs:sequence>
+    <xs:attributeGroup ref="am.common"/>
+    <xs:attribute name="localtype" type="xs:token"/>
+    <xs:attribute name="encodinganalog" type="xs:token"/>
+  </xs:complexType>
+  <!-- M162: rimosso il tipo "index" -->
+  <!-- M163: rimosso il tipo "indexentry" -->
+  <!-- M174: rimosso il tipo "namegrp" -->
+  <!-- M182: rimosso il tipo "ptrgrp" -->
+  <!-- M167: rimosso il tipo "legalstatus" -->
+  <!-- M177: riscritto il tipo il tipo "odd" in forma semplificata -->
+  <xs:complexType name="odd" mixed="true">
+    <xs:sequence>
+      <xs:element name="p" type="p" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attribute name="localtype" type="xs:token"/>
+    <xs:assert xa:message="[&#x0a;&#x0a;
+M208: in &lt;odd> è obbligatorio @localtype con valore pari a &quot;Osservazioni&quot;
+      &#x0a;&#x0a;]"
+      xpathDefaultNamespace="##targetNamespace" 
+      test="@localtype = 'Osservazioni'"/>
+  </xs:complexType>
+  <!-- M178: rimosso il tipo "originalsloc" -->
+  <xs:complexType name="otherfindaid">
+    <xs:sequence>
+      <!-- M129: rimossi gli elementi "head", "otherfindaid" (in ricorsione)
+                 "bibref", "p", "blockquote", "chronlist", "list", e
+                 "table" -->
+      <xs:element name="archref" type="archref" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attributeGroup ref="am.common"/>
+    <xs:attribute name="localtype" type="xs:token"/>
+    <xs:attribute name="encodinganalog" type="xs:token"/>
+  </xs:complexType>
+  <!-- M180: rimosso il tipo "phystech" -->
+  <!-- M181: rimosso il tipo "prefercite" -->
+  <xs:complexType name="processinfo">
+    <!-- M131: rimossi "head", "blockquote", "list", "chronlist", "table" -->
+    <xs:choice maxOccurs="unbounded">
+      <xs:element name="p" type="p"/>
+      <xs:element name="processinfo" type="processinfo"/>
+    </xs:choice>
+    <xs:attributeGroup ref="am.common"/>
+    <xs:attribute name="localtype" type="xs:token"/>
+    <xs:attribute name="encodinganalog" type="xs:token"/>
+  </xs:complexType>
+  <xs:complexType name="relatedmaterial">
+    <xs:sequence>
+      <!-- M132: rimossi "head", "relatedmaterial", "bibref", "p",
+                 "blockquote", "list", "chronlist", e "table" -->
+      <xs:element name="archref" type="archref" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attributeGroup ref="am.common"/>
+    <xs:attribute name="localtype" type="xs:token"/>
+    <xs:attribute name="encodinganalog" type="xs:token"/>
+  </xs:complexType>
+  <xs:complexType name="scopecontent">
+    <xs:sequence>
+      <!-- M134: rimossi "head", "scopecontent", "blockquote", "list",
+                 "chronlist", e "table" -->
+      <xs:element name="p" type="p" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attributeGroup ref="am.common"/>
+    <xs:attribute name="localtype" type="xs:token"/>
+    <xs:attribute name="encodinganalog" type="xs:token"/>
+  </xs:complexType>
+  <!-- M186: rimosso il tipo "separatedmaterial" -->
+  <xs:complexType name="userestrict">
+    <xs:sequence>
+      <!-- M135: rimossi "head", "userestrict", "blockquote", "list",
+                 "chronlist", e "table" -->
+      <xs:element name="p" type="p" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attributeGroup ref="am.common"/>
+    <xs:attribute name="encodinganalog" type="xs:token"/>
+    <xs:attribute name="localtype" type="xs:token"/>
+  </xs:complexType>
+  <!-- controlaccess elements -->
+  <xs:complexType name="corpname">
+    <xs:sequence>
+      <xs:element name="part" type="part" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attributeGroup ref="am.common"/>
+    <xs:attributeGroup ref="am.access"/>
+    <xs:attribute name="localtype" type="xs:token"/>
+    <xs:attribute name="encodinganalog" type="xs:token"/>
+    <xs:attribute name="relator" type="xs:token"/>
+  </xs:complexType>
+  <xs:complexType name="famname">
+    <xs:sequence>
+      <xs:element name="part" type="part" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attributeGroup ref="am.common"/>
+    <xs:attributeGroup ref="am.access"/>
+    <xs:attribute name="localtype" type="xs:token"/>
+    <xs:attribute name="encodinganalog" type="xs:token"/>
+    <xs:attribute name="relator" type="xs:token"/>
+  </xs:complexType>
+  <xs:complexType name="function">
+    <xs:sequence>
+      <xs:element name="part" type="part" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attributeGroup ref="am.common"/>
+    <xs:attributeGroup ref="am.access"/>
+    <xs:attribute name="encodinganalog" type="xs:token"/>
+    <xs:attribute name="localtype" type="xs:token"/>
+    <xs:attribute name="relator" type="xs:token"/>
+  </xs:complexType>
+  <xs:complexType name="genreform">
+    <xs:sequence>
+      <xs:element name="part" type="part" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attributeGroup ref="am.common"/>
+    <xs:attributeGroup ref="am.access"/>
+    <xs:attribute name="encodinganalog" type="xs:token"/>
+    <xs:attribute name="localtype" type="xs:token"/>
+    <xs:attribute name="relator" type="xs:token"/>
+  </xs:complexType>
+  <xs:complexType name="geogname">
+    <xs:sequence>
+      <xs:element name="part" type="part" maxOccurs="unbounded"/>
+      <xs:element name="geographiccoordinates" type="geographiccoordinates" minOccurs="0"
+        maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attributeGroup ref="am.common"/>
+    <xs:attributeGroup ref="am.access"/>
+    <xs:attribute name="localtype" type="xs:token"/>
+    <xs:attribute name="encodinganalog" type="xs:token"/>
+    <xs:attribute name="relator" type="xs:token"/>
+  </xs:complexType>
+  <xs:complexType name="geographiccoordinates" mixed="true">
+    <xs:attributeGroup ref="am.common"/>
+    <xs:attribute name="coordinatesystem" use="required" type="xs:token"/>
+  </xs:complexType>
+  <xs:complexType name="name">
+    <xs:sequence>
+      <xs:element name="part" type="part" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attributeGroup ref="am.common"/>
+    <xs:attributeGroup ref="am.access"/>
+    <xs:attribute name="localtype" type="xs:token"/>
+    <xs:attribute name="encodinganalog" type="xs:token"/>
+    <xs:attribute name="relator" type="xs:token"/>
+  </xs:complexType>
+  <xs:complexType name="occupation">
+    <xs:sequence>
+      <xs:element name="part" type="part" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attributeGroup ref="am.common"/>
+    <xs:attributeGroup ref="am.access"/>
+    <xs:attribute name="encodinganalog" type="xs:token"/>
+    <xs:attribute name="localtype" type="xs:token"/>
+    <xs:attribute name="relator" type="xs:token"/>
+  </xs:complexType>
+  <xs:complexType name="persname">
+    <xs:sequence>
+      <xs:element name="part" type="part" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attributeGroup ref="am.common"/>
+    <xs:attributeGroup ref="am.access"/>
+    <xs:attribute name="localtype" type="xs:token"/>
+    <xs:attribute name="encodinganalog" type="xs:token"/>
+    <xs:attribute name="relator" type="xs:token"/>
+  </xs:complexType>
+  <xs:complexType name="subject">
+    <xs:sequence>
+      <xs:element name="part" type="part" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attributeGroup ref="am.common"/>
+    <xs:attributeGroup ref="am.access"/>
+    <xs:attribute name="encodinganalog" type="xs:token"/>
+    <xs:attribute name="localtype" type="xs:token"/>
+    <xs:attribute name="relator" type="xs:token"/>
+  </xs:complexType>
+  <xs:complexType name="title">
+    <xs:sequence>
+      <xs:element name="part" type="part" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attributeGroup ref="am.common"/>
+    <xs:attribute name="localtype" type="xs:token"/>
+    <xs:attributeGroup ref="am.access"/>
+    <xs:attribute name="encodinganalog" type="xs:token"/>
+    <xs:attribute name="relator" type="xs:token"/>
+    <xs:attribute name="render">
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="altrender"/>
+          <xs:enumeration value="bold"/>
+          <xs:enumeration value="bolddoublequote"/>
+          <xs:enumeration value="bolditalic"/>
+          <xs:enumeration value="boldsinglequote"/>
+          <xs:enumeration value="boldsmcaps"/>
+          <xs:enumeration value="boldunderline"/>
+          <xs:enumeration value="doublequote"/>
+          <xs:enumeration value="italic"/>
+          <xs:enumeration value="nonproport"/>
+          <xs:enumeration value="singlequote"/>
+          <xs:enumeration value="smcaps"/>
+          <xs:enumeration value="sub"/>
+          <xs:enumeration value="super"/>
+          <xs:enumeration value="underline"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:complexType>
+  <!-- M101: riscritto il tipo "part" in forma semplificata -->
+  <xs:complexType name="part" mixed="true">
+    <xs:attributeGroup ref="am.common"/>
+    <xs:attribute name="encodinganalog" type="xs:token"/>
+    <xs:attribute name="localtype" type="xs:token"/>
+    <xs:attributeGroup ref="am.access.no.normal"/>
+  </xs:complexType>
+  <!-- BLOCKS -->
+  <!-- p -->
+  <!-- M100: riscritto il tipo "p" in forma semplificata -->
+  <xs:complexType name="p" mixed="true">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:group ref="m.access"/>
+      <xs:element name="date" type="date"/>
+      <xs:element name="ptr" type="ptr"/>
+      <xs:element name="ref" type="ref"/>
+      <xs:element name="quote" type="quote"/>
+    </xs:choice>
+    <xs:attributeGroup ref="am.common"/>
+  </xs:complexType>
+  <!-- blockquote -->
+  <!-- M148: rimosso il tipo "blockquote" -->
+  <!-- chronlist -->
+  <!-- M152: rimosso il tipo "chronlist" -->
+  <!-- M150: rimosso il tipo "chronitem" -->
+  <!-- M151: rimosso il tipo "chronitemset" -->
+  <!-- M158: rimosso il tipo "event" -->
+  <!-- list -->
+  <xs:complexType name="list">
+    <xs:sequence>
+      <!-- M169: riscritta la sequence per conservare, come obbligatorio e
+                 ripetibile, il solo "item" -->
+      <xs:element name="item" type="item" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attributeGroup ref="am.common"/>
+    <xs:attribute name="listtype">
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="deflist"/>
+          <xs:enumeration value="unordered"/>
+          <xs:enumeration value="ordered"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="mark">
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="disc"/>
+          <xs:enumeration value="circle"/>
+          <xs:enumeration value="square"/>
+          <xs:enumeration value="none"/>
+          <xs:enumeration value="inherit"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="numeration">
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="decimal"/>
+          <xs:enumeration value="decimal-leading-zero"/>
+          <xs:enumeration value="lower-roman"/>
+          <xs:enumeration value="upper-roman"/>
+          <xs:enumeration value="lower-greek"/>
+          <xs:enumeration value="lower-latin"/>
+          <xs:enumeration value="upper-latin"/>
+          <xs:enumeration value="armenian"/>
+          <xs:enumeration value="georgian"/>
+          <xs:enumeration value="lower-alpha"/>
+          <xs:enumeration value="upper-alpha"/>
+          <xs:enumeration value="inherit"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:complexType>
+  <!-- M170: rimosso il tipo "defitem" -->
+  <!-- M172: rimosso il tipo "label" -->
+  <!-- M173: riscritto il tipo "item" in forma semplificata -->
+  <xs:complexType name="item" mixed="true">
+    <xs:attributeGroup ref="am.common"/>
+  </xs:complexType>
+  <!-- M171: rimossi i tipi "listhead", "head01", "head02", e "head03" -->
+  <!-- table -->
+  <!-- M190: rimosso il tipo "table" -->
+  <!-- M192: rimosso il tipo "tbody" -->
+  <!-- M153: rimosso il tipo "colspec" -->
+  <!-- M191: rimosso il tipo "tbody" -->
+  <!-- M185: rimosso il tipo "row" -->
+  <!-- M157: rimosso il tipo "entry" -->
+  <!-- M193: rimosso il tipo "thead" -->
+  <!-- language blocks -->
+  <xs:complexType name="language" mixed="true">
+    <xs:attributeGroup ref="am.common"/>
+    <xs:attribute name="encodinganalog" type="xs:token"/>
+    <xs:attribute name="label" type="xs:string"/>
+    <xs:attribute name="langcode" type="xs:NMTOKEN"/>
+  </xs:complexType>
+  <!-- M165: rimosso il tipo "languageset" -->
+  <xs:complexType name="script" mixed="true">
+    <xs:attributeGroup ref="am.common"/>
+    <xs:attribute name="encodinganalog" type="xs:token"/>
+    <xs:attribute name="label" type="xs:string"/>
+    <xs:attribute name="scriptcode" type="xs:NMTOKEN"/>
+  </xs:complexType>
+  <!-- physdescstructured blocks -->
+  <xs:complexType name="dimensions" mixed="true">
+    <!-- M114: rimossi "dimensions", il gruppo "m.mixed.basic.element" e il
+               choice che li conteneva -->
+    <xs:attributeGroup ref="am.common"/>
+    <xs:attribute name="encodinganalog" type="xs:token"/>
+    <xs:attribute name="localtype" type="xs:token"/>
+    <xs:attribute name="unit" type="xs:token"/>
+  </xs:complexType>
+  <!-- M115: riscritto il tipo "physfacet" in forma semplificata -->
+  <xs:complexType name="physfacet">
+    <xs:attributeGroup ref="am.common"/>
+    <xs:attribute name="encodinganalog" type="xs:token"/>
+    <xs:attributeGroup ref="am.access.no.normal"/>
+    <xs:attribute name="localtype" type="xs:token"/>
+  </xs:complexType>
+  <!-- other blocks -->
+  <xs:complexType name="address">
+    <xs:sequence>
+      <xs:element name="addressline" type="addressline" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attributeGroup ref="am.common"/>
+  </xs:complexType>
+  <!-- M098: riscritto il tipo "addressline" in forma semplificata -->
+  <xs:complexType name="addressline" mixed="true">
+    <xs:attributeGroup ref="am.common"/>
+    <xs:attribute name="localtype" type="xs:token"/>
+  </xs:complexType>
+  <!-- M130 -->
+  <xs:complexType name="archref" mixed="true">
+    <xs:sequence>
+      <xs:element name="ref" type="ref" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attributeGroup ref="am.common"/>
+    <xs:attribute name="encodinganalog" type="xs:token"/>
+  </xs:complexType>
+  <!-- M146: rimosso il tipo "bibref" -->
+  <xs:complexType name="descriptivenote">
+    <xs:sequence>
+      <xs:element name="p" type="p" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attributeGroup ref="am.common"/>
+    <xs:attribute name="encodinganalog" type="xs:token"/>
+  </xs:complexType>
+  <!-- M160: rimosso il tipo "footnote" -->
+  <!-- M128: riscritto il tipo "head" in forma semplificata -->
+  <xs:complexType name="head" mixed="true">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="ptr" type="ptr"/>
+      <xs:element name="ref" type="ref"/>
+    </xs:choice>
+    <xs:attributeGroup ref="am.common"/>
+    <xs:attribute name="althead" type="xs:token"/>
+  </xs:complexType>
+  <!-- DATES -->
+  <xs:complexType name="datesingle">
+    <xs:complexContent>
+      <xs:extension base="m.datesingle">
+        <xs:attributeGroup ref="am.common"/>
+        <xs:attribute name="localtype" type="xs:token"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="daterange">
+    <xs:sequence>
+      <xs:element name="fromdate" type="fromdate" minOccurs="0"/>
+      <xs:element name="todate" type="todate" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attributeGroup ref="am.common"/>
+    <xs:attribute name="localtype" type="xs:token"/>
+  </xs:complexType>
+  <xs:complexType name="fromdate">
+    <xs:complexContent>
+      <xs:extension base="m.datesingle">
+        <xs:attributeGroup ref="am.common"/>
+        <xs:attribute name="localtype" type="xs:token"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="todate">
+    <xs:complexContent>
+      <xs:extension base="m.datesingle">
+        <xs:attributeGroup ref="am.common"/>
+        <xs:attribute name="localtype" type="xs:token"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="dateset">
+    <xs:sequence>
+      <xs:choice>
+        <xs:element name="datesingle" type="datesingle"/>
+        <xs:element name="daterange" type="daterange"/>
+      </xs:choice>
+      <xs:choice maxOccurs="unbounded">
+        <xs:element name="datesingle" type="datesingle"/>
+        <xs:element name="daterange" type="daterange"/>
+      </xs:choice>
+    </xs:sequence>
+    <xs:attributeGroup ref="am.common"/>
+    <xs:attribute name="localtype" type="xs:token"/>
+  </xs:complexType>
+  <!-- MIXED CONTENT -->
+  <!-- M139: rimosso il tipo "abbr" -->
+  <!-- M097: riscritto il tipo "date" in forma semplificata -->
+  <xs:complexType name="date" mixed="true">
+    <xs:attributeGroup ref="am.common"/>
+    <xs:attribute name="localtype" type="xs:token"/>
+    <xs:attributeGroup ref="am.dates.era"/>
+    <xs:attributeGroup ref="am.dates.calendar"/>
+    <xs:attributeGroup ref="am.date.normal"/>
+    <xs:attribute name="certainty" type="xs:NMTOKEN"/>
+    <xs:attribute name="encodinganalog" type="xs:token"/>
+  </xs:complexType>
+  <!-- M156: rimosso il tipo "emph" -->
+  <!-- M159: rimosso il tipo "expan" -->
+  <!-- M161: rimosso il tipo "foreign" -->
+  <!-- M166: rimosso il tipo "lb" -->
+  <!-- M175: rimosso il tipo "num" -->
+  <!-- M183: riscritto il tipo "quote" in forma semplificata -->
+  <xs:complexType name="quote" mixed="true">
+    <xs:attributeGroup ref="am.common"/>
+    <xs:attribute name="localtype" type="xs:token"/>
+    <xs:attribute name="render">
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="altrender"/>
+          <xs:enumeration value="bold"/>
+          <xs:enumeration value="bolddoublequote"/>
+          <xs:enumeration value="bolditalic"/>
+          <xs:enumeration value="boldsinglequote"/>
+          <xs:enumeration value="boldsmcaps"/>
+          <xs:enumeration value="boldunderline"/>
+          <xs:enumeration value="doublequote"/>
+          <xs:enumeration value="italic"/>
+          <xs:enumeration value="nonproport"/>
+          <xs:enumeration value="singlequote"/>
+          <xs:enumeration value="smcaps"/>
+          <xs:enumeration value="sub"/>
+          <xs:enumeration value="super"/>
+          <xs:enumeration value="underline"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:complexType>
+  <xs:complexType name="ptr">
+    <xs:attributeGroup ref="am.common.empty"/>
+    <xs:attributeGroup ref="am.internal.ptr"/>
+    <xs:attribute name="entityref" type="xs:ENTITY"/>
+  </xs:complexType>
+  <xs:complexType name="ref" mixed="true">
+    <!-- M094: nessuno degli elementi figli di "ref" e' utilizzato; cancellato
+               l'intero choice relativo -->
+    <xs:attributeGroup ref="am.common"/>
+    <xs:attributeGroup ref="am.internal.ptr"/>
+    <xs:attribute name="entityref" type="xs:ENTITY"/>
+  </xs:complexType>
+  <!-- DSC -->
+  <xs:complexType name="dsc">
+    <xs:sequence>
+      <!-- M136: rimossi "head", "thead", "p", "blockquote", "list",
+                 "chronlist", "table", e "c01" -->
+      <!-- M002: "c" riscritto tramite un tipo base e tre specializzazioni -->
+      <xs:element name="c" minOccurs="0" maxOccurs="unbounded">
+        <xs:alternative type="c.arch" test="@level = 'file'"/>
+        <xs:alternative type="c.docu" test="@level = 'item'"/>
+        <xs:alternative type="c.comp"/>
+      </xs:element>
+    </xs:sequence>
+    <xs:attributeGroup ref="am.common"/>
+    <xs:attribute name="dsctype">
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="analyticover"/>
+          <xs:enumeration value="combined"/>
+          <xs:enumeration value="in-depth"/>
+          <xs:enumeration value="otherdsctype"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="otherdsctype" type="xs:token"/>
+    <xs:attribute name="encodinganalog" type="xs:token"/>
+  </xs:complexType>
+  <!-- M002: rimosso il tipo "c" -->
+  <!-- M149: rimossi i tipi "c01", "c02", "c03", "c04", "c05", "c06", "c07",
+             "c08", "c09", "c10", "c11", e "c12" -->
+  <!-- RELATIONS -->
+  <xs:complexType name="relations">
+    <xs:sequence>
+      <xs:element name="relation" type="relation" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attributeGroup ref="am.common"/>
+    <xs:attribute name="encodinganalog" type="xs:token"/>
+    <xs:attribute name="localtype" type="xs:token"/>
+    <xs:attribute name="base" type="xs:anyURI"/>
+  </xs:complexType>
+  <xs:complexType name="relation">
+    <xs:sequence>
+      <!-- M133: rimossi "objectxmlwrap", "datesingle", "daterange",
+                 "dateset", "geogname", e "descriptivenote" -->
+      <xs:element name="relationentry" type="relationentry" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attributeGroup ref="am.common"/>
+    <xs:attribute name="encodinganalog" type="xs:token"/>
+    <xs:attribute name="relationtype" use="required">
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="cpfrelation"/>
+          <xs:enumeration value="resourcerelation"/>
+          <xs:enumeration value="functionrelation"/>
+          <xs:enumeration value="otherrelationtype"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="otherrelationtype" type="xs:token"/>
+    <xs:attribute name="lastdatetimeverified">
+      <xs:simpleType>
+        <xs:union>
+          <xs:simpleType>
+            <xs:restriction base="xs:date">
+              <xs:maxInclusive value="2099-12-31"/>
+            </xs:restriction>
+          </xs:simpleType>
+          <xs:simpleType>
+            <xs:restriction base="xs:gYear">
+              <xs:maxInclusive value="2099"/>
+            </xs:restriction>
+          </xs:simpleType>
+          <xs:simpleType>
+            <xs:restriction base="xs:gYearMonth">
+              <xs:maxInclusive value="2099-12"/>
+            </xs:restriction>
+          </xs:simpleType>
+          <xs:simpleType>
+            <xs:restriction base="xs:dateTime">
+              <xs:maxInclusive value="2099-12-31T23:59:59"/>
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:union>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attributeGroup ref="am.simplelink"/>
+    <xs:assert xa:message="[&#x0a;&#x0a;
+M029: in &lt;relation>, nel caso @otherrelationtype sia presente, il suo valore&#x0a;
+      deve essere compreso in una ben precisa lista chiusa di valori&#x0a;
+      ammissibili; inoltre deve essere presente anche @relationtype e il suo&#x0a;
+      valore deve essere pari a &quot;otherrelationtype&quot;
+      &#x0a;&#x0a;]"
+      test="   not(@otherrelationtype)
+           or (    (@relationtype = 'otherrelationtype')
+               and (@otherrelationtype = ('BIBID', 'BIBTEXT', 'BIBURI', 'BIBSBN', 'FONTEID',
+                                          'FONTETEXT', 'FONTEURI', 'URL', 'INDICE')))"/>
+    <xs:assert xa:message="[&#x0a;&#x0a;
+M030: in &lt;relation>, nel caso @relationtype sia presente e il suo valore sia&#x0a;
+      pari a &quot;otherrelationtype&quot;, deve essere presente anche&#x0a;
+      @otherrelationtype
+      &#x0a;&#x0a;]"
+      test="if (@relationtype = 'otherrelationtype')
+            then @otherrelationtype
+            else true()"/>
+    <xs:assert xa:message="[&#x0a;&#x0a;
+M031: &lt;relation> deve avere almeno un figlio &lt;relationentry> con contenuto non&#x0a;
+      vuoto
+      &#x0a;&#x0a;]"
+      xpathDefaultNamespace="##targetNamespace" 
+      test="relationentry/text() != ''"/>
+    <xs:assert xa:message="[&#x0a;&#x0a;
+M032: &lt;relation> deve avere @href con contenuto non vuoto quando&#x0a;
+      @otherelationtype è pari a &quot;URL&quot;
+      &#x0a;&#x0a;]"
+      test="not(@otherrelationtype = 'URL') or (@href != '')"/>
+    <xs:assert xa:message="[&#x0a;&#x0a;
+M033: &lt;relation> deve avere @href con contenuto non vuoto quando&#x0a;
+      @otherelationtype è pari a &quot;INDICE&quot;
+      &#x0a;&#x0a;]"
+      test="not(@otherrelationtype = 'INDICE') or (@href != '')"/>
+    <xs:assert xa:message="[&#x0a;&#x0a;
+M028: in &lt;relation>, se @relationtype è pari a &quot;resourcerelation&quot;, deve avere&#x0a;
+      un figlio &lt;relationentry> con @localtype pari a (con confronto case&#x0a;
+      insensitive) &quot;strumentoRicercaInterno&quot;, a &quot;complArchPrec&quot;, o a&#x0a;
+      &quot;complArchSup&quot;
+      &#x0a;&#x0a;]"
+      xpathDefaultNamespace="##targetNamespace" 
+      test="   not(@relationtype = 'resourcerelation')
+            or relationentry[lower-case(@localtype) = ('complarchsup', 'complarchprec',
+                                                       'strumentoricercainterno')]"/>
+    <!-- disattivato per esigenze importazione SIAS e SIUSA      
+    <xs:assert xa:message="[&#x0a;&#x0a;
+M027: in &lt;relation>, se @relationtype è pari a &quot;resourcerelation&quot; e un suo&#x0a;
+      figlio &lt;relationentry> ha @localtype pari a &quot;strumentoRicercaInterno&quot;&#x0a;
+      (con confronto case insensitive), allora deve essere necessariamente&#x0a;
+      presente @href con valore non nullo
+      &#x0a;&#x0a;]"
+      xpathDefaultNamespace="##targetNamespace" 
+      test="   not( .[@relationtype = 'resourcerelation']
+                   /relationentry[lower-case(@localtype) = 'strumentoricercainterno'])
+            or @href != ''"/>
+  -->
+  </xs:complexType>
+  <xs:complexType name="relationentry" mixed="true">
+    <xs:attributeGroup ref="am.common"/>
+    <xs:attribute name="encodinganalog" type="xs:token"/>
+    <xs:attribute name="localtype" type="xs:token"/>
+    <xs:attribute name="transliteration" type="xs:NMTOKEN"/>
+  </xs:complexType>
+  <!-- M176: rimosso il tipo "objectsxmlwrap" -->
+  <!-- M194: rimosso il tipo "e.anyname" -->
+  <!-- ELEMENT MODELS -->
+  <!-- M200: rimosso il gruppo "m.blocks" -->
+  <!-- M202: rimosso il gruppo "m.inter" -->
+  <!-- M203: rimosso il gruppo "m.inter.noquote" -->
+  <!-- M201: rimosso il gruppo "m.cOrC01" -->
+  <!-- M195: rimosso il tipo "m.c.base" -->
+  <xs:group name="m.access">
+    <xs:choice>
+      <xs:element name="persname" type="persname"/>
+      <xs:element name="corpname" type="corpname"/>
+      <xs:element name="famname" type="famname"/>
+      <xs:element name="geogname" type="geogname"/>
+      <xs:element name="name" type="name"/>
+      <xs:element name="occupation" type="occupation"/>
+      <xs:element name="subject" type="subject"/>
+      <xs:element name="genreform" type="genreform"/>
+      <xs:element name="function" type="function"/>
+      <xs:element name="title" type="title"/>
+    </xs:choice>
+  </xs:group>
+  <!-- M118 -->
+  <xs:complexType name="m.datesingle" mixed="true">
+    <!-- M025: modificato @standarddate per accettare solamente date in
+               formato AAAA-MM-GG (con trattini facoltativi) o AAAA-MM
+               (con trattino facoltativo) oppure AAAA -->
+    <xs:attribute name="standarddate">
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:pattern value="[0-2][0-9]{3}(-?[0-1][0-9](-?[0-3][0-9])?)?"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="notbefore" type="xs:token"/>
+    <xs:attribute name="notafter" type="xs:token"/>
+  </xs:complexType>
+  <xs:group name="m.desc.base">
+    <xs:choice>
+      <!-- M108: rimossi "accruals", "acqinfo", "altformavail", "appraisal",
+                 "bibliography", "bioghist", "index", "legalstatus",
+                 "originalsloc", "phystech", "prefercite", e
+                 "separatedmaterial" -->
+      <xs:element name="accessrestrict" type="accessrestrict"/>
+      <xs:element name="arrangement" type="arrangement"/>
+      <xs:element name="controlaccess" type="controlaccess"/>
+      <xs:element name="custodhist" type="custodhist"/>
+      <xs:element name="fileplan" type="fileplan"/>
+      <xs:element name="odd" type="odd"/>
+      <xs:element name="otherfindaid" type="otherfindaid"/>
+      <!-- M039 -->
+      <xs:element name="processinfo">
+        <xs:alternative type="processinfo.compilatori" test="@localtype = 'compilatori'"/>
+        <xs:alternative type="processinfo"/>
+      </xs:element>
+      <xs:element name="relatedmaterial" type="relatedmaterial"/>
+      <xs:element name="relations" type="relations"/>
+      <xs:element name="scopecontent" type="scopecontent"/>
+      <xs:element name="userestrict" type="userestrict"/>
+    </xs:choice>
+  </xs:group>
+  <xs:group name="m.did">
+    <xs:choice>
+      <!-- M109: rimossi "container", "didnote", e "langmaterial" -->
+      <xs:element name="abstract" type="abstract"/>
+      <xs:element name="dao" type="dao"/>
+      <xs:element name="daoset" type="daoset"/>
+      <xs:element name="materialspec" type="materialspec"/>
+      <xs:element name="origination" type="origination"/>
+      <xs:element name="physdescset" type="physdescset"/>
+      <xs:element name="physdesc" type="physdesc"/>
+      <xs:element name="physdescstructured" type="physdescstructured"/>
+      <xs:element name="physloc" type="physloc"/>
+      <xs:element name="repository" type="repository"/>
+      <xs:element name="unitdate" type="unitdate"/>
+      <xs:element name="unitdatestructured" type="unitdatestructured"/>
+      <xs:element name="unitid" type="unitid"/>
+      <xs:element name="unittitle" type="unittitle"/>
+    </xs:choice>
+  </xs:group>
+  <!-- M207: rimosso il gruppo "m.refs" -->
+  <!-- MIXED CONTENT MODELS -->
+  <!-- M206: rimosso il gruppo "m.mixed.basic.elements" -->
+  <!-- M197: rimosso il tipo "m.mixed.basic" -->
+  <!-- M204: rimosso il gruppo "m.mixed.basic.date.elements" -->
+  <!-- M196: rimosso il tipo "m.mixed.basic.date" -->
+  <!-- M205: rimosso il gruppo "m.mixed.basic.plus.elements" -->
+  <!-- M198: rimosso il tipo "m.mixed.basic.plus.access" -->
+  <!-- M199: rimosso il tipo "m.para.content" -->
+  <!-- ATTRIBUTE MODELS -->
+  <xs:attributeGroup name="am.internal.ptr">
+    <xs:attribute name="target" type="xs:IDREF"/>
+    <xs:attribute name="xpointer" type="xs:token"/>
+    <xs:attributeGroup ref="am.simplelink"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="am.simplelink">
+    <xs:attribute name="href" type="xs:token"/>
+    <xs:attribute name="linkrole" type="xs:anyURI"/>
+    <xs:attribute name="arcrole" type="xs:anyURI"/>
+    <xs:attribute name="linktitle" type="xs:token"/>
+    <xs:attribute name="show">
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="new"/>
+          <xs:enumeration value="replace"/>
+          <xs:enumeration value="embed"/>
+          <xs:enumeration value="other"/>
+          <xs:enumeration value="none"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="actuate">
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="onload"/>
+          <xs:enumeration value="onrequest"/>
+          <xs:enumeration value="other"/>
+          <xs:enumeration value="none"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="am.common.empty">
+    <xs:attribute name="id" type="xs:ID"/>
+    <xs:attribute name="altrender" type="xs:token"/>
+    <xs:attribute name="audience">
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="external"/>
+          <xs:enumeration value="internal"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="am.common">
+    <xs:attributeGroup ref="am.common.empty"/>
+    <xs:attribute name="lang" type="xs:NMTOKEN"/>
+    <xs:attribute name="script" type="xs:NMTOKEN"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="am.desc.base">
+    <xs:attribute name="otherlevel" type="xs:token"/>
+    <xs:attribute name="encodinganalog" type="xs:token"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="am.desc.c">
+    <xs:attributeGroup ref="am.common"/>
+    <xs:attribute name="base" type="xs:anyURI"/>
+    <xs:attribute name="level">
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="class"/>
+          <xs:enumeration value="collection"/>
+          <xs:enumeration value="file"/>
+          <xs:enumeration value="fonds"/>
+          <xs:enumeration value="item"/>
+          <xs:enumeration value="otherlevel"/>
+          <xs:enumeration value="recordgrp"/>
+          <xs:enumeration value="series"/>
+          <xs:enumeration value="subfonds"/>
+          <xs:enumeration value="subgrp"/>
+          <xs:enumeration value="subseries"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attributeGroup ref="am.desc.base"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="am.access">
+    <xs:attributeGroup ref="am.access.no.normal"/>
+    <xs:attribute name="normal" type="xs:token"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="am.access.no.normal">
+    <xs:attribute name="source" type="xs:token"/>
+    <xs:attribute name="rules" type="xs:NMTOKEN"/>
+    <xs:attribute name="identifier" type="xs:token"/>
+  </xs:attributeGroup>
+  <!-- ATTRIBUTE DEFINITIONS -->
+  <!-- xlink-modelled attributes -->
+  <xs:attributeGroup name="a.link.actuate">
+    <xs:attribute name="actuate" use="required">
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="onload"/>
+          <xs:enumeration value="onrequest"/>
+          <xs:enumeration value="other"/>
+          <xs:enumeration value="none"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="a.link.arcrole">
+    <xs:attribute name="arcrole" use="required" type="xs:anyURI"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="a.link.href">
+    <xs:attribute name="href" use="required" type="xs:token"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="a.link.role">
+    <xs:attribute name="linkrole" use="required" type="xs:anyURI"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="a.link.show">
+    <xs:attribute name="show" use="required">
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="new"/>
+          <xs:enumeration value="replace"/>
+          <xs:enumeration value="embed"/>
+          <xs:enumeration value="other"/>
+          <xs:enumeration value="none"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="a.link.title">
+    <xs:attribute name="linktitle" use="required" type="xs:token"/>
+  </xs:attributeGroup>
+  <!-- other linking-related attributes -->
+  <xs:attributeGroup name="a.base">
+    <xs:attribute name="base" use="required" type="xs:anyURI"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="a.identifier">
+    <xs:attribute name="identifier" use="required" type="xs:token"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="a.parent">
+    <xs:attribute name="parent" use="required" type="xs:IDREFS"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="a.relator">
+    <xs:attribute name="relator" use="required" type="xs:token"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="a.link.xpointer">
+    <xs:attribute name="xpointer" use="required" type="xs:token"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="a.entityref">
+    <xs:attribute name="entityref" use="required" type="xs:ENTITY"/>
+  </xs:attributeGroup>
+  <!-- display attributes -->
+  <xs:attributeGroup name="a.align">
+    <xs:attribute name="align" use="required">
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="left"/>
+          <xs:enumeration value="right"/>
+          <xs:enumeration value="center"/>
+          <xs:enumeration value="justify"/>
+          <xs:enumeration value="char"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="a.valign">
+    <xs:attribute name="valign" use="required">
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="top"/>
+          <xs:enumeration value="middle"/>
+          <xs:enumeration value="bottom"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="a.render">
+    <xs:attribute name="render" use="required">
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="altrender"/>
+          <xs:enumeration value="bold"/>
+          <xs:enumeration value="bolddoublequote"/>
+          <xs:enumeration value="bolditalic"/>
+          <xs:enumeration value="boldsinglequote"/>
+          <xs:enumeration value="boldsmcaps"/>
+          <xs:enumeration value="boldunderline"/>
+          <xs:enumeration value="doublequote"/>
+          <xs:enumeration value="italic"/>
+          <xs:enumeration value="nonproport"/>
+          <xs:enumeration value="singlequote"/>
+          <xs:enumeration value="smcaps"/>
+          <xs:enumeration value="sub"/>
+          <xs:enumeration value="super"/>
+          <xs:enumeration value="underline"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="a.label">
+    <xs:attribute name="label" use="required" type="xs:string"/>
+  </xs:attributeGroup>
+  <!-- date attributes -->
+  <xs:attributeGroup name="am.dates.calendar">
+    <xs:attribute name="calendar" type="xs:NMTOKEN"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="am.dates.era">
+    <xs:attribute name="era" type="xs:NMTOKEN"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="am.date.normal">
+    <xs:attribute name="normal" type="xs:token"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="a.lastdatetimeverified">
+    <xs:attribute name="lastdatetimeverified" use="required">
+      <xs:simpleType>
+        <xs:union>
+          <xs:simpleType>
+            <xs:restriction base="xs:date">
+              <xs:maxInclusive value="2099-12-31"/>
+            </xs:restriction>
+          </xs:simpleType>
+          <xs:simpleType>
+            <xs:restriction base="xs:gYear">
+              <xs:maxInclusive value="2099"/>
+            </xs:restriction>
+          </xs:simpleType>
+          <xs:simpleType>
+            <xs:restriction base="xs:gYearMonth">
+              <xs:maxInclusive value="2099-12"/>
+            </xs:restriction>
+          </xs:simpleType>
+          <xs:simpleType>
+            <xs:restriction base="xs:dateTime">
+              <xs:maxInclusive value="2099-12-31T23:59:59"/>
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:union>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="a.datechar">
+    <xs:attribute name="datechar" use="required" type="xs:token"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="a.certainty">
+    <xs:attribute name="certainty" use="required" type="xs:NMTOKEN"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="a.normal">
+    <xs:attribute name="normal" use="required" type="xs:token"/>
+  </xs:attributeGroup>
+  <!-- typing attributes -->
+  <xs:attributeGroup name="a.encodinganalog">
+    <xs:attribute name="encodinganalog" use="required" type="xs:token"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="a.level">
+    <xs:attribute name="level" use="required">
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="class"/>
+          <xs:enumeration value="collection"/>
+          <xs:enumeration value="file"/>
+          <xs:enumeration value="fonds"/>
+          <xs:enumeration value="item"/>
+          <xs:enumeration value="otherlevel"/>
+          <xs:enumeration value="recordgrp"/>
+          <xs:enumeration value="series"/>
+          <xs:enumeration value="subfonds"/>
+          <xs:enumeration value="subgrp"/>
+          <xs:enumeration value="subseries"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="a.localtype">
+    <xs:attribute name="localtype" use="required" type="xs:token"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="a.relatedencoding">
+    <xs:attribute name="relatedencoding" use="required" type="xs:token"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="a.unitdatetype">
+    <xs:attribute name="unitdatetype">
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="bulk"/>
+          <xs:enumeration value="inclusive"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <!-- table attributes -->
+  <xs:attributeGroup name="a.char">
+    <xs:attribute name="char" use="required" type="xs:token"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="a.charoff">
+    <xs:attribute name="charoff" use="required" type="xs:NMTOKEN"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="a.colname">
+    <xs:attribute name="colname" use="required" type="xs:NMTOKEN"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="a.colsep">
+    <xs:attribute name="colsep" use="required" type="av.boolean"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="a.rowsep">
+    <xs:attribute name="rowsep" use="required" type="av.boolean"/>
+  </xs:attributeGroup>
+  <!-- other attributes -->
+  <xs:attributeGroup name="a.coverage">
+    <xs:attribute name="coverage" use="required">
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="whole"/>
+          <xs:enumeration value="part"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="am.countrycode">
+    <xs:attribute name="countrycode" type="xs:NMTOKEN"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="a.transliteration">
+    <xs:attribute name="transliteration" use="required" type="xs:NMTOKEN"/>
+  </xs:attributeGroup>
+  <!-- ATTRIBUTE VALUE LISTS -->
+  <xs:simpleType name="av.boolean">
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="true"/>
+      <xs:enumeration value="false"/>
+    </xs:restriction>
+  </xs:simpleType>
+</xs:schema>
