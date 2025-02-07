@@ -141,9 +141,8 @@ M015: nel caso degli &lt;archdesc> non minimali, ovvero quando non siamo nel&#x0
       /did/unitid sia con @localtype che con @identifier
       &#x0a;&#x0a;]"
       xpathDefaultNamespace="##targetNamespace" 
-      test="if (    (0 = count(*[not(local-name() = ('did', 'odd'))]))
+      test="if (    (1 = count(*))
                 and (1 = count(did))
-                and (2 > count(odd))
                 and (1 = count(did/*))
                 and (1 = count(did/unittitle)))
             then true()
@@ -188,9 +187,8 @@ M049: dobbiamo considerare che &lt;archdesc>, nel caso costituisca apparentement
       &lt;unittitle> vale &quot;titoloAttribuito&quot;, o entrambi
       &#x0a;&#x0a;]"
           xpathDefaultNamespace="##targetNamespace" 
-          test="if (    (0 = count(*[not(local-name() = ('did', 'odd'))]))
+          test="if (    (1 = count(*))
                     and (1 = count(did))
-                    and (2 > count(odd))
                     and (1 = count(did/*))
                     and (1 = count(did/unittitle)))
                 then not(did/unittitle[@localtype])
@@ -246,9 +244,8 @@ M024: in &lt;archdesc>, nel caso sia la versione minimale associata a uno&#x0a;
       @localtype deve essere pari a &quot;denominazione&quot;
       &#x0a;&#x0a;]"
           xpathDefaultNamespace="##targetNamespace" 
-          test="if (    (0 = count(*[not(local-name() = ('did', 'odd'))]))
+          test="if (    (1 = count(*))
                     and (1 = count(did))
-                    and (2 > count(odd))
                     and (1 = count(did/*))
                     and (1 = count(did/unittitle)))
                 then not(did/unittitle[@localtype])
@@ -657,7 +654,6 @@ M050: in &lt;c>, nel caso rappresenti un complesso archivistico, non sono ammess
       <xs:element name="date" type="date" minOccurs="0"/>
     </xs:sequence>
     <xs:attributeGroup ref="am.common"/>
-    <!-- disattivato per l'importazione SIAS e SIUSA
     <xs:assert xa:message="[&#x0a;&#x0a;
 M036: i &lt;p>, discendenti di un &lt;processinfo> con @localtype pari a&#x0a;
       &quot;compilatore&quot;, devono contenere esattamente un persname/part dove il&#x0a;
@@ -665,7 +661,6 @@ M036: i &lt;p>, discendenti di un &lt;processinfo> con @localtype pari a&#x0a;
       &#x0a;&#x0a;]"
       xpathDefaultNamespace="##targetNamespace" 
       test="1  = count(persname/part[@localtype = 'compilatore'])"/>
-      -->
     <xs:assert xa:message="[&#x0a;&#x0a;
 M036: i &lt;p>, discendenti di un &lt;processinfo> con @localtype pari a&#x0a;
       &quot;compilatore&quot;, possono contenere al più un persname/part dove il&#x0a;
@@ -673,7 +668,6 @@ M036: i &lt;p>, discendenti di un &lt;processinfo> con @localtype pari a&#x0a;
       &#x0a;&#x0a;]"
       xpathDefaultNamespace="##targetNamespace" 
       test="1 >= count(persname/part[@localtype = 'qualifica'])"/>
-    <!-- disattivato per l'importazione SIAS e SIUSA
     <xs:assert xa:message="[&#x0a;&#x0a;
 M036: i &lt;p>, discendenti di un &lt;processinfo> con @localtype pari a&#x0a;
       &quot;compilatore&quot;, devono contenere esattamente un persname/part dove il&#x0a;
@@ -681,7 +675,6 @@ M036: i &lt;p>, discendenti di un &lt;processinfo> con @localtype pari a&#x0a;
       &#x0a;&#x0a;]"
       xpathDefaultNamespace="##targetNamespace" 
       test="1  = count(persname/part[@localtype = 'tipoIntervento'])"/>
-      -->
     <xs:assert xa:message="[&#x0a;&#x0a;
 M036: i &lt;p>, discendenti di un &lt;processinfo> con @localtype pari a&#x0a;
       &quot;compilatore&quot;, possono contenere dei persname/part dove il @localtype di&#x0a;
@@ -751,15 +744,25 @@ M066: &lt;ead> può contenere uno o più control/otherrecordid (e, in tal caso,&
       nullo) se, e solo se, descrive uno strumento di ricerca
       &#x0a;&#x0a;]"
         xpathDefaultNamespace="##targetNamespace" 
-        test="if (    (0 = count(archdesc/*[not(local-name() = ('did', 'odd'))]))
+        test="if (    (1 = count(archdesc/*))
                   and (1 = count(archdesc/did))
-                  and (2 > count(archdesc/odd))
                   and (1 = count(archdesc/did/*))
                   and (1 = count(archdesc/did/unittitle)))
               then every $id in control/otherrecordid
                    satisfies $id[(@localtype != '') and (text() != '')]
               else not(control/otherrecordid)"/>
-      <!-- rimosso M067 poiché il relativo controllo è risultato errato -->
+      <xs:assert xa:message="[&#x0a;&#x0a;
+M067: &lt;ead> può contenere un eventuale control/publicationstatus (e, in tal&#x0a;
+      caso, &lt;publicationstatus> deve avere @value pari a &quot;published&quot;) se, e&#x0a;
+      solo se, descrive uno strumento di ricerca
+      &#x0a;&#x0a;]"
+        xpathDefaultNamespace="##targetNamespace" 
+        test="if (    (1 = count(archdesc/*))
+                  and (1 = count(archdesc/did))
+                  and (1 = count(archdesc/did/*))
+                  and (1 = count(archdesc/did/unittitle)))
+              then true()
+              else not(control/publicationstatus)"/>
       <xs:assert xa:message="[&#x0a;&#x0a;
 M069: &lt;ead> può contenere un eventuale control/filedesc/editionstmt/edition&#x0a;
       (e, in tal caso, &lt;edition> deve avere (1) contenuto non nullo, e (2)&#x0a;
@@ -767,9 +770,8 @@ M069: &lt;ead> può contenere un eventuale control/filedesc/editionstmt/edition&
       se, descrive uno strumento di ricerca
       &#x0a;&#x0a;]"
         xpathDefaultNamespace="##targetNamespace" 
-        test="if (    (0 = count(archdesc/*[not(local-name() = ('did', 'odd'))]))
+        test="if (    (1 = count(archdesc/*))
                   and (1 = count(archdesc/did))
-                  and (2 > count(archdesc/odd))
                   and (1 = count(archdesc/did/*))
                   and (1 = count(archdesc/did/unittitle)))
               then every $edit in control/filedesc/editionstmt/edition
@@ -802,9 +804,8 @@ M074: &lt;ead> può contenere un eventuale control/filedesc/publicationstmt solo
       se descrive uno strumento di ricerca
       &#x0a;&#x0a;]"
         xpathDefaultNamespace="##targetNamespace" 
-        test="if (    (0 = count(archdesc/*[not(local-name() = ('did', 'odd'))]))
+        test="if (    (1 = count(archdesc/*))
                   and (1 = count(archdesc/did))
-                  and (2 > count(archdesc/odd))
                   and (1 = count(archdesc/did/*))
                   and (1 = count(archdesc/did/unittitle)))
               then true()
@@ -814,9 +815,8 @@ M075: &lt;ead> può contenere un eventuale control/filedesc/notestmt/controlnote
       solo se descrive uno strumento di ricerca
       &#x0a;&#x0a;]"
         xpathDefaultNamespace="##targetNamespace" 
-        test="if (    (0 = count(archdesc/*[not(local-name() = ('did', 'odd'))]))
+        test="if (    (1 = count(archdesc/*))
                   and (1 = count(archdesc/did))
-                  and (2 > count(archdesc/odd))
                   and (1 = count(archdesc/did/*))
                   and (1 = count(archdesc/did/unittitle)))
               then true()
@@ -828,9 +828,8 @@ M083: &lt;ead> può contenere eventuali control/filedesc/titlestmt/author, dove&
       di ricerca
       &#x0a;&#x0a;]"
         xpathDefaultNamespace="##targetNamespace" 
-        test="if (    (0 = count(archdesc/*[not(local-name() = ('did', 'odd'))]))
+        test="if (    (1 = count(archdesc/*))
                   and (1 = count(archdesc/did))
-                  and (2 > count(archdesc/odd))
                   and (1 = count(archdesc/did/*))
                   and (1 = count(archdesc/did/unittitle)))
               then every $auth in control/filedesc/titlestmt/author[@localtype]
@@ -844,9 +843,8 @@ M084: &lt;ead> può contenere eventuali control/localcontrol (e, in tal caso,&#x
       non vuoto) se, e solo se, descrive uno strumento di ricerca
       &#x0a;&#x0a;]"
         xpathDefaultNamespace="##targetNamespace" 
-        test="if (    (0 = count(archdesc/*[not(local-name() = ('did', 'odd'))]))
+        test="if (    (1 = count(archdesc/*))
                   and (1 = count(archdesc/did))
-                  and (2 > count(archdesc/odd))
                   and (1 = count(archdesc/did/*))
                   and (1 = count(archdesc/did/unittitle)))
               then every $ctrl in control/localcontrol
@@ -860,9 +858,8 @@ M085: &lt;ead> può contenere eventuali control/representation (e, in tal caso,&
       uno strumento di ricerca
       &#x0a;&#x0a;]"
         xpathDefaultNamespace="##targetNamespace" 
-        test="if (    (0 = count(archdesc/*[not(local-name() = ('did', 'odd'))]))
+        test="if (    (1 = count(archdesc/*))
                   and (1 = count(archdesc/did))
-                  and (2 > count(archdesc/odd))
                   and (1 = count(archdesc/did/*))
                   and (1 = count(archdesc/did/unittitle)))
               then every $repr in control/representation
@@ -871,17 +868,20 @@ M085: &lt;ead> può contenere eventuali control/representation (e, in tal caso,&
       <xs:assert xa:message="[&#x0a;&#x0a;
 M086: &lt;ead> può contenere eventuali&#x0a;
       control/maintenancehistory/maintenanceevent (e, in tal caso,&#x0a;
-      &lt;maintenanceevent> deve avere un figlio &lt;agent> con contenuto non vuoto)&#x0a;
-      se, e solo se, descrive uno strumento di ricerca
+      &lt;maintenanceevent> deve avere (1) un figlio &lt;eventdatetime> con&#x0a;
+      contenuto nel formato &quot;AAAA-MM-GG&quot;, o nel formato &quot;AAAA-MM&quot;, o nel&#x0a;
+      formato &quot;AAAA&quot;, e (2) un figlio &lt;agent> con contenuto non vuoto) se, e&#x0a;
+      solo se, descrive uno strumento di ricerca
       &#x0a;&#x0a;]"
         xpathDefaultNamespace="##targetNamespace" 
-        test="if (    (0 = count(archdesc/*[not(local-name() = ('did', 'odd'))]))
+        test="if (    (1 = count(archdesc/*))
                   and (1 = count(archdesc/did))
-                  and (2 > count(archdesc/odd))
                   and (1 = count(archdesc/did/*))
                   and (1 = count(archdesc/did/unittitle)))
               then every $evnt in control/maintenancehistory/maintenanceevent
-                   satisfies $evnt/agent/text() != ''
+                   satisfies     matches($evnt/eventdatetime/text(),
+                                         '^([0-9]{4}(-(0[1-9]|1[0-2])(-(0[1-9]|[12][0-9]|3[0-1]))??)??)$')
+                             and ($evnt/agent/text() != '')
               else true()"/>
     </xs:complexType>
   </xs:element>
@@ -1794,18 +1794,7 @@ M040: in &lt;controlaccess>, ogni &lt;subject> con @localtype pari a&#x0a;
   <!-- M174: rimosso il tipo "namegrp" -->
   <!-- M182: rimosso il tipo "ptrgrp" -->
   <!-- M167: rimosso il tipo "legalstatus" -->
-  <!-- M177: riscritto il tipo il tipo "odd" in forma semplificata -->
-  <xs:complexType name="odd" mixed="true">
-    <xs:sequence>
-      <xs:element name="p" type="p" maxOccurs="unbounded"/>
-    </xs:sequence>
-    <xs:attribute name="localtype" type="xs:token"/>
-    <xs:assert xa:message="[&#x0a;&#x0a;
-M208: in &lt;odd> è obbligatorio @localtype con valore pari a &quot;Osservazioni&quot;
-      &#x0a;&#x0a;]"
-      xpathDefaultNamespace="##targetNamespace" 
-      test="@localtype = 'Osservazioni'"/>
-  </xs:complexType>
+  <!-- M177: rimosso il tipo "odd" -->
   <!-- M178: rimosso il tipo "originalsloc" -->
   <xs:complexType name="otherfindaid">
     <xs:sequence>
@@ -2377,18 +2366,7 @@ M028: in &lt;relation>, se @relationtype è pari a &quot;resourcerelation&quot;,
       test="   not(@relationtype = 'resourcerelation')
             or relationentry[lower-case(@localtype) = ('complarchsup', 'complarchprec',
                                                        'strumentoricercainterno')]"/>
-    <!-- disattivato per esigenze importazione SIAS e SIUSA      
-    <xs:assert xa:message="[&#x0a;&#x0a;
-M027: in &lt;relation>, se @relationtype è pari a &quot;resourcerelation&quot; e un suo&#x0a;
-      figlio &lt;relationentry> ha @localtype pari a &quot;strumentoRicercaInterno&quot;&#x0a;
-      (con confronto case insensitive), allora deve essere necessariamente&#x0a;
-      presente @href con valore non nullo
-      &#x0a;&#x0a;]"
-      xpathDefaultNamespace="##targetNamespace" 
-      test="   not( .[@relationtype = 'resourcerelation']
-                   /relationentry[lower-case(@localtype) = 'strumentoricercainterno'])
-            or @href != ''"/>
-  -->
+    <!-- M027: annullato -->      
   </xs:complexType>
   <xs:complexType name="relationentry" mixed="true">
     <xs:attributeGroup ref="am.common"/>
@@ -2436,7 +2414,7 @@ M027: in &lt;relation>, se @relationtype è pari a &quot;resourcerelation&quot; 
   <xs:group name="m.desc.base">
     <xs:choice>
       <!-- M108: rimossi "accruals", "acqinfo", "altformavail", "appraisal",
-                 "bibliography", "bioghist", "index", "legalstatus",
+                 "bibliography", "bioghist", "index", "legalstatus", "odd",
                  "originalsloc", "phystech", "prefercite", e
                  "separatedmaterial" -->
       <xs:element name="accessrestrict" type="accessrestrict"/>
@@ -2444,7 +2422,6 @@ M027: in &lt;relation>, se @relationtype è pari a &quot;resourcerelation&quot; 
       <xs:element name="controlaccess" type="controlaccess"/>
       <xs:element name="custodhist" type="custodhist"/>
       <xs:element name="fileplan" type="fileplan"/>
-      <xs:element name="odd" type="odd"/>
       <xs:element name="otherfindaid" type="otherfindaid"/>
       <!-- M039 -->
       <xs:element name="processinfo">
