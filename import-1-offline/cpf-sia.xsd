@@ -79,8 +79,8 @@ To customize the error messages that the Xerces or Saxon validation engines disp
 For Xerces, the @message attribute has to belong to the http://xerces.apache.org namespace.
 For Saxon, the @message attribute has to belong to the http://saxon.sf.net/ namespace. -->
   <xs:import namespace="http://www.w3.org/1999/xlink"
-    schemaLocation="xlink.xsd"/>
-  <xs:import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="xml.xsd"/>
+    schemaLocation="http://www.loc.gov/standards/xlink/xlink.xsd"/>
+  <xs:import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="http://www.w3.org/2007/08/xml.xsd"/>
   
   <xs:element name="eac-cpf">
     <xs:complexType>
@@ -108,12 +108,31 @@ For Saxon, the @message attribute has to belong to the http://saxon.sf.net/ name
       <xs:attribute ref="xml:lang"/>
       <xs:attribute ref="xml:base"/>
       
+      <!-- n0025 n0036 n0047 built in? l'obbligatorietà è su entityType -->
       <xs:assert xpathDefaultNamespace="urn:isbn:1-931666-33-4"
-       xao:message="n0025 n0036 n0047 identity[@localType='soggettoProduttore'] è richiesto"
-       test="count(identity[@localType='soggettoProduttore'])=1"/><!-- n0025 n0036 n0047 -->
+       xao:message="eac-cpf n0025 n0036 n0047 identity/@localType è richiesto"
+       test="
+        string-length(normalize-space(identity/@localType))>0
+       "/>
+      <!-- n0025 con identity[entityType.='corporateBody'] identity/@localType può valere soggettoProduttore profiloIstituzionale contestoStoricoIstituzionale -->
+      <xs:assert xpathDefaultNamespace="urn:isbn:1-931666-33-4"
+       xao:message="eac-cpf n0025 identity[entityType[.='corporatebody']]/@localType
+lista chiusa con valori:
+soggettoproduttore,
+profiloistituzionale,
+contestoStoricoIstituzionale"
+       test="
+        not(identity[entityType[normalize-space(lower-case(.))='corporatebody']])
+         or
+        identity[entityType[normalize-space(lower-case(.))='corporatebody']]/@localType[
+            normalize-space(lower-case(.))='soggettoproduttore'
+         or normalize-space(lower-case(.))='profiloistituzionale'
+         or normalize-space(lower-case(.))='contestostoricoistituzionale'
+        ]
+       "/>
         
       <xs:assert xpathDefaultNamespace="urn:isbn:1-931666-33-4"
-       xao:message="n0048 identity[@localType='soggettoProduttore'][entityType[.='person']] richiede nameEntry/part[@localType='cognome']" test=
+       xao:message="eac-cpf n0048 identity[@localType='soggettoProduttore'][entityType[.='person']] richiede nameEntry/part[@localType='cognome']" test=
        "not(identity[@localType='soggettoProduttore'][entityType[normalize-space(lower-case(.))='person']])
          or
         identity[@localType='soggettoProduttore'][entityType[normalize-space(lower-case(.))='person']]/
@@ -121,7 +140,7 @@ For Saxon, the @message attribute has to belong to the http://saxon.sf.net/ name
           part[@localType='cognome'][string-length(normalize-space(.))>0]"/><!-- n0048 -->
           
       <xs:assert xpathDefaultNamespace="urn:isbn:1-931666-33-4"
-       xao:message="n0037 identity[@localType='soggettoProduttore'][entityType[.='family']] richiede nameEntry/part[@localType='denominazione']" test= 
+       xao:message="eac-cpf n0037 identity[@localType='soggettoProduttore'][entityType[.='family']] richiede nameEntry/part[@localType='denominazione']" test= 
        "not(identity[@localType='soggettoProduttore'][entityType[normalize-space(lower-case(.))='family']])
          or
         identity[@localType='soggettoProduttore'][entityType[normalize-space(lower-case(.))='family']]/
@@ -129,10 +148,10 @@ For Saxon, the @message attribute has to belong to the http://saxon.sf.net/ name
           part[@localType='denominazione'][string-length(normalize-space(.))>0]"/><!-- n0037 -->
           
       <xs:assert xpathDefaultNamespace="urn:isbn:1-931666-33-4"
-       xao:message="n0026 identity[@localType='soggettoProduttore'][entityType[.='corporatebody']] richiede nameEntry/part"  test= 
-       "not(identity[@localType='soggettoProduttore'][entityType[normalize-space(lower-case(.))='corporatebody']])
+       xao:message="eac-cpf n0026 identity[entityType[.='corporatebody']] richiede nameEntry/part"  test= 
+       "not(identity[entityType[normalize-space(lower-case(.))='corporatebody']])
          or
-        identity[@localType='soggettoProduttore'][entityType[normalize-space(lower-case(.))='corporatebody']]/
+        identity[entityType[normalize-space(lower-case(.))='corporatebody']]/
          nameEntry[not(@localType='altraDenominazione' or @localType='intestazioneParallela' or @localType='intestazione')]/
           part[string-length(normalize-space(.))>0]"/><!-- n0026 -->
       <!--
@@ -170,13 +189,9 @@ For Saxon, the @message attribute has to belong to the http://saxon.sf.net/ name
         <xs:element ref="recordId"/>
         <xs:element minOccurs="0" maxOccurs="unbounded" ref="otherRecordId"/>
         <xs:element ref="maintenanceStatus"/>
-        <!-- r0006
-        <xs:element minOccurs="0" ref="publicationStatus"/> -->
-        <xs:element ref="publicationStatus"/>
+        <xs:element minOccurs="0" ref="publicationStatus"/>
         <xs:element ref="maintenanceAgency"/>
-        <!-- r0012
-        <xs:element minOccurs="0" maxOccurs="unbounded" ref="languageDeclaration"/> -->
-        <xs:element maxOccurs="unbounded" ref="languageDeclaration"/>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="languageDeclaration"/>
         <xs:element minOccurs="0" maxOccurs="unbounded" ref="conventionDeclaration"/>
         <xs:element minOccurs="0" maxOccurs="unbounded" ref="rightsDeclaration"/>
         <xs:element minOccurs="0" maxOccurs="unbounded" ref="localTypeDeclaration"/>
@@ -187,6 +202,12 @@ For Saxon, the @message attribute has to belong to the http://saxon.sf.net/ name
       <xs:attribute ref="xml:id"/>
       <xs:attribute ref="xml:lang"/>
       <xs:attribute ref="xml:base"/>
+      <!-- n0006 mandatory publicationStatus -->
+      <xs:assert xpathDefaultNamespace="urn:isbn:1-931666-33-4"
+       xao:message="eac-cpf n0009 control/publicationStatus è richiesto"
+       test="
+        count(publicationStatus)>0
+       "/>
     </xs:complexType>
   </xs:element>
   <xs:element name="recordId">
@@ -244,14 +265,18 @@ For Saxon, the @message attribute has to belong to the http://saxon.sf.net/ name
   <xs:element name="maintenanceAgency">
     <xs:complexType>
       <xs:sequence>
-        <!-- r0009
-        <xs:element minOccurs="0" ref="agencyCode"/> -->
-        <xs:element ref="agencyCode"/>
+        <xs:element minOccurs="0" ref="agencyCode"/>
         <xs:element minOccurs="0" maxOccurs="unbounded" ref="otherAgencyCode"/>
         <xs:element maxOccurs="unbounded" ref="agencyName"/>
         <xs:element minOccurs="0" ref="descriptiveNote"/>
       </xs:sequence>
       <xs:attribute ref="xml:id"/>
+      <!-- n0009 mandatory agencyCode Sigla dell'organizzazione -->
+      <xs:assert xpathDefaultNamespace="urn:isbn:1-931666-33-4"
+       xao:message="eac-cpf n0009 maintenanceAgency/agencyCode è richiesto"
+       test="
+        string-length(normalize-space(agencyCode))>0
+       "/>
     </xs:complexType>
   </xs:element>
   <xs:element name="agencyCode">
@@ -336,11 +361,21 @@ For Saxon, the @message attribute has to belong to the http://saxon.sf.net/ name
             <xs:restriction base="xs:token">
               <xs:enumeration value="human"/>
               <xs:enumeration value="machine"/>
-              <!-- r0023
-              <xs:enumeration value="unknown"/> -->
+              <xs:enumeration value="unknown"/>
             </xs:restriction>
           </xs:simpleType>
           <xs:attribute ref="xml:id"/>
+          <!-- n0023 xs:enumeration value="unknown" -->
+          <xs:assert xpathDefaultNamespace="urn:isbn:1-931666-33-4"
+           xao:message="eac-cpf n0009 agentType 'unknown' valore non ammesso
+lista chiusa con valori:
+human
+machine"
+           test="
+            normalize-space(lower-case(.))='human'
+            or 
+            normalize-space(lower-case(.))='machine'
+           "/>
         </xs:restriction>
       </xs:simpleContent>
     </xs:complexType>
