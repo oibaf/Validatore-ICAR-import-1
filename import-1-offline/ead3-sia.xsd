@@ -752,9 +752,8 @@ M066: &lt;ead> può contenere uno o più control/otherrecordid (e, in tal caso,&
                    satisfies $id[(@localtype != '') and (text() != '')]
               else not(control/otherrecordid)"/>
       <xs:assert xa:message="[&#x0a;&#x0a;
-M067: &lt;ead> può contenere un eventuale control/publicationstatus (e, in tal&#x0a;
-      caso, &lt;publicationstatus> deve avere @value pari a &quot;published&quot;) se, e&#x0a;
-      solo se, descrive uno strumento di ricerca
+M067: &lt;ead> può contenere un eventuale control/publicationstatus se, e solo&#x0a;
+      se, descrive uno strumento di ricerca
       &#x0a;&#x0a;]"
         xpathDefaultNamespace="##targetNamespace" 
         test="if (    (1 = count(archdesc/*))
@@ -1007,10 +1006,11 @@ M003: il contenuto di &lt;recordid> non può essere nullo
   </xs:complexType>
   <xs:complexType name="publicationstmt">
     <xs:choice maxOccurs="unbounded">
-      <!-- M095: cancellati i non utilizzati "num" e "p" -->
+      <!-- M095: cancellato il non utilizzato "num" -->
       <xs:element name="publisher" type="publisher"/>
       <xs:element name="date" type="date"/>
       <xs:element name="address" type="address"/>
+      <xs:element name="p" type="p"/>
     </xs:choice>
     <xs:attributeGroup ref="am.common"/>
     <xs:attribute name="encodinganalog" type="xs:token"/>
@@ -1894,8 +1894,8 @@ M040: in &lt;controlaccess>, ogni &lt;subject> con @localtype pari a&#x0a;
   <xs:complexType name="geogname">
     <xs:sequence>
       <xs:element name="part" type="part" maxOccurs="unbounded"/>
-      <xs:element name="geographiccoordinates" type="geographiccoordinates" minOccurs="0"
-        maxOccurs="unbounded"/>
+      <xs:element name="geographiccoordinates" type="geographiccoordinates"
+        minOccurs="0" maxOccurs="unbounded"/>
     </xs:sequence>
     <xs:attributeGroup ref="am.common"/>
     <xs:attributeGroup ref="am.access"/>
@@ -2141,6 +2141,14 @@ M040: in &lt;controlaccess>, ogni &lt;subject> con @localtype pari a&#x0a;
       <xs:extension base="m.datesingle">
         <xs:attributeGroup ref="am.common"/>
         <xs:attribute name="localtype" type="xs:token"/>
+        <xs:assert xa:message="[&#x0a;&#x0a;
+M209: in &lt;datesingle>, @standarddate deve essere o nella forma &quot;AAAA-MM-GG&quot;, o&#x0a;
+      &quot;AAAAMMGG&quot;, o &quot;AAAA-MM&quot;, o &quot;AAAAMM&quot;, o &quot;AAAA&quot;
+      &#x0a;&#x0a;]"
+          xpathDefaultNamespace="##targetNamespace" 
+          test="   not(@standarddate)
+                or matches(@standarddate, '^([0-9]{4}((0[1-9]|1[0-2])((0[1-9]|[12][0-9]|3[0-1]))??)??)$')
+                or matches(@standarddate, '^([0-9]{4}(-(0[1-9]|1[0-2])(-(0[1-9]|[12][0-9]|3[0-1]))??)??)$')"/>
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
@@ -2157,6 +2165,17 @@ M040: in &lt;controlaccess>, ogni &lt;subject> con @localtype pari a&#x0a;
       <xs:extension base="m.datesingle">
         <xs:attributeGroup ref="am.common"/>
         <xs:attribute name="localtype" type="xs:token"/>
+        <xs:assert xa:message="[&#x0a;&#x0a;
+M210: in &lt;fromdate>, @standarddate deve essere o nella forma &quot;AAAA-MM-GG&quot;, o&#x0a;
+      &quot;AAAAMMGG&quot;, o &quot;AAAA-MM&quot;, o &quot;AAAAMM&quot;, o &quot;AAAA&quot;; è accettato anche il&#x0a;
+      valore speciale &quot;0000-00-00&quot; (anche nel formato &quot;00000000&quot;) per indicare&#x0a;
+      come aperto l'estremo sinistro dell'intervallo temporale
+      &#x0a;&#x0a;]"
+          xpathDefaultNamespace="##targetNamespace" 
+          test="   not(@standarddate)
+                or (@standarddate = ('0000-00-00', '00000000'))
+                or matches(@standarddate, '^([0-9]{4}((0[1-9]|1[0-2])((0[1-9]|[12][0-9]|3[0-1]))??)??)$')
+                or matches(@standarddate, '^([0-9]{4}(-(0[1-9]|1[0-2])(-(0[1-9]|[12][0-9]|3[0-1]))??)??)$')"/>
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
@@ -2165,6 +2184,17 @@ M040: in &lt;controlaccess>, ogni &lt;subject> con @localtype pari a&#x0a;
       <xs:extension base="m.datesingle">
         <xs:attributeGroup ref="am.common"/>
         <xs:attribute name="localtype" type="xs:token"/>
+        <xs:assert xa:message="[&#x0a;&#x0a;
+M211: in &lt;todate>, @standarddate deve essere o nella forma &quot;AAAA-MM-GG&quot;, o&#x0a;
+      &quot;AAAAMMGG&quot;, o &quot;AAAA-MM&quot;, o &quot;AAAAMM&quot;, o &quot;AAAA&quot;; è accettato anche il&#x0a;
+      valore speciale &quot;9999-99-99&quot; (anche nel formato &quot;99999999&quot;) per indicare&#x0a;
+      come aperto l'estremo destro dell'intervallo temporale
+      &#x0a;&#x0a;]"
+          xpathDefaultNamespace="##targetNamespace" 
+          test="   not(@standarddate)
+                or (@standarddate = ('9999-99-99', '99999999'))
+                or matches(@standarddate, '^([0-9]{4}((0[1-9]|1[0-2])((0[1-9]|[12][0-9]|3[0-1]))??)??)$')
+                or matches(@standarddate, '^([0-9]{4}(-(0[1-9]|1[0-2])(-(0[1-9]|[12][0-9]|3[0-1]))??)??)$')"/>
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
@@ -2403,9 +2433,7 @@ M028: in &lt;relation>, se @relationtype è pari a &quot;resourcerelation&quot;,
                (con trattino facoltativo) oppure AAAA -->
     <xs:attribute name="standarddate">
       <xs:simpleType>
-        <xs:restriction base="xs:token">
-          <xs:pattern value="[0-2][0-9]{3}(-?[0-1][0-9](-?[0-3][0-9])?)?"/>
-        </xs:restriction>
+        <xs:restriction base="xs:token"/>
       </xs:simpleType>
     </xs:attribute>
     <xs:attribute name="notbefore" type="xs:token"/>
