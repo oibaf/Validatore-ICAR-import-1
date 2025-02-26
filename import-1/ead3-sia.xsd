@@ -2091,7 +2091,7 @@ M040: in &lt;controlaccess>, ogni &lt;subject> con @localtype pari a&#x0a;
     <xs:attribute name="unit" type="xs:token"/>
   </xs:complexType>
   <!-- M115: riscritto il tipo "physfacet" in forma semplificata -->
-  <xs:complexType name="physfacet">
+  <xs:complexType name="physfacet" mixed="true">
     <xs:attributeGroup ref="am.common"/>
     <xs:attribute name="encodinganalog" type="xs:token"/>
     <xs:attributeGroup ref="am.access.no.normal"/>
