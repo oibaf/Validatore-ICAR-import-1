@@ -101,12 +101,11 @@
         <xs:element name="dsc" type="dsc"/>
       </xs:choice>
     </xs:sequence>
-    <xs:attributeGroup ref="am.common"/>
-    <xs:attribute name="localtype" type="xs:token"/>
-    <xs:attribute name="relatedencoding" type="xs:token"/>
+    <!-- M220: rimossa la definizione degli attributi non utilizzati
+               ("am.common", @localtype, @relatedendodinged e @base;
+                vedasi anche M219 per le modifiche ad "am.desc.base") -->
     <xs:attributeGroup ref="am.desc.base"/>
     <xs:attributeGroup ref="a.level"/>
-    <xs:attribute name="base" type="xs:anyURI"/>
     <xs:assert xa:message="[&#x0a;&#x0a;
 M001: in &lt;archdesc>, @level non può assumere il valore &quot;item&quot;
       &#x0a;&#x0a;]"
@@ -140,7 +139,7 @@ M015: nel caso degli &lt;archdesc> non minimali, ovvero quando non siamo nel&#x0
       caso di uno strumento di ricerca, deve essere presente almeno un&#x0a;
       /did/unitid sia con @localtype che con @identifier
       &#x0a;&#x0a;]"
-      xpathDefaultNamespace="##targetNamespace" 
+      xpathDefaultNamespace="##targetNamespace"
       test="if (    (1 = count(*))
                 and (1 = count(did))
                 and (1 = count(did/*))
@@ -186,7 +185,7 @@ M049: dobbiamo considerare che &lt;archdesc>, nel caso costituisca apparentement
       &quot;titolo&quot;, o un did/unititle (ma solo uno) dove il @localtype di&#x0a;
       &lt;unittitle> vale &quot;titoloAttribuito&quot;, o entrambi
       &#x0a;&#x0a;]"
-          xpathDefaultNamespace="##targetNamespace" 
+          xpathDefaultNamespace="##targetNamespace"
           test="if (    (1 = count(*))
                     and (1 = count(did))
                     and (1 = count(did/*))
@@ -243,7 +242,7 @@ M024: in &lt;archdesc>, nel caso sia la versione minimale associata a uno&#x0a;
       altrimenti, quando rappresenta un complesso archivistico, il valore di&#x0a;
       @localtype deve essere pari a &quot;denominazione&quot;
       &#x0a;&#x0a;]"
-          xpathDefaultNamespace="##targetNamespace" 
+          xpathDefaultNamespace="##targetNamespace"
           test="if (    (1 = count(*))
                     and (1 = count(did))
                     and (1 = count(did/*))
@@ -266,6 +265,9 @@ M024: in &lt;archdesc>, nel caso sia la versione minimale associata a uno&#x0a;
         <xs:alternative type="c.comp"/>
       </xs:element>
     </xs:sequence>
+    <!-- M225: vedasi M219 e M224 per la rimozione, da "am.desc.c", degli
+               attributi non utilizzati (ovvero @base, @lang, @script, @id,
+               @altrender, @audience ed @encodinganalog) -->
     <xs:attributeGroup ref="am.desc.c"/>
     <xs:assert xa:message="[&#x0a;&#x0a;
 M013: in &lt;c> deve essere presente almeno un /did/unitid sia con @localtype&#x0a;
@@ -647,13 +649,15 @@ M050: in &lt;c>, nel caso rappresenti un complesso archivistico, non sono ammess
     </xs:complexContent>
   </xs:complexType>
 
-  <!-- M036: specializzazione di "p" quando @localtype vale "compilatore" -->
+  <!-- M036: specializzazione di "p" quando è contentuto in un "processinfo"
+             con @localtype pari a "compilatore" -->
   <xs:complexType name="p.compilatore">
     <xs:sequence>
       <xs:element name="persname" type="persname"/>
       <xs:element name="date" type="date" minOccurs="0"/>
     </xs:sequence>
-    <xs:attributeGroup ref="am.common"/>
+    <!-- M277: rimossa la definizione degli attributi non utilizzati
+               (tutti: "am.common") -->
     <xs:assert xa:message="[&#x0a;&#x0a;
 M036: i &lt;p>, discendenti di un &lt;processinfo> con @localtype pari a&#x0a;
       &quot;compilatore&quot;, devono contenere esattamente un persname/part dove il&#x0a;
@@ -700,9 +704,9 @@ M036: nei &lt;p>, discendenti di un &lt;processinfo> con @localtype pari a&#x0a;
     <xs:sequence>
       <xs:element name="p" type="p.compilatore"/>
     </xs:sequence>
-    <xs:attributeGroup ref="am.common"/>
+    <!-- M285: rimossa la definizione degli attributi non utilizzati
+               ("am.common" ed @encodinganalog) -->
     <xs:attribute name="localtype" type="xs:token"/>
-    <xs:attribute name="encodinganalog" type="xs:token"/>
     <xs:assert xa:message="[&#x0a;&#x0a;
 M037: i &lt;processinfo>, figli di un &lt;processinfo> con @localtype pari a&#x0a;
       &quot;compilatori&quot;, devono avere @localtype pari a &quot;compilatore&quot;
@@ -716,9 +720,9 @@ M037: i &lt;processinfo>, figli di un &lt;processinfo> con @localtype pari a&#x0
     <xs:sequence>
       <xs:element name="processinfo" type="processinfo.compilatore" maxOccurs="unbounded"/>
     </xs:sequence>
-    <xs:attributeGroup ref="am.common"/>
+    <!-- M285: rimossa la definizione degli attributi non utilizzati
+               ("am.common" ed @encodinganalog) -->
     <xs:attribute name="localtype" type="xs:token"/>
-    <xs:attribute name="encodinganalog" type="xs:token"/>
   </xs:complexType>
 
   <!-- end ICAR extra types -->
@@ -735,9 +739,8 @@ M037: i &lt;processinfo>, figli di un &lt;processinfo> con @localtype pari a&#x0
           <xs:alternative type="archdesc.comp"/>
         </xs:element>
       </xs:sequence>
-      <xs:attributeGroup ref="am.common"/>
-      <xs:attribute name="relatedencoding" type="xs:token"/>
-      <xs:attribute name="base" type="xs:anyURI"/>
+      <!-- M246: rimossa la definizione degli attributi non utilizzati
+                 ("am.common", @relatedencoding e @base) -->
       <xs:assert xa:message="[&#x0a;&#x0a;
 M066: &lt;ead> può contenere uno o più control/otherrecordid (e, in tal caso,&#x0a;
       &lt;otherrecordid> deve avere (1) contenuto non nullo e (2) @localtype non&#x0a;
@@ -907,10 +910,9 @@ M086: &lt;ead> può contenere eventuali&#x0a;
       <xs:element name="maintenancehistory" type="maintenancehistory"/>
       <xs:element name="sources" type="sources" minOccurs="0"/>
     </xs:sequence>
-    <xs:attributeGroup ref="am.common"/>
-    <xs:attribute name="encodinganalog" type="xs:token"/>
+    <!-- M227: rimossa la definizione degli attributi non utilizzati
+               ("am.common", @encodinganalog e @base) -->
     <xs:attribute name="relatedencoding" type="xs:token"/>
-    <xs:attribute name="base" type="xs:anyURI"/>
     <xs:attribute name="langencoding">
       <xs:simpleType>
         <xs:restriction base="xs:token">
@@ -954,25 +956,29 @@ M086: &lt;ead> può contenere eventuali&#x0a;
       </xs:simpleType>
     </xs:attribute>
   </xs:complexType>
-  <xs:complexType name="recordid" mixed="true">
-    <xs:attributeGroup ref="am.common"/>
-    <xs:attribute name="encodinganalog" type="xs:token"/>
-    <xs:attribute name="instanceurl" type="xs:anyURI"/>
-    <xs:assert xa:message="[&#x0a;&#x0a;
+  <!-- M291: rimossa la definizione degli attributi non utilizzati
+             ("am.common", @encodinganalog e @instanceurl);
+             l'elemento "recordid" risulta quindi un simpleType -->
+  <xs:simpleType name="recordid">
+    <xs:restriction base="xs:string">
+      <xs:assertion xa:message="[&#x0a;&#x0a;
 M003: il contenuto di &lt;recordid> non può essere nullo
       &#x0a;&#x0a;]"
-      test="text() != ''"/>
-  </xs:complexType>
+        test="$value != ''"/>
+    </xs:restriction>
+  </xs:simpleType>
   <xs:complexType name="otherrecordid" mixed="true">
-    <xs:attributeGroup ref="am.common"/>
-    <xs:attribute name="encodinganalog" type="xs:token"/>
+    <!-- M276: rimossa la definizione degli attributi non utilizzati
+               ("am.common" ed @encodinganalog) -->
     <xs:attribute name="localtype" type="xs:token"/>
   </xs:complexType>
   <xs:complexType name="representation" mixed="true">
-    <xs:attributeGroup ref="am.common"/>
-    <xs:attribute name="encodinganalog" type="xs:token"/>
+    <!-- M298: rimossa la definizione degli attributi non utilizzati
+               ("am.common", @encodinganalog e @localtype) e mantenuta
+               l'inclusione "am.simplelink" causando in questo modo
+               (vedasi M235) l'esclusione di @arcrole, @linktitle, @show
+               e @actuate -->
     <xs:attributeGroup ref="am.simplelink"/>
-    <xs:attribute name="localtype" type="xs:token"/>
   </xs:complexType>
   <xs:complexType name="filedesc">
     <xs:sequence>
@@ -982,8 +988,8 @@ M003: il contenuto di &lt;recordid> non può essere nullo
       <xs:element name="publicationstmt" type="publicationstmt" minOccurs="0"/>
       <xs:element name="notestmt" type="notestmt" minOccurs="0"/>
     </xs:sequence>
-    <xs:attributeGroup ref="am.common"/>
-    <xs:attribute name="encodinganalog" type="xs:token"/>
+    <!-- M253: rimossa la definizione degli attributi non utilizzati
+               ("am.common" ed @encodinganalog) -->
   </xs:complexType>
   <xs:complexType name="titlestmt">
     <xs:sequence>
@@ -993,16 +999,16 @@ M003: il contenuto di &lt;recordid> non può essere nullo
       <xs:element name="titleproper" type="titleproper"/>
       <xs:element name="author" type="author" minOccurs="0" maxOccurs="unbounded"/>
     </xs:sequence>
-    <xs:attributeGroup ref="am.common"/>
-    <xs:attribute name="encodinganalog" type="xs:token"/>
+    <!-- M309: rimossa la definizione degli attributi non utilizzati
+               (tutti: "am.common" ed @encodinganalog) -->
   </xs:complexType>
   <!-- M092: riscritto "editionstmt" in forma semplificata -->
   <xs:complexType name="editionstmt">
     <xs:sequence>
       <xs:element name="edition" type="edition" maxOccurs="unbounded"/>
     </xs:sequence>
-    <xs:attributeGroup ref="am.common"/>
-    <xs:attribute name="encodinganalog" type="xs:token"/>
+    <!-- M248: rimossa la definizione degli attributi non utilizzati
+               (tutti: "am.common" ed @encodinganalog) -->
   </xs:complexType>
   <xs:complexType name="publicationstmt">
     <xs:choice maxOccurs="unbounded">
@@ -1012,8 +1018,8 @@ M003: il contenuto di &lt;recordid> non può essere nullo
       <xs:element name="address" type="address"/>
       <xs:element name="p" type="p"/>
     </xs:choice>
-    <xs:attributeGroup ref="am.common"/>
-    <xs:attribute name="encodinganalog" type="xs:token"/>
+    <!-- M287: rimossa la definizione degli attributi non utilizzati
+               (tutti: "am.common" ed @encodinganalog) -->
     <xs:assert xa:message="[&#x0a;&#x0a;
 M077: i &lt;date>, dotati di @localtype, contenuti in &lt;publicationstmt> devono,&#x0a;
       obbligatoriamente, avere (1) contenuto non nullo e (2) un @localtype con&#x0a;
@@ -1062,8 +1068,8 @@ M079: i &lt;date> con @localtype pari a &quot;rangeDate&quot;, contenuti in&#x0a
     <xs:sequence>
       <xs:element name="controlnote" type="controlnote" maxOccurs="unbounded"/>
     </xs:sequence>
-    <xs:attributeGroup ref="am.common"/>
-    <xs:attribute name="encodinganalog" type="xs:token"/>
+    <!-- M272: rimossa la definizione degli attributi non utilizzati
+               (tutti: "am.common" ed @encodinganalog) -->
     <xs:assert xa:message="[&#x0a;&#x0a;
 M076: &lt;notestmt> può contenere al massimo un unico &lt;controlnote> privo di&#x0a;
       @localtype
@@ -1080,8 +1086,8 @@ M082: eventuali &lt;controlnote>, figli di &lt;notestmt>, se hanno @localtype,&#
                                             'descrizioneIntrinseca')"/>
   </xs:complexType>
   <xs:complexType name="maintenancestatus" mixed="true">
-    <xs:attributeGroup ref="am.common"/>
-    <xs:attribute name="encodinganalog" type="xs:token"/>
+    <!-- M269: rimossa la definizione degli attributi non utilizzati
+               ("am.common" ed @encodinganalog) -->
     <xs:attribute name="value" use="required">
       <xs:simpleType>
         <xs:restriction base="xs:token">
@@ -1098,8 +1104,8 @@ M082: eventuali &lt;controlnote>, figli di &lt;notestmt>, se hanno @localtype,&#
     </xs:attribute>
   </xs:complexType>
   <xs:complexType name="publicationstatus" mixed="true">
-    <xs:attributeGroup ref="am.common"/>
-    <xs:attribute name="encodinganalog" type="xs:token"/>
+    <!-- M286: rimossa la definizione degli attributi non utilizzati
+               ("am.common" ed @encodinganalog) -->
     <xs:attribute name="value" use="required">
       <xs:simpleType>
         <xs:restriction base="xs:token">
@@ -1116,8 +1122,8 @@ M082: eventuali &lt;controlnote>, figli di &lt;notestmt>, se hanno @localtype,&#
       <xs:element name="language" type="language"/>
       <xs:element name="script" type="script"/>
     </xs:sequence>
-    <xs:attributeGroup ref="am.common"/>
-    <xs:attribute name="encodinganalog" type="xs:token"/>
+    <!-- M263: rimossa la definizione degli attributi non utilizzati
+               ("am.common" ed @encodinganalog) -->
     <xs:assert xa:message="[&#x0a;&#x0a;
 M008: in languagedeclaration/language, @langcode non può essere nullo e deve&#x0a;
       essere conforme a ISO 639-2 (tre caratteri alfabetici)
@@ -1130,9 +1136,8 @@ M008: in languagedeclaration/language, @langcode non può essere nullo e deve&#x
       <!-- M104: rimossi "abbr" e "descriptivenote" -->
       <xs:element name="citation" type="citation"/>
     </xs:sequence>
-    <xs:attributeGroup ref="am.common"/>
-    <xs:attribute name="encodinganalog" type="xs:token"/>
-    <xs:attribute name="localtype" type="xs:token"/>
+    <!-- M230: rimossa la definizione degli attributi non utilizzati
+               (tutti: "am.common", @localtype ed @encodinganalog) -->
     <xs:assert xa:message="[&#x0a;&#x0a;
 M010: in &lt;conventiondeclaration>, il contenuto di &lt;citation> non può essere&#x0a;
       nullo
@@ -1148,48 +1153,24 @@ M010: in &lt;conventiondeclaration>, il contenuto di &lt;citation> non può esse
       <!-- M106: rimossi gli elementi "datesingle" e "daterange" e, di
                  conseguenza, il choice, ormai vuoto, che li conteneva -->
     </xs:sequence>
-    <xs:attributeGroup ref="am.common"/>
-    <xs:attribute name="encodinganalog" type="xs:token"/>
+    <!-- M265: rimossa la definizione degli attributi non utilizzati
+               ("am.common" ed @encodinganalog) -->
     <xs:attribute name="localtype" type="xs:token"/>
   </xs:complexType>
   <xs:complexType name="term" mixed="true">
-    <xs:attributeGroup ref="am.common"/>
-    <xs:attribute name="encodinganalog" type="xs:token"/>
-    <xs:attribute name="transliteration" type="xs:NMTOKEN"/>
-    <xs:attribute name="lastdatetimeverified">
-      <xs:simpleType>
-        <xs:union>
-          <xs:simpleType>
-            <xs:restriction base="xs:date">
-              <xs:maxInclusive value="2099-12-31"/>
-            </xs:restriction>
-          </xs:simpleType>
-          <xs:simpleType>
-            <xs:restriction base="xs:gYear">
-              <xs:maxInclusive value="2099"/>
-            </xs:restriction>
-          </xs:simpleType>
-          <xs:simpleType>
-            <xs:restriction base="xs:gYearMonth">
-              <xs:maxInclusive value="2099-12"/>
-            </xs:restriction>
-          </xs:simpleType>
-          <xs:simpleType>
-            <xs:restriction base="xs:dateTime">
-              <xs:maxInclusive value="2099-12-31T23:59:59"/>
-            </xs:restriction>
-          </xs:simpleType>
-        </xs:union>
-      </xs:simpleType>
-    </xs:attribute>
-    <xs:attributeGroup ref="am.access.no.normal"/>
+    <!-- M305: rimossa la definizione degli attributi non utilizzati
+               ("am.common", @transliteration, @lastdatetimeverified
+               ed @encodinganalog) e sostituita l'inclusione di
+               "am.access.no.normal" con quella di "am.access.no.normal.base"
+               (per escludere @sources e @rules, vedasi anche M231) -->
+    <xs:attributeGroup ref="am.access.no.normal.base"/>
   </xs:complexType>
   <xs:complexType name="maintenancehistory">
     <xs:sequence>
       <xs:element name="maintenanceevent" type="maintenanceevent" maxOccurs="unbounded"/>
     </xs:sequence>
-    <xs:attributeGroup ref="am.common"/>
-    <xs:attribute name="encodinganalog" type="xs:token"/>
+    <!-- M268: rimossa la definizione degli attributi non utilizzati
+               (tutti: "am.common" ed @encodinganalog) -->
   </xs:complexType>
   <xs:complexType name="maintenanceevent">
     <xs:sequence>
@@ -1201,12 +1182,12 @@ M010: in &lt;conventiondeclaration>, il contenuto di &lt;citation> non può esse
                  renderlo non ripetibile -->
       <xs:element name="eventdescription" type="eventdescription" minOccurs="0"/>
     </xs:sequence>
-    <xs:attributeGroup ref="am.common"/>
-    <xs:attribute name="encodinganalog" type="xs:token"/>
+    <!-- M267: rimossa la definizione degli attributi non utilizzati
+               (tutti: "am.common" ed @encodinganalog) -->
   </xs:complexType>
   <xs:complexType name="eventtype" mixed="true">
-    <xs:attributeGroup ref="am.common"/>
-    <xs:attribute name="encodinganalog" type="xs:token"/>
+    <!-- M251: rimossa la definizione degli attributi non utilizzati
+               ("am.common" ed @encodinganalog) -->
     <xs:attribute name="value" use="required">
       <xs:simpleType>
         <xs:restriction base="xs:token">
@@ -1222,8 +1203,8 @@ M010: in &lt;conventiondeclaration>, il contenuto di &lt;citation> non può esse
     </xs:attribute>
   </xs:complexType>
   <xs:complexType name="eventdatetime" mixed="true">
-    <xs:attributeGroup ref="am.common"/>
-    <xs:attribute name="encodinganalog" type="xs:token"/>
+    <!-- M249: rimossa la definizione degli attributi non utilizzati
+               ("am.common" ed @encodinganalog) -->
     <xs:attribute name="standarddatetime">
       <xs:simpleType>
         <xs:union>
@@ -1249,8 +1230,8 @@ M010: in &lt;conventiondeclaration>, il contenuto di &lt;citation> non può esse
     </xs:attribute>
   </xs:complexType>
   <xs:complexType name="agenttype" mixed="true">
-    <xs:attributeGroup ref="am.common"/>
-    <xs:attribute name="encodinganalog" type="xs:token"/>
+    <!-- M218: rimossa la definizione degli attributi non utilizzati
+               ("am.common" ed @encodinganalog) -->
     <xs:attribute name="value" use="required">
       <xs:simpleType>
         <xs:restriction base="xs:token">
@@ -1261,90 +1242,53 @@ M010: in &lt;conventiondeclaration>, il contenuto di &lt;citation> non può esse
       </xs:simpleType>
     </xs:attribute>
   </xs:complexType>
-  <xs:complexType name="agent" mixed="true">
-    <xs:attributeGroup ref="am.common"/>
-    <xs:attribute name="encodinganalog" type="xs:token"/>
-  </xs:complexType>
-  <xs:complexType name="eventdescription" mixed="true">
-    <xs:attributeGroup ref="am.common"/>
-    <xs:attribute name="encodinganalog" type="xs:token"/>
-    <xs:attribute name="localtype" type="xs:token"/>
-  </xs:complexType>
+  <!-- M217: rimossa la definizione degli attributi non utilizzati
+             (tutti: "am.common" ed @encodinganalog);
+             l'elemento "agent" risulta quindi un simpleType -->
+  <xs:simpleType name="agent">
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
+  <!-- M250: rimossa la definizione degli attributi non utilizzati
+             (tutti: "am.common", @localtype ed @encodinganalog)
+             l'elemento "eventdescription" risulta quindi un simpleType -->
+  <xs:simpleType name="eventdescription">
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
   <xs:complexType name="sources">
     <xs:sequence>
       <xs:element name="source" type="source" maxOccurs="unbounded"/>
     </xs:sequence>
-    <xs:attributeGroup ref="am.common"/>
-    <xs:attribute name="encodinganalog" type="xs:token"/>
-    <xs:attribute name="localtype" type="xs:token"/>
-    <xs:attribute name="base" type="xs:anyURI"/>
+    <!-- M303: rimossa la definizione degli attributi non utilizzati
+               (tutti: "am.common", @localtype, @base ed @encodinganalog) -->
   </xs:complexType>
   <xs:complexType name="source">
     <xs:sequence>
       <!-- M107: rimossi "objectxmlwrap" e "descriptivenote" -->
       <xs:element name="sourceentry" type="sourceentry" minOccurs="0" maxOccurs="unbounded"/>
     </xs:sequence>
-    <xs:attributeGroup ref="am.common"/>
-    <xs:attribute name="encodinganalog" type="xs:token"/>
-    <xs:attribute name="lastdatetimeverified">
-      <xs:simpleType>
-        <xs:union>
-          <xs:simpleType>
-            <xs:restriction base="xs:date">
-              <xs:maxInclusive value="2099-12-31"/>
-            </xs:restriction>
-          </xs:simpleType>
-          <xs:simpleType>
-            <xs:restriction base="xs:gYear">
-              <xs:maxInclusive value="2099"/>
-            </xs:restriction>
-          </xs:simpleType>
-          <xs:simpleType>
-            <xs:restriction base="xs:gYearMonth">
-              <xs:maxInclusive value="2099-12"/>
-            </xs:restriction>
-          </xs:simpleType>
-          <xs:simpleType>
-            <xs:restriction base="xs:dateTime">
-              <xs:maxInclusive value="2099-12-31T23:59:59"/>
-            </xs:restriction>
-          </xs:simpleType>
-        </xs:union>
-      </xs:simpleType>
-    </xs:attribute>
+    <!-- M301: rimossa la definizione degli attributi definiti localmente
+               e non utilizzati (@encodinganalog e @lastdatetimeverified),
+               sostituita l'inclusione di "am.common" con "am.common.empty"
+               (per escludere @lang, @script, @altrender e @audience
+               (vedasi anche M234)) e mantenuta quella di "am.simplelink"
+               per escludere (vedasi M235) @arcrole, @linktitle, @show
+               e @actuate -->
+    <xs:attributeGroup ref="am.common.empty"/>
     <xs:attributeGroup ref="am.simplelink"/>
   </xs:complexType>
-  <xs:complexType name="sourceentry" mixed="true">
-    <xs:attributeGroup ref="am.common"/>
-    <xs:attribute name="encodinganalog" type="xs:token"/>
-    <xs:attribute name="transliteration" type="xs:NMTOKEN"/>
-  </xs:complexType>
+  <!-- M302: rimossa la definizione degli attributi non utilizzati
+             (tutti: "am.common", @encodinganalog e @transliteration);
+             l'elemento "sourceentry" risulta quindi un simpleType -->
+  <xs:simpleType name="sourceentry">
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
   <!-- M090: riscritto il tipo "titleproper" come tipo solo attibuti -->
   <xs:complexType name="titleproper" mixed="true">
-    <xs:attributeGroup ref="am.common"/>
-    <xs:attribute name="localtype" type="xs:token"/>
-    <xs:attribute name="render">
-      <xs:simpleType>
-        <xs:restriction base="xs:token">
-          <xs:enumeration value="altrender"/>
-          <xs:enumeration value="bold"/>
-          <xs:enumeration value="bolddoublequote"/>
-          <xs:enumeration value="bolditalic"/>
-          <xs:enumeration value="boldsinglequote"/>
-          <xs:enumeration value="boldsmcaps"/>
-          <xs:enumeration value="boldunderline"/>
-          <xs:enumeration value="doublequote"/>
-          <xs:enumeration value="italic"/>
-          <xs:enumeration value="nonproport"/>
-          <xs:enumeration value="singlequote"/>
-          <xs:enumeration value="smcaps"/>
-          <xs:enumeration value="sub"/>
-          <xs:enumeration value="super"/>
-          <xs:enumeration value="underline"/>
-        </xs:restriction>
-      </xs:simpleType>
-    </xs:attribute>
-    <xs:attribute name="encodinganalog" type="xs:token"/>
+    <!-- M308: rimossa la definizione degli attributi non utilizzati
+               (@localtype, @render ed @encodinganalog) e sostituita
+               l'inclusione di "am.common" con quella di "am.common.lang"
+               (per escludere @script, @id, @altrender e @audience) -->
+    <xs:attributeGroup ref="am.common.lang"/>
     <xs:assert xa:message="[&#x0a;&#x0a;
 M068: nel caso sia presente @lang in &lt;titleproper>, il suo valore deve essere&#x0a;
       conforme a ISO 639-2 (deve essere costutito da tre caratteri alfabetici)
@@ -1356,9 +1300,9 @@ M068: nel caso sia presente @lang in &lt;titleproper>, il suo valore deve essere
   <!-- M189: rimosso il tipo "subtitle" -->
   <!-- M091: riscritto il tipo "author" come tipo solo attibuti -->
   <xs:complexType name="author" mixed="true">
-    <xs:attributeGroup ref="am.common"/>
+    <!-- M223: rimossa la definzione degli attributi non utilizzati
+               ("am.common" ed @encodinganalog) -->
     <xs:attribute name="localtype" type="xs:token"/>
-    <xs:attribute name="encodinganalog" type="xs:token"/>
   </xs:complexType>
   <!-- M188: rimosso il tipo "sponsor" -->
   <!-- M093: riscritto il tipo "edition" in forma semplificata -->
@@ -1366,9 +1310,9 @@ M068: nel caso sia presente @lang in &lt;titleproper>, il suo valore deve essere
     <xs:sequence>
       <xs:element name="ref" type="ref" minOccurs="0" maxOccurs="unbounded"/>
     </xs:sequence>
-    <xs:attributeGroup ref="am.common"/>
+    <!-- M247: rimossa la definzione degli attributi non utilizzati
+               ("am.common" ed @encodinganalog) -->
     <xs:attribute name="localtype" type="xs:token"/>
-    <xs:attribute name="encodinganalog" type="xs:token"/>
     <xs:assert xa:message="[&#x0a;&#x0a;
 M073: il contenuto dell'elemento &lt;edition>, quando il suo @localtype vale&#x0a;
       &quot;published&quot;, può essere solo &quot;sì&quot;, oppure &quot;si&quot;, oppure &quot;no&quot;
@@ -1378,11 +1322,12 @@ M073: il contenuto dell'elemento &lt;edition>, quando il suo @localtype vale&#x0
             else true()"/>
   </xs:complexType>
   <!-- M096: riscritto il tipo "publisher" in forma semplificata -->
-  <xs:complexType name="publisher" mixed="true">
-    <xs:attributeGroup ref="am.common"/>
-    <xs:attribute name="localtype" type="xs:token"/>
-    <xs:attribute name="encodinganalog" type="xs:token"/>
-  </xs:complexType>
+  <!-- M288: rimossa la definizione degli attributi non utilizzati
+             (tutti: "am.common", @localtype ed @encodinganalog);
+             l'elemento "publisher" risulta quindi un simpleType -->
+  <xs:simpleType name="publisher">
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
   <xs:complexType name="controlnote">
     <!-- M099: degli elementi di "m.blocks", solo "p" viene utilizzato;
                sostituito quindi il riferimento al gruppo con una sequence del
@@ -1390,9 +1335,9 @@ M073: il contenuto dell'elemento &lt;edition>, quando il suo @localtype vale&#x0
     <xs:sequence>
       <xs:element name="p" type="p" maxOccurs="unbounded"/>
     </xs:sequence>
-    <xs:attributeGroup ref="am.common"/>
+    <!-- M229: rimossa la definizione degli attributi non utilizzati
+               ("am.common" e @encodinganalog) -->
     <xs:attribute name="localtype" type="xs:token"/>
-    <xs:attribute name="encodinganalog" type="xs:token"/>
   </xs:complexType>
   <xs:complexType name="maintenanceagency">
     <xs:sequence>
@@ -1402,53 +1347,30 @@ M073: il contenuto dell'elemento &lt;edition>, quando il suo @localtype vale&#x0
                  non ripetibile -->
       <xs:element name="agencyname" type="agencyname"/>
     </xs:sequence>
-    <xs:attributeGroup ref="am.common"/>
-    <xs:attribute name="encodinganalog" type="xs:token"/>
-    <xs:attributeGroup ref="am.countrycode"/>
+    <!-- M266: rimossa la definizione degli attributi non utilizzati
+               (tutti: "am.common", "am.countrycode" ed @encodinganalog) -->
   </xs:complexType>
   <!-- M142: rimosso il tipo "agencycode" -->
   <!-- M179: rimosso il tipo "otheragencycode" -->
-  <xs:complexType name="agencyname" mixed="true">
-    <xs:attributeGroup ref="am.common"/>
-    <xs:attribute name="encodinganalog" type="xs:token"/>
-    <xs:attribute name="localtype" type="xs:token"/>
-    <xs:assert xa:message="[&#x0a;&#x0a;
+  <!-- M216: rimossa la definizione degli attributi non utilizzati
+             (tutti: "am.common", @localtype ed @encodinganalog);
+             l'elemento "agencyname" risulta quindi un simpleType -->
+  <xs:simpleType name="agencyname">
+    <xs:restriction base="xs:string">
+      <xs:assertion xa:message="[&#x0a;&#x0a;
 M006: il contenuto di &lt;agencyname> non può essere nullo
       &#x0a;&#x0a;]"
-      test="text() != ''"/>
-  </xs:complexType>
+        test="$value != ''"/>
+    </xs:restriction>
+  </xs:simpleType>
   <!-- M105: riscritto il tipo "citation" in forma semplificata -->
-  <xs:complexType name="citation" mixed="true">
-    <xs:attributeGroup ref="am.common"/>
-    <xs:attribute name="encodinganalog" type="xs:token"/>
-    <xs:attributeGroup ref="am.simplelink"/>
-    <xs:attribute name="lastdatetimeverified">
-      <xs:simpleType>
-        <xs:union>
-          <xs:simpleType>
-            <xs:restriction base="xs:date">
-              <xs:maxInclusive value="2099-12-31"/>
-            </xs:restriction>
-          </xs:simpleType>
-          <xs:simpleType>
-            <xs:restriction base="xs:gYear">
-              <xs:maxInclusive value="2099"/>
-            </xs:restriction>
-          </xs:simpleType>
-          <xs:simpleType>
-            <xs:restriction base="xs:gYearMonth">
-              <xs:maxInclusive value="2099-12"/>
-            </xs:restriction>
-          </xs:simpleType>
-          <xs:simpleType>
-            <xs:restriction base="xs:dateTime">
-              <xs:maxInclusive value="2099-12-31T23:59:59"/>
-            </xs:restriction>
-          </xs:simpleType>
-        </xs:union>
-      </xs:simpleType>
-    </xs:attribute>
-  </xs:complexType>
+  <!-- M226: rimossa la definizione degli attributi non utilizzati
+             (tutti: "am.common", "am.simplelink", @encodinganalog
+             e @lasttimeverified);
+             l'elemento "citation" risulta quindi un simpleType -->
+  <xs:simpleType name="citation">
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
 
   <!-- ARCHDESC -->
   <!-- M001: rimosso il tipo "archdesc" -->
@@ -1458,27 +1380,28 @@ M006: il contenuto di &lt;agencyname> non può essere nullo
       <!-- M110: rimosso "head" -->
       <xs:group maxOccurs="unbounded" ref="m.did"/>
     </xs:sequence>
-    <xs:attributeGroup ref="am.common"/>
-    <xs:attribute name="encodinganalog" type="xs:token"/>
+    <!-- M243: rimossa la definizione degli attributi non utilizzati
+               (tutti: "am.common" ed @encodinganalog) -->
   </xs:complexType>
   <!-- M121: riscritto il tipo "abstract" in forma semplificata -->
-  <xs:complexType name="abstract" mixed="true">
-    <xs:attributeGroup ref="am.common"/>
-    <xs:attribute name="localtype" type="xs:token"/>
-    <xs:attribute name="label" type="xs:string"/>
-    <xs:attribute name="encodinganalog" type="xs:token"/>
-  </xs:complexType>
+  <!-- M212: rimossa la definizione degli attributi non utilizzati
+             (tutti: "am.common", @localtype, @label ed @encodinganalog);
+             l'elemento "abstract" risulta quindi un simpleType -->
+  <xs:simpleType name="abstract">
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
   <!-- M154: rimosso il tipo "container" -->
   <xs:complexType name="dao">
     <!-- M111: rimosso "descriptivenote" e il sequence che lo conteneva -->
-    <xs:attributeGroup ref="am.common"/>
-    <xs:attribute name="encodinganalog" type="xs:token"/>
-    <xs:attribute name="localtype" type="xs:token"/>
-    <xs:attribute name="label" type="xs:string"/>
-    <xs:attributeGroup ref="am.simplelink"/>
-    <xs:attribute name="identifier" type="xs:token"/>
-    <xs:attribute name="xpointer" type="xs:token"/>
-    <xs:attribute name="entityref" type="xs:ENTITY"/>
+    <!-- M236: rimossa la definizione degli attributi non utilizzati
+               (@encodinganalog, @localtype, @label, @identifier, @xpointer ed
+               @entityref), sostituita l'inclusione di "am.common" con
+               "am.common.empty" (per escludere @lang, @script, @altrender e
+               @audience (vedasi anche M234)) e quella di "am.simplelink" con
+               "am.simplelink.dao" (per escludere @arcrole, @show e @actuate
+               (vedasi anche M235)) -->
+    <xs:attributeGroup ref="am.common.empty"/>
+    <xs:attributeGroup ref="am.simplelink.dao"/>
     <xs:attribute name="daotype" use="required">
       <xs:simpleType>
         <xs:restriction base="xs:token">
@@ -1521,9 +1444,8 @@ M043: in &lt;dao>, se @daotype vale &quot;otherdaotype&quot;, allora deve essere
       <xs:element name="dao" type="dao" maxOccurs="unbounded"/>
       <xs:element name="descriptivenote" type="descriptivenote" minOccurs="0"/>
     </xs:sequence>
-    <xs:attributeGroup ref="am.common"/>
-    <xs:attribute name="localtype" type="xs:token"/>
-    <xs:attribute name="encodinganalog" type="xs:token"/>
+    <!-- M237: rimossa la definizione degli attributi non utilizzati
+               ("am.common", @encodinganalog, @localtype e @base) -->
     <xs:attribute name="label" type="xs:string"/>
     <xs:attribute name="coverage">
       <xs:simpleType>
@@ -1533,52 +1455,39 @@ M043: in &lt;dao>, se @daotype vale &quot;otherdaotype&quot;, allora deve essere
         </xs:restriction>
       </xs:simpleType>
     </xs:attribute>
-    <xs:attribute name="base" type="xs:anyURI"/>
   </xs:complexType>
   <!-- M155: rimosso il tipo "didnote" -->
   <!-- M164: rimosso il tipo "langmaterial" -->
   <!-- M112: riscritto il tipo "materialspec" in forma semplificata -->
   <xs:complexType name="materialspec" mixed="true">
-    <xs:attributeGroup ref="am.common"/>
+    <!-- M270: rimossa la definizione degli attributi non utilizzati
+               ("am.common", @encodinganalog e @localtype) -->
     <xs:attribute name="label" type="xs:string"/>
-    <xs:attribute name="encodinganalog" type="xs:token"/>
-    <xs:attribute name="localtype" type="xs:token"/>
   </xs:complexType>
   <xs:complexType name="physdescset">
     <xs:sequence>
       <xs:element name="physdescstructured" type="physdescstructured"/>
       <xs:element name="physdescstructured" type="physdescstructured" maxOccurs="unbounded"/>
     </xs:sequence>
-    <xs:attributeGroup ref="am.common"/>
-    <xs:attribute name="label" type="xs:string"/>
-    <xs:attribute name="encodinganalog" type="xs:token"/>
-    <xs:attribute name="parallel" type="av.boolean"/>
-    <xs:attribute name="coverage">
-      <xs:simpleType>
-        <xs:restriction base="xs:token">
-          <xs:enumeration value="whole"/>
-          <xs:enumeration value="part"/>
-        </xs:restriction>
-      </xs:simpleType>
-    </xs:attribute>
+    <!-- M281: rimossa la definizione degli attributi non utilizzati
+               (tutti: "am.common", @label, @encodinganalog, @parallel
+               e @coverage) -->
   </xs:complexType>
   <!-- M122: riscritto il tipo "physdesc" in forma semplificata -->
-  <xs:complexType name="physdesc" mixed="true">
-    <xs:attributeGroup ref="am.common"/>
-    <xs:attribute name="localtype" type="xs:token"/>
-    <xs:attribute name="label" type="xs:string"/>
-    <xs:attribute name="encodinganalog" type="xs:token"/>
-  </xs:complexType>
+  <!-- M280: rimossa la definizione degli attributi non utilizzati
+             (tutti: "am.common", @localtype, @label ed @encodinganalog);
+             l'elemento "physdesc" risulta quindi un simpleType -->
+  <xs:simpleType name="physdesc">
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
   <!-- M138: riscritto in tipo "physloc" in forma semplificata -->
   <xs:complexType name="physloc" mixed="true">
     <xs:sequence>
       <xs:element name="ref" type="ref" minOccurs="0" maxOccurs="unbounded"/>
     </xs:sequence>
-    <xs:attributeGroup ref="am.common"/>
-    <xs:attribute name="localtype" type="xs:token"/>
-    <xs:attribute name="label" type="xs:string"/>
-    <xs:attribute name="encodinganalog" type="xs:token"/>
-    <xs:attribute name="parent" type="xs:IDREFS"/>
+    <!-- M284: rimossa la definizione degli attributi non utilizzati
+               (tutti: "am.common", @label, @localtype, @encodinganalog
+               e @parent) -->
   </xs:complexType>
   <xs:complexType name="origination">
     <xs:choice maxOccurs="unbounded">
@@ -1587,16 +1496,28 @@ M043: in &lt;dao>, se @daotype vale &quot;otherdaotype&quot;, allora deve essere
       <xs:element name="famname" type="famname"/>
       <xs:element name="persname" type="persname"/>
     </xs:choice>
-    <xs:attributeGroup ref="am.common"/>
-    <xs:attribute name="localtype" type="xs:token"/>
-    <xs:attribute name="label" type="xs:string"/>
-    <xs:attribute name="encodinganalog" type="xs:token"/>
+    <!-- M274: rimossa la definizione degli attributi non utilizzati
+               (tutti: "am.common", @localtype, @label ed @encodinganalog) -->
     <xs:assert xa:message="[&#x0a;&#x0a;
-M026: in &lt;origination>, eventuali figli &lt;corpname>, &lt;persname>, o &lt;famname>,&#x0a;
+M026: in &lt;origination>, eventuali figli &lt;corpname> devono obbligatioriamente&#x0a;
+      avere @identifier
+      &#x0a;&#x0a;]"
+      xpathDefaultNamespace="##targetNamespace" 
+      test="every $elem in corpname
+            satisfies $elem/@identifier"/>
+    <xs:assert xa:message="[&#x0a;&#x0a;
+M026: in &lt;origination>, eventuali figli &lt;persname> devono obbligatioriamente&#x0a;
       devono obbligatioriamente avere @identifier
       &#x0a;&#x0a;]"
       xpathDefaultNamespace="##targetNamespace" 
-      test="every $elem in (corpname, persname, famname)
+      test="every $elem in persname
+            satisfies $elem/@identifier"/>
+    <xs:assert xa:message="[&#x0a;&#x0a;
+M026: in &lt;origination>, eventuali figli &lt;famname> devono obbligatioriamente&#x0a;
+      devono obbligatioriamente avere @identifier
+      &#x0a;&#x0a;]"
+      xpathDefaultNamespace="##targetNamespace" 
+      test="every $elem in famname
             satisfies $elem/@identifier"/>
   </xs:complexType>
   <xs:complexType name="physdescstructured">
@@ -1609,9 +1530,9 @@ M026: in &lt;origination>, eventuali figli &lt;corpname>, &lt;persname>, o &lt;f
       </xs:choice>
       <xs:element name="descriptivenote" type="descriptivenote" minOccurs="0"/>
     </xs:sequence>
-    <xs:attributeGroup ref="am.common"/>
-    <xs:attribute name="label" type="xs:string"/>
-    <xs:attribute name="encodinganalog" type="xs:token"/>
+    <!-- M282: rimossa la definizione degli attributi non utilizzati
+               ("am.common", @label, @encodinganalog
+               e @otherphysdescstructuredtype) -->
     <xs:attribute name="physdescstructuredtype" use="required">
       <xs:simpleType>
         <xs:restriction base="xs:token">
@@ -1622,19 +1543,20 @@ M026: in &lt;origination>, eventuali figli &lt;corpname>, &lt;persname>, o &lt;f
         </xs:restriction>
       </xs:simpleType>
     </xs:attribute>
-    <xs:attribute name="otherphysdescstructuredtype" type="xs:token"/>
     <xs:attributeGroup ref="a.coverage"/>
   </xs:complexType>
-  <xs:complexType name="quantity" mixed="true">
-    <xs:attributeGroup ref="am.common"/>
-    <xs:attribute name="encodinganalog" type="xs:token"/>
-    <xs:attribute name="approximate" type="av.boolean"/>
-  </xs:complexType>
-  <xs:complexType name="unittype" mixed="true">
-    <xs:attributeGroup ref="am.common"/>
-    <xs:attribute name="encodinganalog" type="xs:token"/>
-    <xs:attributeGroup ref="am.access.no.normal"/>
-  </xs:complexType>
+  <!-- M289: rimossa la definizione degli attributi non utilizzati
+             ("am.common", @approximate ed @encodinganalog);
+             l'elemento "quantity" risulta quindi un simpleType -->
+  <xs:simpleType name="quantity">
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
+  <!-- M315: rimossa la definizione degli attributi non utilizzati
+             ("am.common", "am.access.no.normal" ed @encodinganalog);
+             l'elemento "unittype" risulta quindi un simpleType -->
+  <xs:simpleType name="unittype">
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
   <xs:complexType name="repository">
     <xs:sequence>
       <xs:choice maxOccurs="unbounded">
@@ -1645,10 +1567,12 @@ M026: in &lt;origination>, eventuali figli &lt;corpname>, &lt;persname>, o &lt;f
       </xs:choice>
       <xs:element name="address" type="address" minOccurs="0"/>
     </xs:sequence>
-    <xs:attributeGroup ref="am.common"/>
-    <xs:attribute name="localtype" type="xs:token"/>
-    <xs:attribute name="label" type="xs:string"/>
-    <xs:attribute name="encodinganalog" type="xs:token"/>
+    <!-- M297: rimossa la definizione degli attributi non utilizzati
+               (@encodinganalog, @localtype e @label) e sostituita
+               l'inclusione di "am.common" con quella di "am.common.empty"
+               (per escludere @lang, @script, @altrender e @audience
+               (vedasi anche M234)) -->
+    <xs:attributeGroup ref="am.common.empty"/>
     <xs:assert xa:message="[&#x0a;&#x0a;
 M026: in &lt;repository>, eventuali figli &lt;corpname>, &lt;persname>, o &lt;famname>,&#x0a;
       devono obbligatioriamente avere @identifier
@@ -1658,31 +1582,24 @@ M026: in &lt;repository>, eventuali figli &lt;corpname>, &lt;persname>, o &lt;fa
             satisfies $elem/@identifier"/>
   </xs:complexType>
   <!-- M117: riscritto il tipo "unitdate" in forma semplificata -->
-  <xs:complexType name="unitdate" mixed="true">
-    <xs:attributeGroup ref="am.common"/>
-    <xs:attribute name="label" type="xs:string"/>
-    <xs:attributeGroup ref="a.unitdatetype"/>
-    <xs:attribute name="datechar" type="xs:token"/>
-    <xs:attribute name="certainty" type="xs:NMTOKEN"/>
-    <xs:attributeGroup ref="am.dates.era"/>
-    <xs:attributeGroup ref="am.dates.calendar"/>
-    <xs:attributeGroup ref="am.date.normal"/>
-    <xs:attribute name="encodinganalog" type="xs:token"/>
-  </xs:complexType>
+  <!-- M311: rimossa la definizione degli attributi non utilizzati
+             (tutti: "am.common", "a.unitdatetype", "am.dates.era",
+             "am.dates.calendar", "am.date.normale", @label, @datechar,
+             @certainty ed @encodinganalog);
+             l'elemento "unitdate" risulta quindi un simpleType -->
+  <xs:simpleType name="unitdate">
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
   <xs:complexType name="unitdatestructured">
     <xs:choice>
       <xs:element name="datesingle" type="datesingle"/>
       <xs:element name="daterange" type="daterange"/>
       <xs:element name="dateset" type="dateset"/>
     </xs:choice>
-    <xs:attributeGroup ref="am.common"/>
-    <xs:attribute name="label" type="xs:string"/>
-    <xs:attributeGroup ref="a.unitdatetype"/>
-    <xs:attribute name="datechar" type="xs:token"/>
+    <!-- M312: rimossa la definizione degli attributi non utilizzati
+               ("am.common", "a.unitdatetype", "am.dates.era",
+               "am.dates.calendar", @label, @datechar ed @encodinganalog) -->
     <xs:attribute name="certainty" type="xs:NMTOKEN"/>
-    <xs:attribute name="encodinganalog" type="xs:token"/>
-    <xs:attributeGroup ref="am.dates.era"/>
-    <xs:attributeGroup ref="am.dates.calendar"/>
   </xs:complexType>
   <!-- M120: riscritto il tipo "unittitle" in forma semplificata -->
   <xs:complexType name="unittitle" mixed="true">
@@ -1690,11 +1607,13 @@ M026: in &lt;repository>, eventuali figli &lt;corpname>, &lt;persname>, o &lt;fa
       <xs:element name="date" type="date"/>
       <xs:element name="genreform" type="genreform"/>
     </xs:choice>
-    <xs:attributeGroup ref="am.common"/>
+    <!-- M314: rimossa la definizione degli attributi non utilizzati
+               (@normal ed @encodinganalog) e sostituita l'inclusione
+               di "am.common" con quella di "am.common.lang" (per
+               escludere @script, @id, @altrender e @audience) -->
+    <xs:attributeGroup ref="am.common.lang"/>
     <xs:attribute name="label" type="xs:string"/>
-    <xs:attribute name="encodinganalog" type="xs:token"/>
     <xs:attribute name="localtype" type="xs:token"/>
-    <xs:attribute name="normal" type="xs:token"/>
     <xs:assert xa:message="[&#x0a;&#x0a;
 M023: in &lt;unittitle>, il contenuto di un eventuale @lang deve soddisfare lo&#x0a;
       standard ISO 639-2 (ovvero: deve essere costituito da tre caratteri&#x0a;
@@ -1704,13 +1623,12 @@ M023: in &lt;unittitle>, il contenuto di un eventuale @lang deve soddisfare lo&#
   </xs:complexType>
   <!-- M119: riscritto il tipo "unitid" in forma semplificata -->
   <xs:complexType name="unitid" mixed="true">
-    <xs:attributeGroup ref="am.common"/>
+    <!-- M313: rimossa la definizione degli attributi non utilizzati
+               ("am.common", "am.countrycode", @repositorycode
+               ed @encodinganalog) -->
     <xs:attribute name="localtype" type="xs:token"/>
     <xs:attribute name="label" type="xs:string"/>
-    <xs:attributeGroup ref="am.countrycode"/>
-    <xs:attribute name="repositorycode" type="xs:token"/>
     <xs:attribute name="identifier"/>
-    <xs:attribute name="encodinganalog" type="xs:token"/>
   </xs:complexType>
   <!-- archdesc notes -->
   <xs:complexType name="accessrestrict">
@@ -1719,9 +1637,8 @@ M023: in &lt;unittitle>, il contenuto di un eventuale @lang deve soddisfare lo&#
                  "blockquote", "chronlist", "list", "table") tranne "p" -->
       <xs:element name="p" type="p" maxOccurs="unbounded"/>
     </xs:sequence>
-    <xs:attributeGroup ref="am.common"/>
-    <xs:attribute name="encodinganalog" type="xs:token"/>
-    <xs:attribute name="localtype" type="xs:token"/>
+    <!-- M213: rimossa la definzione degli attributi (non utilizzati)
+               (tutti: "am.common", @localtype ed @encodinganalog) -->
   </xs:complexType>
   <!-- M140: rimosso il tipo "accruals" -->
   <!-- M141: rimosso il tipo "acqinfo" -->
@@ -1733,9 +1650,8 @@ M023: in &lt;unittitle>, il contenuto di un eventuale @lang deve soddisfare lo&#
                  "blockquote", "chronlist", "list", "table") tranne "p" -->
       <xs:element name="p" type="p" maxOccurs="unbounded"/>
     </xs:sequence>
-    <xs:attributeGroup ref="am.common"/>
-    <xs:attribute name="localtype" type="xs:token"/>
-    <xs:attribute name="encodinganalog" type="xs:token"/>
+    <!-- M222: rimossa la definzione degli attributi non utilizzati
+               (tutti: "am.common", @localtype ed @encodinganalog) -->
   </xs:complexType>
   <!-- M145: rimosso il tipo "bibliography" -->
   <!-- M147: rimosso il tipo "bioghist" -->
@@ -1746,9 +1662,8 @@ M023: in &lt;unittitle>, il contenuto di un eventuale @lang deve soddisfare lo&#
     <xs:choice maxOccurs="unbounded">
       <xs:group ref="m.access"/>
     </xs:choice>
-    <xs:attributeGroup ref="am.common"/>
-    <xs:attribute name="localtype" type="xs:token"/>
-    <xs:attribute name="encodinganalog" type="xs:token"/>
+    <!-- M228: rimossa la definizione degli attributi non utilizzati
+               (tutti: "am.common", @localtype ed @encodinganalog) -->
     <xs:assert xa:message="[&#x0a;&#x0a;
 M040: in &lt;controlaccess>, ogni &lt;subject> con @localtype pari a&#x0a;
       &quot;tematismoCollegato&quot; deve avere un figlio &lt;part> con contenuto non vuoto
@@ -1771,9 +1686,8 @@ M040: in &lt;controlaccess>, ogni &lt;subject> con @localtype pari a&#x0a;
                  "chronlist", "list", e "table" -->
       <xs:element name="p" type="p" maxOccurs="unbounded"/>
     </xs:sequence>
-    <xs:attributeGroup ref="am.common"/>
-    <xs:attribute name="localtype" type="xs:token"/>
-    <xs:attribute name="encodinganalog" type="xs:token"/>
+    <!-- M233: rimossa la definizione degli attributi non utilizzati
+               (tutti: "am.common", @localtype ed @encodinganalog) -->
   </xs:complexType>
   <xs:complexType name="fileplan">
     <xs:sequence>
@@ -1785,9 +1699,8 @@ M040: in &lt;controlaccess>, ogni &lt;subject> con @localtype pari a&#x0a;
         <xs:element name="p" type="p"/>
       </xs:choice>
     </xs:sequence>
-    <xs:attributeGroup ref="am.common"/>
-    <xs:attribute name="localtype" type="xs:token"/>
-    <xs:attribute name="encodinganalog" type="xs:token"/>
+    <!-- M254: rimossa la definizione degli attributi non utilizzati
+               (tutti: "am.common", @localtype ed @encodinganalog) -->
   </xs:complexType>
   <!-- M162: rimosso il tipo "index" -->
   <!-- M163: rimosso il tipo "indexentry" -->
@@ -1803,9 +1716,8 @@ M040: in &lt;controlaccess>, ogni &lt;subject> con @localtype pari a&#x0a;
                  "table" -->
       <xs:element name="archref" type="archref" maxOccurs="unbounded"/>
     </xs:sequence>
-    <xs:attributeGroup ref="am.common"/>
-    <xs:attribute name="localtype" type="xs:token"/>
-    <xs:attribute name="encodinganalog" type="xs:token"/>
+    <!-- M275: rimossa la definizione degli attributi non utilizzati
+               (tutti: "am.common", @localtype ed @encodinganalog) -->
   </xs:complexType>
   <!-- M180: rimosso il tipo "phystech" -->
   <!-- M181: rimosso il tipo "prefercite" -->
@@ -1815,9 +1727,9 @@ M040: in &lt;controlaccess>, ogni &lt;subject> con @localtype pari a&#x0a;
       <xs:element name="p" type="p"/>
       <xs:element name="processinfo" type="processinfo"/>
     </xs:choice>
-    <xs:attributeGroup ref="am.common"/>
+    <!-- M285: rimossa la definizione degli attributi non utilizzati
+               ("am.common" ed @encodinganalog) -->
     <xs:attribute name="localtype" type="xs:token"/>
-    <xs:attribute name="encodinganalog" type="xs:token"/>
   </xs:complexType>
   <xs:complexType name="relatedmaterial">
     <xs:sequence>
@@ -1825,9 +1737,8 @@ M040: in &lt;controlaccess>, ogni &lt;subject> con @localtype pari a&#x0a;
                  "blockquote", "list", "chronlist", e "table" -->
       <xs:element name="archref" type="archref" maxOccurs="unbounded"/>
     </xs:sequence>
-    <xs:attributeGroup ref="am.common"/>
-    <xs:attribute name="localtype" type="xs:token"/>
-    <xs:attribute name="encodinganalog" type="xs:token"/>
+    <!-- M293: rimossa la definizione degli attributi non utilizzati
+               (tutti: "am.common", @localtype ed @encodinganalog) -->
   </xs:complexType>
   <xs:complexType name="scopecontent">
     <xs:sequence>
@@ -1835,9 +1746,8 @@ M040: in &lt;controlaccess>, ogni &lt;subject> con @localtype pari a&#x0a;
                  "chronlist", e "table" -->
       <xs:element name="p" type="p" maxOccurs="unbounded"/>
     </xs:sequence>
-    <xs:attributeGroup ref="am.common"/>
-    <xs:attribute name="localtype" type="xs:token"/>
-    <xs:attribute name="encodinganalog" type="xs:token"/>
+    <!-- M299: rimossa la definizione degli attributi non utilizzati
+               (tutti: "am.common", @localtype ed @encodinganalog) -->
   </xs:complexType>
   <!-- M186: rimosso il tipo "separatedmaterial" -->
   <xs:complexType name="userestrict">
@@ -1846,50 +1756,48 @@ M040: in &lt;controlaccess>, ogni &lt;subject> con @localtype pari a&#x0a;
                  "chronlist", e "table" -->
       <xs:element name="p" type="p" maxOccurs="unbounded"/>
     </xs:sequence>
-    <xs:attributeGroup ref="am.common"/>
-    <xs:attribute name="encodinganalog" type="xs:token"/>
-    <xs:attribute name="localtype" type="xs:token"/>
+    <!-- M316: rimossa la definizione degli attributi non utilizzati
+               (tutti: "am.common", @localtype ed @encodinganalog) -->
   </xs:complexType>
   <!-- controlaccess elements -->
   <xs:complexType name="corpname">
     <xs:sequence>
       <xs:element name="part" type="part" maxOccurs="unbounded"/>
     </xs:sequence>
-    <xs:attributeGroup ref="am.common"/>
-    <xs:attributeGroup ref="am.access"/>
+    <!-- M232: rimossa la definizione degli attributi non utilizzati
+               ("am.common", @encodinganalog e @relator) e sostituita
+               l'inclusione di "am.access" con quella di "am.access.no.normal.base"
+               (vedasi M231) -->
+    <xs:attributeGroup ref="am.access.no.normal.base"/>
     <xs:attribute name="localtype" type="xs:token"/>
-    <xs:attribute name="encodinganalog" type="xs:token"/>
-    <xs:attribute name="relator" type="xs:token"/>
   </xs:complexType>
   <xs:complexType name="famname">
     <xs:sequence>
       <xs:element name="part" type="part" maxOccurs="unbounded"/>
     </xs:sequence>
-    <xs:attributeGroup ref="am.common"/>
-    <xs:attributeGroup ref="am.access"/>
-    <xs:attribute name="localtype" type="xs:token"/>
-    <xs:attribute name="encodinganalog" type="xs:token"/>
-    <xs:attribute name="relator" type="xs:token"/>
+    <!-- M252: rimossa la definizione degli attributi non utilizzati
+               ("am.common", @localtype, @encodinganalog e @relator) e sostituita
+               l'inclusione di "am.access" con quella di "am.access.no.normal.base"
+               (vedasi M231) -->
+    <xs:attributeGroup ref="am.access.no.normal.base"/>
   </xs:complexType>
   <xs:complexType name="function">
     <xs:sequence>
       <xs:element name="part" type="part" maxOccurs="unbounded"/>
     </xs:sequence>
-    <xs:attributeGroup ref="am.common"/>
-    <xs:attributeGroup ref="am.access"/>
-    <xs:attribute name="encodinganalog" type="xs:token"/>
-    <xs:attribute name="localtype" type="xs:token"/>
-    <xs:attribute name="relator" type="xs:token"/>
+    <!-- M256: rimossa la definizione degli attributi non utilizzati
+               ("am.common", "am.access", @localtype, @relator ed
+               @encodinganalog) -->
   </xs:complexType>
   <xs:complexType name="genreform">
     <xs:sequence>
       <xs:element name="part" type="part" maxOccurs="unbounded"/>
     </xs:sequence>
-    <xs:attributeGroup ref="am.common"/>
-    <xs:attributeGroup ref="am.access"/>
-    <xs:attribute name="encodinganalog" type="xs:token"/>
-    <xs:attribute name="localtype" type="xs:token"/>
-    <xs:attribute name="relator" type="xs:token"/>
+    <!-- M257: rimossa la definizione degli attributi non utilizzati
+               ("am.common", @localtype, @encodinganalog e @relator) e sostituita
+               l'inclusione di "am.access" con quella di "am.access.no.normal.base"
+               (vedasi M231) -->
+    <xs:attributeGroup ref="am.access.no.normal.base"/>
   </xs:complexType>
   <xs:complexType name="geogname">
     <xs:sequence>
@@ -1897,93 +1805,68 @@ M040: in &lt;controlaccess>, ogni &lt;subject> con @localtype pari a&#x0a;
       <xs:element name="geographiccoordinates" type="geographiccoordinates"
         minOccurs="0" maxOccurs="unbounded"/>
     </xs:sequence>
-    <xs:attributeGroup ref="am.common"/>
-    <xs:attributeGroup ref="am.access"/>
+    <!-- M258: rimossa la definizione degli attributi non utilizzati
+               ("am.common", "am.access", @encodinganalog e @relator) -->
     <xs:attribute name="localtype" type="xs:token"/>
-    <xs:attribute name="encodinganalog" type="xs:token"/>
-    <xs:attribute name="relator" type="xs:token"/>
   </xs:complexType>
   <xs:complexType name="geographiccoordinates" mixed="true">
-    <xs:attributeGroup ref="am.common"/>
+    <!-- M259: rimossa la definizione degli attributi non utilizzati
+               ("am.common") -->
     <xs:attribute name="coordinatesystem" use="required" type="xs:token"/>
   </xs:complexType>
   <xs:complexType name="name">
     <xs:sequence>
       <xs:element name="part" type="part" maxOccurs="unbounded"/>
     </xs:sequence>
-    <xs:attributeGroup ref="am.common"/>
-    <xs:attributeGroup ref="am.access"/>
-    <xs:attribute name="localtype" type="xs:token"/>
-    <xs:attribute name="encodinganalog" type="xs:token"/>
-    <xs:attribute name="relator" type="xs:token"/>
+    <!-- M271: rimossa la definizione degli attributi non utilizzati
+               (tutti: "am.common", "am.access", @localtype, @encodinganalog
+               e @relator) -->
   </xs:complexType>
   <xs:complexType name="occupation">
     <xs:sequence>
       <xs:element name="part" type="part" maxOccurs="unbounded"/>
     </xs:sequence>
-    <xs:attributeGroup ref="am.common"/>
-    <xs:attributeGroup ref="am.access"/>
-    <xs:attribute name="encodinganalog" type="xs:token"/>
-    <xs:attribute name="localtype" type="xs:token"/>
-    <xs:attribute name="relator" type="xs:token"/>
+    <!-- M273: rimossa la definizione degli attributi non utilizzati
+               (tutti: "am.common", "am.access", @localtype, @encodinganalog
+               e @relator) -->
   </xs:complexType>
   <xs:complexType name="persname">
     <xs:sequence>
       <xs:element name="part" type="part" maxOccurs="unbounded"/>
     </xs:sequence>
-    <xs:attributeGroup ref="am.common"/>
-    <xs:attributeGroup ref="am.access"/>
-    <xs:attribute name="localtype" type="xs:token"/>
-    <xs:attribute name="encodinganalog" type="xs:token"/>
-    <xs:attribute name="relator" type="xs:token"/>
+    <!-- M279: rimossa la definizione degli attributi non utilizzati
+               ("am.common", @localtype, @relator ed @encodinganalog) e
+               sostituita l'inclusione di "am.access" con quella di
+               "am.access.no.normal.base" (vedasi M231) -->
+    <xs:attributeGroup ref="am.access.no.normal.base"/>
   </xs:complexType>
   <xs:complexType name="subject">
     <xs:sequence>
       <xs:element name="part" type="part" maxOccurs="unbounded"/>
     </xs:sequence>
-    <xs:attributeGroup ref="am.common"/>
-    <xs:attributeGroup ref="am.access"/>
-    <xs:attribute name="encodinganalog" type="xs:token"/>
+    <!-- M304: rimossa la definizione degli attributi non utilizzati
+               ("am.common", @encodinganalog e @relator) e sostituita
+               l'inclusione di "am.access" con quella di "am.access.no.normal"
+               (per escludere @normal e @rules, vedasi anche M231) -->
+    <xs:attributeGroup ref="am.access.no.normal"/>
     <xs:attribute name="localtype" type="xs:token"/>
-    <xs:attribute name="relator" type="xs:token"/>
   </xs:complexType>
   <xs:complexType name="title">
     <xs:sequence>
       <xs:element name="part" type="part" maxOccurs="unbounded"/>
     </xs:sequence>
-    <xs:attributeGroup ref="am.common"/>
-    <xs:attribute name="localtype" type="xs:token"/>
-    <xs:attributeGroup ref="am.access"/>
-    <xs:attribute name="encodinganalog" type="xs:token"/>
-    <xs:attribute name="relator" type="xs:token"/>
-    <xs:attribute name="render">
-      <xs:simpleType>
-        <xs:restriction base="xs:token">
-          <xs:enumeration value="altrender"/>
-          <xs:enumeration value="bold"/>
-          <xs:enumeration value="bolddoublequote"/>
-          <xs:enumeration value="bolditalic"/>
-          <xs:enumeration value="boldsinglequote"/>
-          <xs:enumeration value="boldsmcaps"/>
-          <xs:enumeration value="boldunderline"/>
-          <xs:enumeration value="doublequote"/>
-          <xs:enumeration value="italic"/>
-          <xs:enumeration value="nonproport"/>
-          <xs:enumeration value="singlequote"/>
-          <xs:enumeration value="smcaps"/>
-          <xs:enumeration value="sub"/>
-          <xs:enumeration value="super"/>
-          <xs:enumeration value="underline"/>
-        </xs:restriction>
-      </xs:simpleType>
-    </xs:attribute>
+    <!-- M306: rimossa la definizione degli attributi non utilizzati
+               (tutti: "am.common", "am.access", @localtype,
+                @encodinganalog, @relator e @render) -->
   </xs:complexType>
   <!-- M101: riscritto il tipo "part" in forma semplificata -->
   <xs:complexType name="part" mixed="true">
-    <xs:attributeGroup ref="am.common"/>
-    <xs:attribute name="encodinganalog" type="xs:token"/>
+    <!-- M278: rimossa la definizione degli attributi non utilizzati
+               ("am.common" ed @encodinganalog) e sostituita l'inclusione
+               di "am.access" con quella di "am.access.no.normal.base"
+               (vedasi M231) -->
     <xs:attribute name="localtype" type="xs:token"/>
-    <xs:attributeGroup ref="am.access.no.normal"/>
+    <xs:attributeGroup ref="am.access.no.normal.base"/>
   </xs:complexType>
   <!-- BLOCKS -->
   <!-- p -->
@@ -1996,7 +1879,8 @@ M040: in &lt;controlaccess>, ogni &lt;subject> con @localtype pari a&#x0a;
       <xs:element name="ref" type="ref"/>
       <xs:element name="quote" type="quote"/>
     </xs:choice>
-    <xs:attributeGroup ref="am.common"/>
+    <!-- M277: rimossa la definizione degli attributi non utilizzati
+               (tutti: "am.common") -->
   </xs:complexType>
   <!-- blockquote -->
   <!-- M148: rimosso il tipo "blockquote" -->
@@ -2012,52 +1896,18 @@ M040: in &lt;controlaccess>, ogni &lt;subject> con @localtype pari a&#x0a;
                  ripetibile, il solo "item" -->
       <xs:element name="item" type="item" maxOccurs="unbounded"/>
     </xs:sequence>
-    <xs:attributeGroup ref="am.common"/>
-    <xs:attribute name="listtype">
-      <xs:simpleType>
-        <xs:restriction base="xs:token">
-          <xs:enumeration value="deflist"/>
-          <xs:enumeration value="unordered"/>
-          <xs:enumeration value="ordered"/>
-        </xs:restriction>
-      </xs:simpleType>
-    </xs:attribute>
-    <xs:attribute name="mark">
-      <xs:simpleType>
-        <xs:restriction base="xs:token">
-          <xs:enumeration value="disc"/>
-          <xs:enumeration value="circle"/>
-          <xs:enumeration value="square"/>
-          <xs:enumeration value="none"/>
-          <xs:enumeration value="inherit"/>
-        </xs:restriction>
-      </xs:simpleType>
-    </xs:attribute>
-    <xs:attribute name="numeration">
-      <xs:simpleType>
-        <xs:restriction base="xs:token">
-          <xs:enumeration value="decimal"/>
-          <xs:enumeration value="decimal-leading-zero"/>
-          <xs:enumeration value="lower-roman"/>
-          <xs:enumeration value="upper-roman"/>
-          <xs:enumeration value="lower-greek"/>
-          <xs:enumeration value="lower-latin"/>
-          <xs:enumeration value="upper-latin"/>
-          <xs:enumeration value="armenian"/>
-          <xs:enumeration value="georgian"/>
-          <xs:enumeration value="lower-alpha"/>
-          <xs:enumeration value="upper-alpha"/>
-          <xs:enumeration value="inherit"/>
-        </xs:restriction>
-      </xs:simpleType>
-    </xs:attribute>
+    <!-- M264: rimossa la definizione degli attributi non utilizzati
+               ("am.common", @listtype, @mark e @numeration) -->
   </xs:complexType>
   <!-- M170: rimosso il tipo "defitem" -->
   <!-- M172: rimosso il tipo "label" -->
   <!-- M173: riscritto il tipo "item" in forma semplificata -->
-  <xs:complexType name="item" mixed="true">
-    <xs:attributeGroup ref="am.common"/>
-  </xs:complexType>
+  <!-- M261: rimossa la definizione degli attributi non utilizzati
+             (tutti: "am.common") l'elemento "item" risulta quindi un
+             simpleType -->
+  <xs:simpleType name="item">
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
   <!-- M171: rimossi i tipi "listhead", "head01", "head02", e "head03" -->
   <!-- table -->
   <!-- M190: rimosso il tipo "table" -->
@@ -2069,32 +1919,29 @@ M040: in &lt;controlaccess>, ogni &lt;subject> con @localtype pari a&#x0a;
   <!-- M193: rimosso il tipo "thead" -->
   <!-- language blocks -->
   <xs:complexType name="language" mixed="true">
-    <xs:attributeGroup ref="am.common"/>
-    <xs:attribute name="encodinganalog" type="xs:token"/>
-    <xs:attribute name="label" type="xs:string"/>
+    <!-- M262: rimossa la definizione degli attributi non utilizzati
+               ("am.common", @encodinganalog e @label) -->
     <xs:attribute name="langcode" type="xs:NMTOKEN"/>
   </xs:complexType>
   <!-- M165: rimosso il tipo "languageset" -->
   <xs:complexType name="script" mixed="true">
-    <xs:attributeGroup ref="am.common"/>
-    <xs:attribute name="encodinganalog" type="xs:token"/>
-    <xs:attribute name="label" type="xs:string"/>
+    <!-- M300: rimossa la definizione degli attributi non utilizzati
+               ("am.common", @encodinganalog e @label) -->
     <xs:attribute name="scriptcode" type="xs:NMTOKEN"/>
   </xs:complexType>
   <!-- physdescstructured blocks -->
   <xs:complexType name="dimensions" mixed="true">
     <!-- M114: rimossi "dimensions", il gruppo "m.mixed.basic.element" e il
                choice che li conteneva -->
-    <xs:attributeGroup ref="am.common"/>
-    <xs:attribute name="encodinganalog" type="xs:token"/>
+    <!-- M244: rimossa la definizione degli attributi non utilizzati
+               ("am.common" ed @encodinganalog) -->
     <xs:attribute name="localtype" type="xs:token"/>
     <xs:attribute name="unit" type="xs:token"/>
   </xs:complexType>
   <!-- M115: riscritto il tipo "physfacet" in forma semplificata -->
   <xs:complexType name="physfacet" mixed="true">
-    <xs:attributeGroup ref="am.common"/>
-    <xs:attribute name="encodinganalog" type="xs:token"/>
-    <xs:attributeGroup ref="am.access.no.normal"/>
+    <!-- M283: rimossa la definizione degli attributi non utilizzati
+               ("am.common", "am.access.no.normal" ed @encodinganalog) -->
     <xs:attribute name="localtype" type="xs:token"/>
   </xs:complexType>
   <!-- other blocks -->
@@ -2102,28 +1949,31 @@ M040: in &lt;controlaccess>, ogni &lt;subject> con @localtype pari a&#x0a;
     <xs:sequence>
       <xs:element name="addressline" type="addressline" maxOccurs="unbounded"/>
     </xs:sequence>
-    <xs:attributeGroup ref="am.common"/>
+    <!-- M214: rimossa la definzione degli attributi non utilizzati
+               (tutti: "am.common") -->
   </xs:complexType>
   <!-- M098: riscritto il tipo "addressline" in forma semplificata -->
-  <xs:complexType name="addressline" mixed="true">
-    <xs:attributeGroup ref="am.common"/>
-    <xs:attribute name="localtype" type="xs:token"/>
-  </xs:complexType>
-  <!-- M130 -->
+  <!-- M215: rimossa la definizione degli attributi non utilizzati
+             (tutti: "am.common" e @localtype);
+             l'elemento "addressline" risulta quindi un simpleType -->
+  <xs:simpleType name="addressline">
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
+  <!-- M130: riscritto il tipo "archref" in forma semplificata -->
   <xs:complexType name="archref" mixed="true">
     <xs:sequence>
       <xs:element name="ref" type="ref" minOccurs="0" maxOccurs="unbounded"/>
     </xs:sequence>
-    <xs:attributeGroup ref="am.common"/>
-    <xs:attribute name="encodinganalog" type="xs:token"/>
+    <!-- M221: rimossa la definzione degli attributi non utilizzati
+               (tutti: "am.common" ed @encodinganalog) -->
   </xs:complexType>
   <!-- M146: rimosso il tipo "bibref" -->
   <xs:complexType name="descriptivenote">
     <xs:sequence>
       <xs:element name="p" type="p" maxOccurs="unbounded"/>
     </xs:sequence>
-    <xs:attributeGroup ref="am.common"/>
-    <xs:attribute name="encodinganalog" type="xs:token"/>
+    <!-- M242: rimossa la definizione degli attributi non utilizzati
+               (tutti: "am.common" ed @encodinganalog) -->
   </xs:complexType>
   <!-- M160: rimosso il tipo "footnote" -->
   <!-- M128: riscritto il tipo "head" in forma semplificata -->
@@ -2132,14 +1982,15 @@ M040: in &lt;controlaccess>, ogni &lt;subject> con @localtype pari a&#x0a;
       <xs:element name="ptr" type="ptr"/>
       <xs:element name="ref" type="ref"/>
     </xs:choice>
-    <xs:attributeGroup ref="am.common"/>
-    <xs:attribute name="althead" type="xs:token"/>
+    <!-- M260: rimossa la definizione degli attributi non utilizzati
+               ("am.common" e @althead) -->
   </xs:complexType>
   <!-- DATES -->
   <xs:complexType name="datesingle">
     <xs:complexContent>
       <xs:extension base="m.datesingle">
-        <xs:attributeGroup ref="am.common"/>
+        <!-- M241: rimossa la definizione degli attributi non utilizzati
+                   ("am.common") -->
         <xs:attribute name="localtype" type="xs:token"/>
         <xs:assert xa:message="[&#x0a;&#x0a;
 M209: in &lt;datesingle>, @standarddate deve essere o nella forma &quot;AAAA-MM-GG&quot;, o&#x0a;
@@ -2157,14 +2008,14 @@ M209: in &lt;datesingle>, @standarddate deve essere o nella forma &quot;AAAA-MM-
       <xs:element name="fromdate" type="fromdate" minOccurs="0"/>
       <xs:element name="todate" type="todate" minOccurs="0"/>
     </xs:sequence>
-    <xs:attributeGroup ref="am.common"/>
-    <xs:attribute name="localtype" type="xs:token"/>
+    <!-- M239: rimossa la definizione degli attributi non utilizzati
+               (tutti: "am.common" e @localtype) -->
   </xs:complexType>
   <xs:complexType name="fromdate">
     <xs:complexContent>
       <xs:extension base="m.datesingle">
-        <xs:attributeGroup ref="am.common"/>
-        <xs:attribute name="localtype" type="xs:token"/>
+        <!-- M255: rimossa la definizione degli attributi non utilizzati
+                   ("am.common" e @localtype) -->
         <xs:assert xa:message="[&#x0a;&#x0a;
 M210: in &lt;fromdate>, @standarddate deve essere o nella forma &quot;AAAA-MM-GG&quot;, o&#x0a;
       &quot;AAAAMMGG&quot;, o &quot;AAAA-MM&quot;, o &quot;AAAAMM&quot;, o &quot;AAAA&quot;; è accettato anche il&#x0a;
@@ -2182,8 +2033,8 @@ M210: in &lt;fromdate>, @standarddate deve essere o nella forma &quot;AAAA-MM-GG
   <xs:complexType name="todate">
     <xs:complexContent>
       <xs:extension base="m.datesingle">
-        <xs:attributeGroup ref="am.common"/>
-        <xs:attribute name="localtype" type="xs:token"/>
+        <!-- M310: rimossa la definizione degli attributi non utilizzati
+                   ("am.common" e @localtype) -->
         <xs:assert xa:message="[&#x0a;&#x0a;
 M211: in &lt;todate>, @standarddate deve essere o nella forma &quot;AAAA-MM-GG&quot;, o&#x0a;
       &quot;AAAAMMGG&quot;, o &quot;AAAA-MM&quot;, o &quot;AAAAMM&quot;, o &quot;AAAA&quot;; è accettato anche il&#x0a;
@@ -2209,20 +2060,19 @@ M211: in &lt;todate>, @standarddate deve essere o nella forma &quot;AAAA-MM-GG&q
         <xs:element name="daterange" type="daterange"/>
       </xs:choice>
     </xs:sequence>
-    <xs:attributeGroup ref="am.common"/>
-    <xs:attribute name="localtype" type="xs:token"/>
+    <!-- M240: rimossa la definizione degli attributi non utilizzati
+               (tutti: "am.common" e @localtype) -->
   </xs:complexType>
   <!-- MIXED CONTENT -->
   <!-- M139: rimosso il tipo "abbr" -->
   <!-- M097: riscritto il tipo "date" in forma semplificata -->
   <xs:complexType name="date" mixed="true">
-    <xs:attributeGroup ref="am.common"/>
+    <!-- M238: rimossa la definizione degli attributi non utilizzati
+               ("am.common", "am.dates.era", "am.dates.calendar" ed
+               @encodinganalog) -->
     <xs:attribute name="localtype" type="xs:token"/>
-    <xs:attributeGroup ref="am.dates.era"/>
-    <xs:attributeGroup ref="am.dates.calendar"/>
     <xs:attributeGroup ref="am.date.normal"/>
     <xs:attribute name="certainty" type="xs:NMTOKEN"/>
-    <xs:attribute name="encodinganalog" type="xs:token"/>
   </xs:complexType>
   <!-- M156: rimosso il tipo "emph" -->
   <!-- M159: rimosso il tipo "expan" -->
@@ -2231,41 +2081,25 @@ M211: in &lt;todate>, @standarddate deve essere o nella forma &quot;AAAA-MM-GG&q
   <!-- M175: rimosso il tipo "num" -->
   <!-- M183: riscritto il tipo "quote" in forma semplificata -->
   <xs:complexType name="quote" mixed="true">
-    <xs:attributeGroup ref="am.common"/>
+    <!-- M290: rimossa la definizione degli attributi non utilizzati
+               ("am.common" e @render) -->
     <xs:attribute name="localtype" type="xs:token"/>
-    <xs:attribute name="render">
-      <xs:simpleType>
-        <xs:restriction base="xs:token">
-          <xs:enumeration value="altrender"/>
-          <xs:enumeration value="bold"/>
-          <xs:enumeration value="bolddoublequote"/>
-          <xs:enumeration value="bolditalic"/>
-          <xs:enumeration value="boldsinglequote"/>
-          <xs:enumeration value="boldsmcaps"/>
-          <xs:enumeration value="boldunderline"/>
-          <xs:enumeration value="doublequote"/>
-          <xs:enumeration value="italic"/>
-          <xs:enumeration value="nonproport"/>
-          <xs:enumeration value="singlequote"/>
-          <xs:enumeration value="smcaps"/>
-          <xs:enumeration value="sub"/>
-          <xs:enumeration value="super"/>
-          <xs:enumeration value="underline"/>
-        </xs:restriction>
-      </xs:simpleType>
-    </xs:attribute>
   </xs:complexType>
-  <xs:complexType name="ptr">
-    <xs:attributeGroup ref="am.common.empty"/>
-    <xs:attributeGroup ref="am.internal.ptr"/>
-    <xs:attribute name="entityref" type="xs:ENTITY"/>
-  </xs:complexType>
+  <!-- M353: rimossa la definizione degli attributi non utilizzati
+             (tutti: "am.common.empty", "am.internal.ptr" ed @entityref);
+             l'elemento "ptr" risulta quindi un simpleType -->
+  <xs:simpleType name="ptr">
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
   <xs:complexType name="ref" mixed="true">
     <!-- M094: nessuno degli elementi figli di "ref" e' utilizzato; cancellato
                l'intero choice relativo -->
-    <xs:attributeGroup ref="am.common"/>
-    <xs:attributeGroup ref="am.internal.ptr"/>
-    <xs:attribute name="entityref" type="xs:ENTITY"/>
+    <!-- M292: sostituita l'inclusione di "am.internal.ptr" con
+               "am.simplelink.base" (vedasi M235) - per escludere @target,
+               @xpointer, @linkrole, @arcrole, @linktitle, @show e @actuate -
+               e rimossa la definizione degli altri attributi non utilizzati
+               ("am.common" ed @entityref) -->
+    <xs:attributeGroup ref="am.simplelink.base"/>
   </xs:complexType>
   <!-- DSC -->
   <xs:complexType name="dsc">
@@ -2279,19 +2113,8 @@ M211: in &lt;todate>, @standarddate deve essere o nella forma &quot;AAAA-MM-GG&q
         <xs:alternative type="c.comp"/>
       </xs:element>
     </xs:sequence>
-    <xs:attributeGroup ref="am.common"/>
-    <xs:attribute name="dsctype">
-      <xs:simpleType>
-        <xs:restriction base="xs:token">
-          <xs:enumeration value="analyticover"/>
-          <xs:enumeration value="combined"/>
-          <xs:enumeration value="in-depth"/>
-          <xs:enumeration value="otherdsctype"/>
-        </xs:restriction>
-      </xs:simpleType>
-    </xs:attribute>
-    <xs:attribute name="otherdsctype" type="xs:token"/>
-    <xs:attribute name="encodinganalog" type="xs:token"/>
+    <!-- M245: rimossa la definizione degli attributi non utilizzati
+               ("am.common", @dsctype, @otherdsctype ed @encodinganalog) -->
   </xs:complexType>
   <!-- M002: rimosso il tipo "c" -->
   <!-- M149: rimossi i tipi "c01", "c02", "c03", "c04", "c05", "c06", "c07",
@@ -2301,10 +2124,8 @@ M211: in &lt;todate>, @standarddate deve essere o nella forma &quot;AAAA-MM-GG&q
     <xs:sequence>
       <xs:element name="relation" type="relation" maxOccurs="unbounded"/>
     </xs:sequence>
-    <xs:attributeGroup ref="am.common"/>
-    <xs:attribute name="encodinganalog" type="xs:token"/>
-    <xs:attribute name="localtype" type="xs:token"/>
-    <xs:attribute name="base" type="xs:anyURI"/>
+    <!-- M296: rimossa la definizione degli attributi non utilizzati
+               (tutti: "am.common", @encodinganalog, @localtype e @base) -->
   </xs:complexType>
   <xs:complexType name="relation">
     <xs:sequence>
@@ -2312,8 +2133,11 @@ M211: in &lt;todate>, @standarddate deve essere o nella forma &quot;AAAA-MM-GG&q
                  "dateset", "geogname", e "descriptivenote" -->
       <xs:element name="relationentry" type="relationentry" minOccurs="0" maxOccurs="unbounded"/>
     </xs:sequence>
-    <xs:attributeGroup ref="am.common"/>
-    <xs:attribute name="encodinganalog" type="xs:token"/>
+    <!-- M294: sostituita l'inclusione di "am.simplelink" con
+               "am.simplelink.base" (vedasi M235) - per escludere @linkrole,
+               @arcrole, @linktitle, @show e @actuate - e rimossa la
+               definizione degli altri attributi non utilizzati ("am.common",
+               @lastdatetimeverified ed @entityref) -->
     <xs:attribute name="relationtype" use="required">
       <xs:simpleType>
         <xs:restriction base="xs:token">
@@ -2325,33 +2149,7 @@ M211: in &lt;todate>, @standarddate deve essere o nella forma &quot;AAAA-MM-GG&q
       </xs:simpleType>
     </xs:attribute>
     <xs:attribute name="otherrelationtype" type="xs:token"/>
-    <xs:attribute name="lastdatetimeverified">
-      <xs:simpleType>
-        <xs:union>
-          <xs:simpleType>
-            <xs:restriction base="xs:date">
-              <xs:maxInclusive value="2099-12-31"/>
-            </xs:restriction>
-          </xs:simpleType>
-          <xs:simpleType>
-            <xs:restriction base="xs:gYear">
-              <xs:maxInclusive value="2099"/>
-            </xs:restriction>
-          </xs:simpleType>
-          <xs:simpleType>
-            <xs:restriction base="xs:gYearMonth">
-              <xs:maxInclusive value="2099-12"/>
-            </xs:restriction>
-          </xs:simpleType>
-          <xs:simpleType>
-            <xs:restriction base="xs:dateTime">
-              <xs:maxInclusive value="2099-12-31T23:59:59"/>
-            </xs:restriction>
-          </xs:simpleType>
-        </xs:union>
-      </xs:simpleType>
-    </xs:attribute>
-    <xs:attributeGroup ref="am.simplelink"/>
+    <xs:attributeGroup ref="am.simplelink.base"/>
     <xs:assert xa:message="[&#x0a;&#x0a;
 M029: in &lt;relation>, nel caso @otherrelationtype sia presente, il suo valore&#x0a;
       deve essere compreso in una ben precisa lista chiusa di valori&#x0a;
@@ -2399,10 +2197,9 @@ M028: in &lt;relation>, se @relationtype è pari a &quot;resourcerelation&quot;,
     <!-- M027: annullato -->      
   </xs:complexType>
   <xs:complexType name="relationentry" mixed="true">
-    <xs:attributeGroup ref="am.common"/>
-    <xs:attribute name="encodinganalog" type="xs:token"/>
+    <!-- M295: rimossa la definizione degli attributi non utilizzati
+               ("am.common", @encodinganalog e @transliteration) -->
     <xs:attribute name="localtype" type="xs:token"/>
-    <xs:attribute name="transliteration" type="xs:NMTOKEN"/>
   </xs:complexType>
   <!-- M176: rimosso il tipo "objectsxmlwrap" -->
   <!-- M194: rimosso il tipo "e.anyname" -->
@@ -2426,16 +2223,14 @@ M028: in &lt;relation>, se @relationtype è pari a &quot;resourcerelation&quot;,
       <xs:element name="title" type="title"/>
     </xs:choice>
   </xs:group>
-  <!-- M118 -->
+  <!-- M118: dal momento che nessuno degli elementi che include
+             "m.datesingle" ne utilizza gli elementi inclusi tramite
+             "m.mixed.basic" (ovvero "abbr", "emph", "expan", "foreign",
+             "lb", "ptr", "ref"), riscritto "m.datesingle", in maniera
+             semplificata come gruppo di soli attributi ed eliminando
+             la dipendenza da "m.mixed.basic" -->
   <xs:complexType name="m.datesingle" mixed="true">
-    <!-- M025: modificato @standarddate per accettare solamente date in
-               formato AAAA-MM-GG (con trattini facoltativi) o AAAA-MM
-               (con trattino facoltativo) oppure AAAA -->
-    <xs:attribute name="standarddate">
-      <xs:simpleType>
-        <xs:restriction base="xs:token"/>
-      </xs:simpleType>
-    </xs:attribute>
+    <xs:attribute name="standarddate" type="xs:token"/>
     <xs:attribute name="notbefore" type="xs:token"/>
     <xs:attribute name="notafter" type="xs:token"/>
   </xs:complexType>
@@ -2451,7 +2246,9 @@ M028: in &lt;relation>, se @relationtype è pari a &quot;resourcerelation&quot;,
       <xs:element name="custodhist" type="custodhist"/>
       <xs:element name="fileplan" type="fileplan"/>
       <xs:element name="otherfindaid" type="otherfindaid"/>
-      <!-- M039 -->
+      <!-- M039: utilizzata "processinfo.compilatori", variante di "processinfo",
+                 per quando @localtype vale "compilatori" (vedasi anche M037 per
+                 la variante "processinfo.compilatore") -->
       <xs:element name="processinfo">
         <xs:alternative type="processinfo.compilatori" test="@localtype = 'compilatori'"/>
         <xs:alternative type="processinfo"/>
@@ -2491,62 +2288,51 @@ M028: in &lt;relation>, se @relationtype è pari a &quot;resourcerelation&quot;,
   <!-- M198: rimosso il tipo "m.mixed.basic.plus.access" -->
   <!-- M199: rimosso il tipo "m.para.content" -->
   <!-- ATTRIBUTE MODELS -->
-  <xs:attributeGroup name="am.internal.ptr">
-    <xs:attribute name="target" type="xs:IDREF"/>
-    <xs:attribute name="xpointer" type="xs:token"/>
+  <!-- M354: rimosso il tipo "am.internal.ptr" -->
+  <!-- M235: creato "am.simplelink.dao" con @linktitle
+             e l'inclusione di "am.simplelink" -->
+  <xs:attributeGroup name="am.simplelink.dao">
+    <xs:attribute name="linktitle" type="xs:token"/>
     <xs:attributeGroup ref="am.simplelink"/>
   </xs:attributeGroup>
   <xs:attributeGroup name="am.simplelink">
-    <xs:attribute name="href" type="xs:token"/>
+    <!-- M235: rimossi gli attributi non utilizzati (@arcrole, @show e
+               @actuate), rimosso @linktitle (trasferito in
+               "am.simplelink.dao") e sostituita la definizione di @href
+               con l'inclusione di "am.simplelink.base" dove la definizione
+               di @href e' stata trasferita -->
     <xs:attribute name="linkrole" type="xs:anyURI"/>
-    <xs:attribute name="arcrole" type="xs:anyURI"/>
-    <xs:attribute name="linktitle" type="xs:token"/>
-    <xs:attribute name="show">
-      <xs:simpleType>
-        <xs:restriction base="xs:token">
-          <xs:enumeration value="new"/>
-          <xs:enumeration value="replace"/>
-          <xs:enumeration value="embed"/>
-          <xs:enumeration value="other"/>
-          <xs:enumeration value="none"/>
-        </xs:restriction>
-      </xs:simpleType>
-    </xs:attribute>
-    <xs:attribute name="actuate">
-      <xs:simpleType>
-        <xs:restriction base="xs:token">
-          <xs:enumeration value="onload"/>
-          <xs:enumeration value="onrequest"/>
-          <xs:enumeration value="other"/>
-          <xs:enumeration value="none"/>
-        </xs:restriction>
-      </xs:simpleType>
-    </xs:attribute>
+    <xs:attributeGroup ref="am.simplelink.base"/>
+  </xs:attributeGroup>
+  <!-- M235: creato "am.simplelink.base" col solo @href -->
+  <xs:attributeGroup name="am.simplelink.base">
+    <xs:attribute name="href" type="xs:token"/>
   </xs:attributeGroup>
   <xs:attributeGroup name="am.common.empty">
+    <!-- M234: rimossa la definizione degli attributi non utilizzati
+               da nessuno degli elementi che fanno uso di "am.common.empty"
+               (ovvero @altrender e @audience) -->
     <xs:attribute name="id" type="xs:ID"/>
-    <xs:attribute name="altrender" type="xs:token"/>
-    <xs:attribute name="audience">
-      <xs:simpleType>
-        <xs:restriction base="xs:token">
-          <xs:enumeration value="external"/>
-          <xs:enumeration value="internal"/>
-        </xs:restriction>
-      </xs:simpleType>
-    </xs:attribute>
   </xs:attributeGroup>
-  <xs:attributeGroup name="am.common">
-    <xs:attributeGroup ref="am.common.empty"/>
+  <!-- M317: rimosso "am.common" -->
+  <!-- M307: creato il gruppo "am.common.lang" che definisce @lang, l'unico
+             attributo che risulta utilizzato tra quelli definiti direttamente
+             in "am.common", esattamente come definito nello stesso
+             "am.common" -->
+  <xs:attributeGroup name="am.common.lang">
     <xs:attribute name="lang" type="xs:NMTOKEN"/>
-    <xs:attribute name="script" type="xs:NMTOKEN"/>
   </xs:attributeGroup>
   <xs:attributeGroup name="am.desc.base">
+    <!-- M219: rimossa la definizione degli attributi non utilizzati
+               da nessuno degli elementi che fanno uso di "am.desc.base"
+               (ovvero @encodinganalog) -->
     <xs:attribute name="otherlevel" type="xs:token"/>
-    <xs:attribute name="encodinganalog" type="xs:token"/>
   </xs:attributeGroup>
   <xs:attributeGroup name="am.desc.c">
-    <xs:attributeGroup ref="am.common"/>
-    <xs:attribute name="base" type="xs:anyURI"/>
+    <!-- M224: rimossa la definizione degli attributi non utilizzati
+               da nessuno degli elementi che fanno uso di "am.desc.c"
+               (ovvero "am.common" e @base; vedasi anche M219 per la
+               modifica ad "am.desc.base") -->
     <xs:attribute name="level">
       <xs:simpleType>
         <xs:restriction base="xs:token">
@@ -2566,175 +2352,49 @@ M028: in &lt;relation>, se @relationtype è pari a &quot;resourcerelation&quot;,
     </xs:attribute>
     <xs:attributeGroup ref="am.desc.base"/>
   </xs:attributeGroup>
-  <xs:attributeGroup name="am.access">
-    <xs:attributeGroup ref="am.access.no.normal"/>
-    <xs:attribute name="normal" type="xs:token"/>
-  </xs:attributeGroup>
+  <!-- M318: rimosso "am.access" -->
   <xs:attributeGroup name="am.access.no.normal">
+    <!-- M231: cancellato @rules e sostituito @identifier con
+               l'inclusione di "am.access.no.normal.base" -->
     <xs:attribute name="source" type="xs:token"/>
-    <xs:attribute name="rules" type="xs:NMTOKEN"/>
+    <xs:attributeGroup ref="am.access.no.normal.base"/>
+  </xs:attributeGroup>
+  <!-- M231: creato "am.access.no.normal.base" col solo @identifier -->
+  <xs:attributeGroup name="am.access.no.normal.base">
     <xs:attribute name="identifier" type="xs:token"/>
   </xs:attributeGroup>
   <!-- ATTRIBUTE DEFINITIONS -->
   <!-- xlink-modelled attributes -->
-  <xs:attributeGroup name="a.link.actuate">
-    <xs:attribute name="actuate" use="required">
-      <xs:simpleType>
-        <xs:restriction base="xs:token">
-          <xs:enumeration value="onload"/>
-          <xs:enumeration value="onrequest"/>
-          <xs:enumeration value="other"/>
-          <xs:enumeration value="none"/>
-        </xs:restriction>
-      </xs:simpleType>
-    </xs:attribute>
-  </xs:attributeGroup>
-  <xs:attributeGroup name="a.link.arcrole">
-    <xs:attribute name="arcrole" use="required" type="xs:anyURI"/>
-  </xs:attributeGroup>
-  <xs:attributeGroup name="a.link.href">
-    <xs:attribute name="href" use="required" type="xs:token"/>
-  </xs:attributeGroup>
-  <xs:attributeGroup name="a.link.role">
-    <xs:attribute name="linkrole" use="required" type="xs:anyURI"/>
-  </xs:attributeGroup>
-  <xs:attributeGroup name="a.link.show">
-    <xs:attribute name="show" use="required">
-      <xs:simpleType>
-        <xs:restriction base="xs:token">
-          <xs:enumeration value="new"/>
-          <xs:enumeration value="replace"/>
-          <xs:enumeration value="embed"/>
-          <xs:enumeration value="other"/>
-          <xs:enumeration value="none"/>
-        </xs:restriction>
-      </xs:simpleType>
-    </xs:attribute>
-  </xs:attributeGroup>
-  <xs:attributeGroup name="a.link.title">
-    <xs:attribute name="linktitle" use="required" type="xs:token"/>
-  </xs:attributeGroup>
+  <!-- M319: rimosso "a.link.actuate" -->
+  <!-- M320: rimosso "a.link.arcrole" -->
+  <!-- M321: rimosso "a.link.href" -->
+  <!-- M322: rimosso "a.link.role" -->
+  <!-- M323: rimosso "a.link.show" -->
+  <!-- M324: rimosso "a.link.title" -->
   <!-- other linking-related attributes -->
-  <xs:attributeGroup name="a.base">
-    <xs:attribute name="base" use="required" type="xs:anyURI"/>
-  </xs:attributeGroup>
-  <xs:attributeGroup name="a.identifier">
-    <xs:attribute name="identifier" use="required" type="xs:token"/>
-  </xs:attributeGroup>
-  <xs:attributeGroup name="a.parent">
-    <xs:attribute name="parent" use="required" type="xs:IDREFS"/>
-  </xs:attributeGroup>
-  <xs:attributeGroup name="a.relator">
-    <xs:attribute name="relator" use="required" type="xs:token"/>
-  </xs:attributeGroup>
-  <xs:attributeGroup name="a.link.xpointer">
-    <xs:attribute name="xpointer" use="required" type="xs:token"/>
-  </xs:attributeGroup>
-  <xs:attributeGroup name="a.entityref">
-    <xs:attribute name="entityref" use="required" type="xs:ENTITY"/>
-  </xs:attributeGroup>
+  <!-- M325: rimosso "a.base" -->
+  <!-- M326: rimosso "a.identifier" -->
+  <!-- M327: rimosso "a.parent" -->
+  <!-- M328: rimosso "a.relator" -->
+  <!-- M329: rimosso "a.link.xpointer" -->
+  <!-- M330: rimosso "a.entityref" -->
   <!-- display attributes -->
-  <xs:attributeGroup name="a.align">
-    <xs:attribute name="align" use="required">
-      <xs:simpleType>
-        <xs:restriction base="xs:token">
-          <xs:enumeration value="left"/>
-          <xs:enumeration value="right"/>
-          <xs:enumeration value="center"/>
-          <xs:enumeration value="justify"/>
-          <xs:enumeration value="char"/>
-        </xs:restriction>
-      </xs:simpleType>
-    </xs:attribute>
-  </xs:attributeGroup>
-  <xs:attributeGroup name="a.valign">
-    <xs:attribute name="valign" use="required">
-      <xs:simpleType>
-        <xs:restriction base="xs:token">
-          <xs:enumeration value="top"/>
-          <xs:enumeration value="middle"/>
-          <xs:enumeration value="bottom"/>
-        </xs:restriction>
-      </xs:simpleType>
-    </xs:attribute>
-  </xs:attributeGroup>
-  <xs:attributeGroup name="a.render">
-    <xs:attribute name="render" use="required">
-      <xs:simpleType>
-        <xs:restriction base="xs:token">
-          <xs:enumeration value="altrender"/>
-          <xs:enumeration value="bold"/>
-          <xs:enumeration value="bolddoublequote"/>
-          <xs:enumeration value="bolditalic"/>
-          <xs:enumeration value="boldsinglequote"/>
-          <xs:enumeration value="boldsmcaps"/>
-          <xs:enumeration value="boldunderline"/>
-          <xs:enumeration value="doublequote"/>
-          <xs:enumeration value="italic"/>
-          <xs:enumeration value="nonproport"/>
-          <xs:enumeration value="singlequote"/>
-          <xs:enumeration value="smcaps"/>
-          <xs:enumeration value="sub"/>
-          <xs:enumeration value="super"/>
-          <xs:enumeration value="underline"/>
-        </xs:restriction>
-      </xs:simpleType>
-    </xs:attribute>
-  </xs:attributeGroup>
-  <xs:attributeGroup name="a.label">
-    <xs:attribute name="label" use="required" type="xs:string"/>
-  </xs:attributeGroup>
+  <!-- M331: rimosso "a.align" -->
+  <!-- M332: rimosso "a.valign" -->
+  <!-- M333: rimosso "a.render" -->
+  <!-- M334: rimosso "a.label" -->
   <!-- date attributes -->
-  <xs:attributeGroup name="am.dates.calendar">
-    <xs:attribute name="calendar" type="xs:NMTOKEN"/>
-  </xs:attributeGroup>
-  <xs:attributeGroup name="am.dates.era">
-    <xs:attribute name="era" type="xs:NMTOKEN"/>
-  </xs:attributeGroup>
+  <!-- M335: rimosso "am.dates.calendar" -->
+  <!-- M336: rimosso "am.dates.era" -->
   <xs:attributeGroup name="am.date.normal">
     <xs:attribute name="normal" type="xs:token"/>
   </xs:attributeGroup>
-  <xs:attributeGroup name="a.lastdatetimeverified">
-    <xs:attribute name="lastdatetimeverified" use="required">
-      <xs:simpleType>
-        <xs:union>
-          <xs:simpleType>
-            <xs:restriction base="xs:date">
-              <xs:maxInclusive value="2099-12-31"/>
-            </xs:restriction>
-          </xs:simpleType>
-          <xs:simpleType>
-            <xs:restriction base="xs:gYear">
-              <xs:maxInclusive value="2099"/>
-            </xs:restriction>
-          </xs:simpleType>
-          <xs:simpleType>
-            <xs:restriction base="xs:gYearMonth">
-              <xs:maxInclusive value="2099-12"/>
-            </xs:restriction>
-          </xs:simpleType>
-          <xs:simpleType>
-            <xs:restriction base="xs:dateTime">
-              <xs:maxInclusive value="2099-12-31T23:59:59"/>
-            </xs:restriction>
-          </xs:simpleType>
-        </xs:union>
-      </xs:simpleType>
-    </xs:attribute>
-  </xs:attributeGroup>
-  <xs:attributeGroup name="a.datechar">
-    <xs:attribute name="datechar" use="required" type="xs:token"/>
-  </xs:attributeGroup>
-  <xs:attributeGroup name="a.certainty">
-    <xs:attribute name="certainty" use="required" type="xs:NMTOKEN"/>
-  </xs:attributeGroup>
-  <xs:attributeGroup name="a.normal">
-    <xs:attribute name="normal" use="required" type="xs:token"/>
-  </xs:attributeGroup>
+  <!-- M337: rimosso "a.lastdatetimeverified" -->
+  <!-- M338: rimosso "a.datechar" -->
+  <!-- M339: rimosso "a.certainty" -->
+  <!-- M340: rimosso "a.normal" -->
   <!-- typing attributes -->
-  <xs:attributeGroup name="a.encodinganalog">
-    <xs:attribute name="encodinganalog" use="required" type="xs:token"/>
-  </xs:attributeGroup>
+  <!-- M341: rimosso "a.encodinganalog" -->
   <xs:attributeGroup name="a.level">
     <xs:attribute name="level" use="required">
       <xs:simpleType>
@@ -2754,38 +2414,15 @@ M028: in &lt;relation>, se @relationtype è pari a &quot;resourcerelation&quot;,
       </xs:simpleType>
     </xs:attribute>
   </xs:attributeGroup>
-  <xs:attributeGroup name="a.localtype">
-    <xs:attribute name="localtype" use="required" type="xs:token"/>
-  </xs:attributeGroup>
-  <xs:attributeGroup name="a.relatedencoding">
-    <xs:attribute name="relatedencoding" use="required" type="xs:token"/>
-  </xs:attributeGroup>
-  <xs:attributeGroup name="a.unitdatetype">
-    <xs:attribute name="unitdatetype">
-      <xs:simpleType>
-        <xs:restriction base="xs:token">
-          <xs:enumeration value="bulk"/>
-          <xs:enumeration value="inclusive"/>
-        </xs:restriction>
-      </xs:simpleType>
-    </xs:attribute>
-  </xs:attributeGroup>
+  <!-- M342: rimosso "a.localtype" -->
+  <!-- M343: rimosso "a.relatedencoding" -->
+  <!-- M344: rimosso "a.unitdatetype" -->
   <!-- table attributes -->
-  <xs:attributeGroup name="a.char">
-    <xs:attribute name="char" use="required" type="xs:token"/>
-  </xs:attributeGroup>
-  <xs:attributeGroup name="a.charoff">
-    <xs:attribute name="charoff" use="required" type="xs:NMTOKEN"/>
-  </xs:attributeGroup>
-  <xs:attributeGroup name="a.colname">
-    <xs:attribute name="colname" use="required" type="xs:NMTOKEN"/>
-  </xs:attributeGroup>
-  <xs:attributeGroup name="a.colsep">
-    <xs:attribute name="colsep" use="required" type="av.boolean"/>
-  </xs:attributeGroup>
-  <xs:attributeGroup name="a.rowsep">
-    <xs:attribute name="rowsep" use="required" type="av.boolean"/>
-  </xs:attributeGroup>
+  <!-- M345: rimosso "a.char" -->
+  <!-- M346: rimosso "a.charoff" -->
+  <!-- M347: rimosso "a.colname" -->
+  <!-- M348: rimosso "a.colsep" -->
+  <!-- M349: rimosso "a.rowsep" -->
   <!-- other attributes -->
   <xs:attributeGroup name="a.coverage">
     <xs:attribute name="coverage" use="required">
@@ -2797,17 +2434,8 @@ M028: in &lt;relation>, se @relationtype è pari a &quot;resourcerelation&quot;,
       </xs:simpleType>
     </xs:attribute>
   </xs:attributeGroup>
-  <xs:attributeGroup name="am.countrycode">
-    <xs:attribute name="countrycode" type="xs:NMTOKEN"/>
-  </xs:attributeGroup>
-  <xs:attributeGroup name="a.transliteration">
-    <xs:attribute name="transliteration" use="required" type="xs:NMTOKEN"/>
-  </xs:attributeGroup>
+  <!-- M350: rimosso "am.countrycode" -->
+  <!-- M351: rimosso "am.transliteration" -->
   <!-- ATTRIBUTE VALUE LISTS -->
-  <xs:simpleType name="av.boolean">
-    <xs:restriction base="xs:token">
-      <xs:enumeration value="true"/>
-      <xs:enumeration value="false"/>
-    </xs:restriction>
-  </xs:simpleType>
+  <!-- M352: rimosso "av.boolean" -->
 </xs:schema>
