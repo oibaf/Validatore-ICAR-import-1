@@ -1549,7 +1549,14 @@ M026: in &lt;origination>, eventuali figli &lt;famname> devono obbligatioriament
              ("am.common", @approximate ed @encodinganalog);
              l'elemento "quantity" risulta quindi un simpleType -->
   <xs:simpleType name="quantity">
-    <xs:restriction base="xs:string"/>
+    <xs:restriction base="xs:string">
+      <xs:assertion xa:message="[&#x0a;&#x0a;
+M355: il contenuto di &lt;quantity>, se non vuoto, deve essere un numero positivo&#x0a;
+      intero
+      &#x0a;&#x0a;]"
+        test="   ($value = '')
+              or matches($value, '^\+?[1-9][0-9]*$')"/>
+    </xs:restriction>
   </xs:simpleType>
   <!-- M315: rimossa la definizione degli attributi non utilizzati
              ("am.common", "am.access.no.normal" ed @encodinganalog);
