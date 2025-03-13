@@ -7,9 +7,9 @@
 Java 8 + maven
 
 ### installazione
-`> mvn clean package`
+`> mvn validate clean package`
 
 ### esecuzione
-`> java -Dfile.encoding=UTF-8 -jar target/Validatore-0.1-jar-with-dependencies.jar`
+`> java -Dfile.encoding=UTF-8 -jar target/Validatore-0.1-jar-with-dependencies.jar
 
 
