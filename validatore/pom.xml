@@ -12,6 +12,30 @@
 
   <build>
     <plugins>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-install-plugin</artifactId>
+        <version>2.5.1</version>
+        <configuration>
+          <groupId>org.eclipse.wst.xml.xpath2</groupId>
+          <artifactId>processor</artifactId>
+          <version>1.2.1</version>
+          <packaging>jar</packaging>
+          <file>${project.basedir}/dependencies/org.eclipse.wst.xml.xpath2.processor_1.2.1.jar</file>
+          <generatePom>true</generatePom>
+        </configuration>
+        <executions>
+          <execution>
+            <id>install-jar-lib</id>
+            <goals>
+              <goal>install-file</goal>
+            </goals>
+            <phase>validate</phase>
+          </execution>
+        </executions>
+      </plugin>
+
       <plugin>
         <!-- NOTE: We don't need a groupId specification because the group is
              org.apache.maven.plugins ...which is assumed by default.
@@ -83,22 +107,23 @@
 
   </build>
   
-  <dependencies><!--
-    <dependency>
-      <groupId>xerces</groupId>
-      <artifactId>xercesImpl</artifactId>
-      <version>2.12.2</version>
-    </dependency> -->
-    <dependency>
-      <groupId>com.ibm.icu</groupId>
-      <artifactId>icu4j</artifactId>
-      <version>2.6.1</version><!--
-      <version>76.1</version> -->
+  <!--
+  https://issues.apache.org/jira/browse/XERCESJ-1736
+  -->
+  
+  <dependencies>
+    <dependency><!-- override ibis-xerces -->
+      <groupId>org.eclipse.wst.xml.xpath2</groupId>
+      <artifactId>processor</artifactId>
+      <version>1.2.1</version>
+      <!--
+      <scope>provided</scope>
+      -->
     </dependency>
     <dependency>
-      <groupId>org.opengis.cite.xerces</groupId>
-      <artifactId>xercesImpl-xsd11</artifactId>
-      <version>2.12-beta-r1667115</version>
+      <groupId>org.ibissource</groupId>
+      <artifactId>ibis-xerces</artifactId>
+      <version>2.12.2-xml-schema-1.1</version>
     </dependency>
     <!-- position means packaging order (reversed) -->
   </dependencies>
