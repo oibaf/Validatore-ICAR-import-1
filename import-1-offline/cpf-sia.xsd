@@ -108,19 +108,18 @@ For Saxon, the @message attribute has to belong to the http://saxon.sf.net/ name
       <xs:attribute ref="xml:lang"/>
       <xs:attribute ref="xml:base"/>
       
-      <!-- n0025 n0036 n0047 built in? l'obbligatorietà è su entityType -->
+      <!-- 0025 0036 0047 built in? l'obbligatorietà è su entityType -->
       <xs:assert xpathDefaultNamespace="urn:isbn:1-931666-33-4"
-       xao:message="eac-cpf n0025 n0036 n0047 identity/@localType è richiesto"
+       xao:message="&#160;&#xa; eac-cpf 0025 0036 0047&#xa; identity/@localType&#xa; 'Tipologia entità' è richiesto"
        test="
         string-length(normalize-space(identity/@localType))>0
        "/>
-      <!-- n0025 con identity[entityType.='corporateBody'] identity/@localType può valere soggettoProduttore profiloIstituzionale contestoStoricoIstituzionale -->
+      <!-- 0025 con identity[entityType.='corporateBody'] identity/@localType può valere soggettoProduttore profiloIstituzionale contestoStoricoIstituzionale -->
       <xs:assert xpathDefaultNamespace="urn:isbn:1-931666-33-4"
-       xao:message="eac-cpf n0025 identity[entityType[.='corporatebody']]/@localType
-lista chiusa con valori:
+       xao:message="&#160;&#xa; eac-cpf 0025&#xa; identity[entityType[.='corporatebody']]/@localType&#xa; 'Tipologia entità' è richiesto con valori:&#xa;
 soggettoproduttore,
 profiloistituzionale,
-contestoStoricoIstituzionale"
+contestoStoricoIstituzionale."
        test="
         not(identity[entityType[normalize-space(lower-case(.))='corporatebody']])
          or
@@ -132,28 +131,34 @@ contestoStoricoIstituzionale"
        "/>
         
       <xs:assert xpathDefaultNamespace="urn:isbn:1-931666-33-4"
-       xao:message="eac-cpf n0048 identity[@localType='soggettoProduttore'][entityType[.='person']] richiede nameEntry/part[@localType='cognome']" test=
-       "not(identity[@localType='soggettoProduttore'][entityType[normalize-space(lower-case(.))='person']])
+       xao:message="&#160;&#xa; eac-cpf 0048&#xa; identity[@localType='soggettoProduttore'][entityType[.='person']]&#xa; richiede 'Cognome' in nameEntry/part[@localType='cognome']"
+       test="
+        not(identity[@localType='soggettoProduttore'][entityType[normalize-space(lower-case(.))='person']])
          or
         identity[@localType='soggettoProduttore'][entityType[normalize-space(lower-case(.))='person']]/
          nameEntry/
-          part[@localType='cognome'][string-length(normalize-space(.))>0]"/><!-- n0048 -->
+          part[@localType='cognome'][string-length(normalize-space(.))>0]
+       "/><!-- 0048 -->
           
       <xs:assert xpathDefaultNamespace="urn:isbn:1-931666-33-4"
-       xao:message="eac-cpf n0037 identity[@localType='soggettoProduttore'][entityType[.='family']] richiede nameEntry/part[@localType='denominazione']" test= 
-       "not(identity[@localType='soggettoProduttore'][entityType[normalize-space(lower-case(.))='family']])
+       xao:message="&#160;&#xa; eac-cpf 0037&#xa; identity[@localType='soggettoProduttore'][entityType[.='family']]&#xa; richiede 'Denominazione' in nameEntry/part[@localType='denominazione']"
+       test="
+        not(identity[@localType='soggettoProduttore'][entityType[normalize-space(lower-case(.))='family']])
          or
         identity[@localType='soggettoProduttore'][entityType[normalize-space(lower-case(.))='family']]/
          nameEntry/
-          part[@localType='denominazione'][string-length(normalize-space(.))>0]"/><!-- n0037 -->
+          part[@localType='denominazione'][string-length(normalize-space(.))>0]
+       "/><!-- 0037 -->
           
       <xs:assert xpathDefaultNamespace="urn:isbn:1-931666-33-4"
-       xao:message="eac-cpf n0026 identity[entityType[.='corporatebody']] richiede nameEntry/part"  test= 
-       "not(identity[entityType[normalize-space(lower-case(.))='corporatebody']])
+       xao:message="&#160;&#xa; eac-cpf 0026&#xa; identity[entityType[.='corporatebody']]&#xa; richiede 'Denominazione' in nameEntry/part"
+       test="
+        not(identity[entityType[normalize-space(lower-case(.))='corporatebody']])
          or
         identity[entityType[normalize-space(lower-case(.))='corporatebody']]/
          nameEntry[not(@localType='altraDenominazione' or @localType='intestazioneParallela' or @localType='intestazione')]/
-          part[string-length(normalize-space(.))>0]"/><!-- n0026 -->
+          part[string-length(normalize-space(.))>0]
+       "/><!-- 0026 -->
       <!--
       <xs:assert xpathDefaultNamespace="urn:isbn:1-931666-33-4"
         test=" 
@@ -168,7 +173,7 @@ contestoStoricoIstituzionale"
           (identity[@localType='soggettoProduttore'][entityType[normalize-space(lower-case(.))='corporatebody']]/
             nameEntry[not(@localType='altraDenominazione' or @localType='intestazioneParallela' or @localType='intestazione')]/
              part[string-length(normalize-space(.))>0])
-             "/> --><!-- n0026 n0037 n0048 in entityType family @localType='denominazione' è esplicitato nell'esempio -->
+             "/> --><!-- 0026 0037 0048 in entityType family @localType='denominazione' è esplicitato nell'esempio -->
 
     </xs:complexType>
   </xs:element>
@@ -202,9 +207,9 @@ contestoStoricoIstituzionale"
       <xs:attribute ref="xml:id"/>
       <xs:attribute ref="xml:lang"/>
       <xs:attribute ref="xml:base"/>
-      <!-- n0006 mandatory publicationStatus -->
+      <!-- 0006 mandatory publicationStatus -->
       <xs:assert xpathDefaultNamespace="urn:isbn:1-931666-33-4"
-       xao:message="eac-cpf n0009 control/publicationStatus è richiesto"
+       xao:message="&#160;&#xa; eac-cpf 0006&#xa; control/publicationStatus&#xa; 'Stato della scheda' è richiesto"
        test="
         count(publicationStatus)>0
        "/>
@@ -271,9 +276,9 @@ contestoStoricoIstituzionale"
         <xs:element minOccurs="0" ref="descriptiveNote"/>
       </xs:sequence>
       <xs:attribute ref="xml:id"/>
-      <!-- n0009 mandatory agencyCode Sigla dell'organizzazione -->
+      <!-- 0009 mandatory agencyCode Sigla dell'organizzazione -->
       <xs:assert xpathDefaultNamespace="urn:isbn:1-931666-33-4"
-       xao:message="eac-cpf n0009 maintenanceAgency/agencyCode è richiesto"
+       xao:message="&#160;&#xa; eac-cpf 0009&#xa; maintenanceAgency/agencyCode&#xa; 'Sigla dell'organizzazione' è richiesto"
        test="
         string-length(normalize-space(agencyCode))>0
        "/>
@@ -365,12 +370,11 @@ contestoStoricoIstituzionale"
             </xs:restriction>
           </xs:simpleType>
           <xs:attribute ref="xml:id"/>
-          <!-- n0023 xs:enumeration value="unknown" -->
+          <!-- 0023 xs:enumeration value="unknown" -->
           <xs:assert xpathDefaultNamespace="urn:isbn:1-931666-33-4"
-           xao:message="eac-cpf n0009 agentType 'unknown' valore non ammesso
-lista chiusa con valori:
-human
-machine"
+           xao:message="&#160;&#xa; eac-cpf 0023&#xa; eac-cpf/control/maintenanceHistory/maintenanceEvent/agentType&#xa; 'Tipologia dell'agente' lista chiusa con valori:&#xa;
+human,
+machine."
            test="
             normalize-space(lower-case(.))='human'
             or 
