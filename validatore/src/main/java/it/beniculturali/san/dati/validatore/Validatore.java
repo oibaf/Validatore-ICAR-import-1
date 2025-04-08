@@ -12,7 +12,9 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
+import org.xml.sax.ext.DefaultHandler2;
 import org.xml.sax.helpers.DefaultHandler;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
@@ -28,19 +30,25 @@ public class Validatore {
   static class veh extends DefaultHandler {
     final ArrayList<SAXParseException> val$errorList;
 
-    veh(ArrayList<SAXParseException> var1) {
-      this.val$errorList = var1;
+    veh(ArrayList<SAXParseException> el) {
+      this.val$errorList = el;
     }
 
-    public void error(SAXParseException var1) throws SAXException {
-      this.val$errorList.add(var1);
+    public void error(SAXParseException e) throws SAXException {
+      this.val$errorList.add(e);
     }
 
-    public void fatalError(SAXParseException var1) throws SAXException {
-      this.val$errorList.add(var1);
+    public void fatalError(SAXParseException e) throws SAXException {
+      this.val$errorList.add(e);
     }
+    //public void warning(SAXParseException e) throws SAXException {System.err.println(e);}
+  }
 
-    public void warning(SAXParseException var1) throws SAXException {
+  static class sfe extends DefaultHandler {
+    //public void error(SAXParseException e) throws SAXException {System.err.println("error " + e);}
+    //public void fatalError(SAXParseException e) throws SAXException {System.err.println("fatal " + e);}
+    public void warning(SAXParseException e) throws SAXException {
+      System.err.println("warning: " + e);
     }
   }
 
@@ -74,7 +82,10 @@ public class Validatore {
         sd.add(new StreamSource(args[j]));
       String schemaLanguage = "http://www.w3.org/XML/XMLSchema" + (one ? "" : "/v1.1");
       if (!out && one) System.out.println(schemaLanguage);
-      Validator v = SchemaFactory.newInstance(schemaLanguage).newSchema(sd.toArray(new StreamSource[0])).newValidator();
+      //Validator v = SchemaFactory.newInstance(schemaLanguage).newSchema(sd.toArray(new StreamSource[0])).newValidator();
+      SchemaFactory schemaFactory = SchemaFactory.newInstance(schemaLanguage);
+      schemaFactory.setErrorHandler(new sfe());
+      Validator v = schemaFactory.newSchema(sd.toArray(new StreamSource[0])).newValidator();
 
       ArrayList<SAXParseException> spel = new ArrayList<SAXParseException>();
       if (verbose) v.setErrorHandler(new veh(spel));
