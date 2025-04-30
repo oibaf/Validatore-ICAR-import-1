@@ -1050,14 +1050,16 @@ M078: i &lt;date> con @localtype pari a &quot;singleDate&quot;, contenuti in &lt
 M079: i &lt;date> con @localtype pari a &quot;rangeDate&quot;, contenuti in&#x0a;
       &lt;publicationstmt>, devono, obbligatoriamente, avere @normal nel formato&#x0a;
       &quot;AAAA/AAAA&quot; o, in alternativa, nel formato &quot;AAAAMMGG/AAAAMMGG&quot;; sono&#x0a;
-      ammessi, come valori speciali, &quot;00000000&quot;, per indicare il primo estremo&#x0a;
-      aperto, e &quot;99999999&quot;, per indicare il secondo estremo aperto
+      ammessi, come valori speciali, &quot;00010101&quot;, per indicare il primo estremo&#x0a;
+      aperto, e &quot;99991231&quot;, per indicare il secondo estremo aperto
       &#x0a;&#x0a;]"
         xpathDefaultNamespace="##targetNamespace" 
         test="every $date in date[@localtype = 'rangeDate']
-              satisfies    matches($date/@normal, '^([0-9]{4}(0[1-9]|1[0-2])(0[1-9]|[12][0-9]|3[0-1])|0{8})
-                                                   /([0-9]{4}(0[1-9]|1[0-2])(0[1-9]|[12][0-9]|3[0-1])|9{8})$', 'x')
-                        or matches($date/@normal, '^[0-9]{4}/[0-9]{4}$')"/>
+              satisfies     (   matches($date/@normal, '^([0-9]{4}(0[1-9]|1[0-2])(0[1-9]|[12][0-9]|3[0-1]))
+                                                        /([0-9]{4}(0[1-9]|1[0-2])(0[1-9]|[12][0-9]|3[0-1]))$', 'x')
+                             or matches($date/@normal, '^[0-9]{4}/[0-9]{4}$'))
+                        and not(matches($date/@normal, '^0000.*$'))
+                        and not(matches($date/@normal, '^.*/0000.*$'))"/>
     <!-- soppresso M080 poiche' il "singlesec" e' risultato piu' complesso di quanto
          inizialmente inteso -->
     <!-- soppresso M081 poiche' il "rangeSec" e' risultato piu' complesso di quanto
@@ -2007,6 +2009,65 @@ M209: in &lt;datesingle>, @standarddate deve essere o nella forma &quot;AAAA-MM-
           test="   not(@standarddate)
                 or matches(@standarddate, '^([0-9]{4}((0[1-9]|1[0-2])((0[1-9]|[12][0-9]|3[0-1]))??)??)$')
                 or matches(@standarddate, '^([0-9]{4}(-(0[1-9]|1[0-2])(-(0[1-9]|[12][0-9]|3[0-1]))??)??)$')"/>
+        <xs:assert xa:message="[&#x0a;&#x0a;
+M356: In &lt;datesingle> il valore di @notbefore, se presente, deve corrispondere&#x0a;
+      a un numero, positivo, di quattro cifre corrispondente a un anno; i&#x0a;
+      valori precedenti all'anno 1000 richiedono degli zeri sulla sinistra&#x0a;
+      (esempio: l'anno 37 a.C. deve essere rappresentato come &quot;0037&quot;)
+      &#x0a;&#x0a;]"
+          xpathDefaultNamespace="##targetNamespace" 
+          test="not(@notbefore) or matches(@notbefore, '^[0-9]{4}$')"/>
+        <xs:assert xa:message="[&#x0a;&#x0a;
+M357: In &lt;datesingle> il valore di @notafter, se presente, deve corrispondere a&#x0a;
+      un numero, positivo, di quattro cifre corrispondente a un anno; i valori&#x0a;
+      precedenti all'anno 1000 richiedono degli zeri sulla sinistra (esempio:&#x0a;
+      l'anno 37 a.C. deve essere rappresentato come &quot;0037&quot;)
+      &#x0a;&#x0a;]"
+          xpathDefaultNamespace="##targetNamespace" 
+          test="not(@notafter) or matches(@notafter, '^[0-9]{4}$')"/>
+        <xs:assert xa:message="[&#x0a;&#x0a;
+M358: In &lt;datesingle> devono essere presenti sia @notbefore che @notafter&#x0a;
+      oppure, in alternativa, nessuno dei due
+      &#x0a;&#x0a;]"
+          xpathDefaultNamespace="##targetNamespace" 
+          test="1 != (count(@notbefore) + count(@notafter))"/>
+        <xs:assert xa:message="[&#x0a;&#x0a;
+M359: In &lt;datesingle> se @notbefore e @notafter sono entrambi presenti, i loro&#x0a;
+      valori devono soddisfare alcune precise regole
+      &#x0a;&#x0a;]"
+          xpathDefaultNamespace="##targetNamespace" 
+          test="if (@notbefore)
+                then    (    ( 1 = (number(@notbefore) mod 100))
+                         and (number(@notafter) =  9 + number(@notbefore)))
+                     or (    (46 = (number(@notbefore) mod 100))
+                         and (number(@notafter) =  9 + number(@notbefore)))
+                     or (    (91 = (number(@notbefore) mod 100))
+                         and (number(@notafter) =  9 + number(@notbefore)))
+                     or (    ( 1 = (number(@notbefore) mod 100))
+                         and (number(@notafter) = 24 + number(@notbefore)))
+                     or (    (26 = (number(@notbefore) mod 100))
+                         and (number(@notafter) = 24 + number(@notbefore)))
+                     or (    (51 = (number(@notbefore) mod 100))
+                         and (number(@notafter) = 24 + number(@notbefore)))
+                     or (    (76 = (number(@notbefore) mod 100))
+                         and (number(@notafter) = 24 + number(@notbefore)))
+                     or (    ( 1 = (number(@notbefore) mod 100))
+                         and (number(@notafter) = 49 + number(@notbefore)))
+                     or (    (51 = (number(@notbefore) mod 100))
+                         and (number(@notafter) = 49 + number(@notbefore)))
+                else true()"/>
+        <xs:assert xa:message="[&#x0a;&#x0a;
+M360: In &lt;datesingle> il valore di @notbefore, se presente, non può valere&#x0a;
+      &quot;0000&quot; (valore non accettabile per un attributo che indica un anno)
+      &#x0a;&#x0a;]"
+          xpathDefaultNamespace="##targetNamespace" 
+          test="@notbefore != '0000'"/>
+        <xs:assert xa:message="[&#x0a;&#x0a;
+M361: In &lt;datesingle> il valore di @notafter, se presente, non può valere&#x0a;
+      &quot;0000&quot; (valore non accettabile per un attributo che indica un anno)
+      &#x0a;&#x0a;]"
+          xpathDefaultNamespace="##targetNamespace" 
+          test="@notafter != '0000'"/>
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
@@ -2026,14 +2087,73 @@ M209: in &lt;datesingle>, @standarddate deve essere o nella forma &quot;AAAA-MM-
         <xs:assert xa:message="[&#x0a;&#x0a;
 M210: in &lt;fromdate>, @standarddate deve essere o nella forma &quot;AAAA-MM-GG&quot;, o&#x0a;
       &quot;AAAAMMGG&quot;, o &quot;AAAA-MM&quot;, o &quot;AAAAMM&quot;, o &quot;AAAA&quot;; è accettato anche il&#x0a;
-      valore speciale &quot;0000-00-00&quot; (anche nel formato &quot;00000000&quot;) per indicare&#x0a;
+      valore speciale &quot;0001-01-01&quot; (anche nel formato &quot;00010101&quot;) per indicare&#x0a;
       come aperto l'estremo sinistro dell'intervallo temporale
       &#x0a;&#x0a;]"
           xpathDefaultNamespace="##targetNamespace" 
           test="   not(@standarddate)
-                or (@standarddate = ('0000-00-00', '00000000'))
-                or matches(@standarddate, '^([0-9]{4}((0[1-9]|1[0-2])((0[1-9]|[12][0-9]|3[0-1]))??)??)$')
-                or matches(@standarddate, '^([0-9]{4}(-(0[1-9]|1[0-2])(-(0[1-9]|[12][0-9]|3[0-1]))??)??)$')"/>
+                or (    (   matches(@standarddate, '^([0-9]{4}((0[1-9]|1[0-2])((0[1-9]|[12][0-9]|3[0-1]))??)??)$')
+                         or matches(@standarddate, '^([0-9]{4}(-(0[1-9]|1[0-2])(-(0[1-9]|[12][0-9]|3[0-1]))??)??)$'))
+                    and not(matches(@standarddate, '^0000.*$')))"/>
+        <xs:assert xa:message="[&#x0a;&#x0a;
+M356: In &lt;fromdate> il valore di @notbefore, se presente, deve corrispondere a&#x0a;
+      un numero, positivo, di quattro cifre corrispondente a un anno; i valori&#x0a;
+      precedenti all'anno 1000 richiedono degli zeri sulla sinistra (esempio:&#x0a;
+      l'anno 37 a.C. deve essere rappresentato come &quot;0037&quot;)
+      &#x0a;&#x0a;]"
+          xpathDefaultNamespace="##targetNamespace" 
+          test="not(@notbefore) or matches(@notbefore, '^[0-9]{4}$')"/>
+        <xs:assert xa:message="[&#x0a;&#x0a;
+M357: In &lt;fromdate> il valore di @notafter, se presente, deve corrispondere a&#x0a;
+      un numero, positivo, di quattro cifre corrispondente a un anno; i valori&#x0a;
+      precedenti all'anno 1000 richiedono degli zeri sulla sinistra (esempio:&#x0a;
+      l'anno 37 a.C. deve essere rappresentato come &quot;0037&quot;)
+      &#x0a;&#x0a;]"
+          xpathDefaultNamespace="##targetNamespace" 
+          test="not(@notafter) or matches(@notafter, '^[0-9]{4}$')"/>
+        <xs:assert xa:message="[&#x0a;&#x0a;
+M358: In &lt;fromdate> devono essere presenti sia @notbefore che @notafter oppure,&#x0a;
+      in alternativa, nessuno dei due
+      &#x0a;&#x0a;]"
+          xpathDefaultNamespace="##targetNamespace" 
+          test="1 != (count(@notbefore) + count(@notafter))"/>
+        <xs:assert xa:message="[&#x0a;&#x0a;
+M359: In &lt;fromdate> se @notbefore e @notafter sono entrambi presenti, i loro&#x0a;
+      valori devono soddisfare alcune precise regole
+      &#x0a;&#x0a;]"
+          xpathDefaultNamespace="##targetNamespace" 
+          test="if (@notbefore)
+                then    (    ( 1 = (number(@notbefore) mod 100))
+                         and (number(@notafter) =  9 + number(@notbefore)))
+                     or (    (46 = (number(@notbefore) mod 100))
+                         and (number(@notafter) =  9 + number(@notbefore)))
+                     or (    (91 = (number(@notbefore) mod 100))
+                         and (number(@notafter) =  9 + number(@notbefore)))
+                     or (    ( 1 = (number(@notbefore) mod 100))
+                         and (number(@notafter) = 24 + number(@notbefore)))
+                     or (    (26 = (number(@notbefore) mod 100))
+                         and (number(@notafter) = 24 + number(@notbefore)))
+                     or (    (51 = (number(@notbefore) mod 100))
+                         and (number(@notafter) = 24 + number(@notbefore)))
+                     or (    (76 = (number(@notbefore) mod 100))
+                         and (number(@notafter) = 24 + number(@notbefore)))
+                     or (    ( 1 = (number(@notbefore) mod 100))
+                         and (number(@notafter) = 49 + number(@notbefore)))
+                     or (    (51 = (number(@notbefore) mod 100))
+                         and (number(@notafter) = 49 + number(@notbefore)))
+                else true()"/>
+        <xs:assert xa:message="[&#x0a;&#x0a;
+M360: In &lt;fromdate> il valore di @notbefore, se presente, non può valere &quot;0000&quot;&#x0a;
+      (valore non accettabile per un attributo che indica un anno)
+      &#x0a;&#x0a;]"
+          xpathDefaultNamespace="##targetNamespace" 
+          test="@notbefore != '0000'"/>
+        <xs:assert xa:message="[&#x0a;&#x0a;
+M361: In &lt;fromdate> il valore di @notafter, se presente, non può valere &quot;0000&quot;&#x0a;
+      (valore non accettabile per un attributo che indica un anno)
+      &#x0a;&#x0a;]"
+          xpathDefaultNamespace="##targetNamespace" 
+          test="@notafter != '0000'"/>
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
@@ -2045,14 +2165,73 @@ M210: in &lt;fromdate>, @standarddate deve essere o nella forma &quot;AAAA-MM-GG
         <xs:assert xa:message="[&#x0a;&#x0a;
 M211: in &lt;todate>, @standarddate deve essere o nella forma &quot;AAAA-MM-GG&quot;, o&#x0a;
       &quot;AAAAMMGG&quot;, o &quot;AAAA-MM&quot;, o &quot;AAAAMM&quot;, o &quot;AAAA&quot;; è accettato anche il&#x0a;
-      valore speciale &quot;9999-99-99&quot; (anche nel formato &quot;99999999&quot;) per indicare&#x0a;
+      valore speciale &quot;9999-12-31&quot; (anche nel formato &quot;99991231&quot;) per indicare&#x0a;
       come aperto l'estremo destro dell'intervallo temporale
       &#x0a;&#x0a;]"
           xpathDefaultNamespace="##targetNamespace" 
           test="   not(@standarddate)
-                or (@standarddate = ('9999-99-99', '99999999'))
-                or matches(@standarddate, '^([0-9]{4}((0[1-9]|1[0-2])((0[1-9]|[12][0-9]|3[0-1]))??)??)$')
-                or matches(@standarddate, '^([0-9]{4}(-(0[1-9]|1[0-2])(-(0[1-9]|[12][0-9]|3[0-1]))??)??)$')"/>
+                or (    (   matches(@standarddate, '^([0-9]{4}((0[1-9]|1[0-2])((0[1-9]|[12][0-9]|3[0-1]))??)??)$')
+                         or matches(@standarddate, '^([0-9]{4}(-(0[1-9]|1[0-2])(-(0[1-9]|[12][0-9]|3[0-1]))??)??)$'))
+                    and not(matches(@standarddate, '^0000.*$')))"/>
+        <xs:assert xa:message="[&#x0a;&#x0a;
+M356: In &lt;todate> il valore di @notbefore, se presente, deve corrispondere a un&#x0a;
+      numero, positivo, di quattro cifre corrispondente a un anno; i valori&#x0a;
+      precedenti all'anno 1000 richiedono degli zeri sulla sinistra (esempio:&#x0a;
+      l'anno 37 a.C. deve essere rappresentato come &quot;0037&quot;)
+      &#x0a;&#x0a;]"
+          xpathDefaultNamespace="##targetNamespace" 
+          test="not(@notbefore) or matches(@notbefore, '^[0-9]{4}$')"/>
+        <xs:assert xa:message="[&#x0a;&#x0a;
+M357: In &lt;todate> il valore di @notafter, se presente, deve corrispondere a un&#x0a;
+      numero, positivo, di quattro cifre corrispondente a un anno; i valori&#x0a;
+      precedenti all'anno 1000 richiedono degli zeri sulla sinistra (esempio:&#x0a;
+      l'anno 37 a.C. deve essere rappresentato come &quot;0037&quot;)
+      &#x0a;&#x0a;]"
+          xpathDefaultNamespace="##targetNamespace" 
+          test="not(@notafter) or matches(@notafter, '^[0-9]{4}$')"/>
+        <xs:assert xa:message="[&#x0a;&#x0a;
+M358: In &lt;todate> devono essere presenti sia @notbefore che @notafter oppure,&#x0a;
+      in alternativa, nessuno dei due
+      &#x0a;&#x0a;]"
+          xpathDefaultNamespace="##targetNamespace" 
+          test="1 != (count(@notbefore) + count(@notafter))"/>
+        <xs:assert xa:message="[&#x0a;&#x0a;
+M359: In &lt;todate> se @notbefore e @notafter sono entrambi presenti, i loro&#x0a;
+      valori devono soddisfare alcune precise regole
+      &#x0a;&#x0a;]"
+          xpathDefaultNamespace="##targetNamespace" 
+          test="if (@notbefore)
+                then    (    ( 1 = (number(@notbefore) mod 100))
+                         and (number(@notafter) =  9 + number(@notbefore)))
+                     or (    (46 = (number(@notbefore) mod 100))
+                         and (number(@notafter) =  9 + number(@notbefore)))
+                     or (    (91 = (number(@notbefore) mod 100))
+                         and (number(@notafter) =  9 + number(@notbefore)))
+                     or (    ( 1 = (number(@notbefore) mod 100))
+                         and (number(@notafter) = 24 + number(@notbefore)))
+                     or (    (26 = (number(@notbefore) mod 100))
+                         and (number(@notafter) = 24 + number(@notbefore)))
+                     or (    (51 = (number(@notbefore) mod 100))
+                         and (number(@notafter) = 24 + number(@notbefore)))
+                     or (    (76 = (number(@notbefore) mod 100))
+                         and (number(@notafter) = 24 + number(@notbefore)))
+                     or (    ( 1 = (number(@notbefore) mod 100))
+                         and (number(@notafter) = 49 + number(@notbefore)))
+                     or (    (51 = (number(@notbefore) mod 100))
+                         and (number(@notafter) = 49 + number(@notbefore)))
+                else true()"/>
+        <xs:assert xa:message="[&#x0a;&#x0a;
+M360: In &lt;todate> il valore di @notbefore, se presente, non può valere &quot;0000&quot;&#x0a;
+      (valore non accettabile per un attributo che indica un anno)
+      &#x0a;&#x0a;]"
+          xpathDefaultNamespace="##targetNamespace" 
+          test="@notbefore != '0000'"/>
+        <xs:assert xa:message="[&#x0a;&#x0a;
+M361: In &lt;todate> il valore di @notafter, se presente, non può valere &quot;0000&quot;&#x0a;
+      (valore non accettabile per un attributo che indica un anno)
+      &#x0a;&#x0a;]"
+          xpathDefaultNamespace="##targetNamespace" 
+          test="@notafter != '0000'"/>
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
