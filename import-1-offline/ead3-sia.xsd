@@ -2061,13 +2061,13 @@ M360: In &lt;datesingle> il valore di @notbefore, se presente, non può valere&#
       &quot;0000&quot; (valore non accettabile per un attributo che indica un anno)
       &#x0a;&#x0a;]"
           xpathDefaultNamespace="##targetNamespace" 
-          test="@notbefore != '0000'"/>
+          test="not(@notbefore) or (@notbefore != '0000')"/>
         <xs:assert xa:message="[&#x0a;&#x0a;
 M361: In &lt;datesingle> il valore di @notafter, se presente, non può valere&#x0a;
       &quot;0000&quot; (valore non accettabile per un attributo che indica un anno)
       &#x0a;&#x0a;]"
           xpathDefaultNamespace="##targetNamespace" 
-          test="@notafter != '0000'"/>
+          test="not(@notafter) or (@notafter != '0000')"/>
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
@@ -2147,13 +2147,13 @@ M360: In &lt;fromdate> il valore di @notbefore, se presente, non può valere &qu
       (valore non accettabile per un attributo che indica un anno)
       &#x0a;&#x0a;]"
           xpathDefaultNamespace="##targetNamespace" 
-          test="@notbefore != '0000'"/>
+          test="not(@notbefore) or (@notbefore != '0000')"/>
         <xs:assert xa:message="[&#x0a;&#x0a;
 M361: In &lt;fromdate> il valore di @notafter, se presente, non può valere &quot;0000&quot;&#x0a;
       (valore non accettabile per un attributo che indica un anno)
       &#x0a;&#x0a;]"
           xpathDefaultNamespace="##targetNamespace" 
-          test="@notafter != '0000'"/>
+          test="not(@notafter) or (@notafter != '0000')"/>
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
@@ -2225,13 +2225,13 @@ M360: In &lt;todate> il valore di @notbefore, se presente, non può valere &quot
       (valore non accettabile per un attributo che indica un anno)
       &#x0a;&#x0a;]"
           xpathDefaultNamespace="##targetNamespace" 
-          test="@notbefore != '0000'"/>
+          test="not(@notbefore) or (@notbefore != '0000')"/>
         <xs:assert xa:message="[&#x0a;&#x0a;
 M361: In &lt;todate> il valore di @notafter, se presente, non può valere &quot;0000&quot;&#x0a;
       (valore non accettabile per un attributo che indica un anno)
       &#x0a;&#x0a;]"
           xpathDefaultNamespace="##targetNamespace" 
-          test="@notafter != '0000'"/>
+          test="not(@notafter) or (@notafter != '0000')"/>
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
