@@ -117,8 +117,8 @@ For Saxon, the @message attribute has to belong to the http://saxon.sf.net/ name
       <!-- 0025 con identity[entityType.='corporateBody'] identity/@localType può valere soggettoProduttore profiloIstituzionale contestoStoricoIstituzionale -->
       <xs:assert xpathDefaultNamespace="urn:isbn:1-931666-33-4"
        xao:message="&#160;&#xa; eac-cpf 0025&#xa; identity[entityType[.='corporatebody']]/@localType&#xa; 'Tipologia entità' è richiesto con valori:&#xa;
-soggettoproduttore,
-profiloistituzionale,
+soggettoProduttore,
+profiloIstituzionale,
 contestoStoricoIstituzionale."
        test="
         not(identity[entityType[normalize-space(lower-case(.))='corporatebody']])
@@ -133,21 +133,21 @@ contestoStoricoIstituzionale."
       <xs:assert xpathDefaultNamespace="urn:isbn:1-931666-33-4"
        xao:message="&#160;&#xa; eac-cpf 0048&#xa; identity[@localType='soggettoProduttore'][entityType[.='person']]&#xa; richiede 'Cognome' in nameEntry/part[@localType='cognome']"
        test="
-        not(identity[@localType='soggettoProduttore'][entityType[normalize-space(lower-case(.))='person']])
+        not(identity[normalize-space(lower-case(@localType))='soggettoproduttore'][entityType[normalize-space(lower-case(.))='person']])
          or
-        identity[@localType='soggettoProduttore'][entityType[normalize-space(lower-case(.))='person']]/
+        identity[normalize-space(lower-case(@localType))='soggettoproduttore'][entityType[normalize-space(lower-case(.))='person']]/
          nameEntry/
-          part[@localType='cognome'][string-length(normalize-space(.))>0]
+          part[normalize-space(lower-case(@localType))='cognome'][string-length(normalize-space(.))>0]
        "/><!-- 0048 -->
           
       <xs:assert xpathDefaultNamespace="urn:isbn:1-931666-33-4"
        xao:message="&#160;&#xa; eac-cpf 0037&#xa; identity[@localType='soggettoProduttore'][entityType[.='family']]&#xa; richiede 'Denominazione' in nameEntry/part[@localType='denominazione']"
        test="
-        not(identity[@localType='soggettoProduttore'][entityType[normalize-space(lower-case(.))='family']])
+        not(identity[normalize-space(lower-case(@localType))='soggettoproduttore'][entityType[normalize-space(lower-case(.))='family']])
          or
-        identity[@localType='soggettoProduttore'][entityType[normalize-space(lower-case(.))='family']]/
+        identity[normalize-space(lower-case(@localType))='soggettoproduttore'][entityType[normalize-space(lower-case(.))='family']]/
          nameEntry/
-          part[@localType='denominazione'][string-length(normalize-space(.))>0]
+          part[normalize-space(lower-case(@localType))='denominazione'][string-length(normalize-space(.))>0]
        "/><!-- 0037 -->
           
       <xs:assert xpathDefaultNamespace="urn:isbn:1-931666-33-4"
@@ -156,7 +156,7 @@ contestoStoricoIstituzionale."
         not(identity[entityType[normalize-space(lower-case(.))='corporatebody']])
          or
         identity[entityType[normalize-space(lower-case(.))='corporatebody']]/
-         nameEntry[not(@localType='altraDenominazione' or @localType='intestazioneParallela' or @localType='intestazione')]/
+         nameEntry[not(normalize-space(lower-case(@localType))='altradenominazione' or normalize-space(lower-case(@localType))='intestazioneparallela' or normalize-space(lower-case(@localType))='intestazione')]/
           part[string-length(normalize-space(.))>0]
        "/><!-- 0026 -->
       <!--
