@@ -45,8 +45,14 @@ public class Validatore {
   }
 
   static class sfe extends DefaultHandler {
-    //public void error(SAXParseException e) throws SAXException {System.err.println("error " + e);}
-    //public void fatalError(SAXParseException e) throws SAXException {System.err.println("fatal " + e);}
+    public void error(SAXParseException e) throws SAXException {
+      System.err.println("error " + e);
+    }
+
+    public void fatalError(SAXParseException e) throws SAXException {
+      System.err.println("fatal " + e);
+    }
+
     public void warning(SAXParseException e) throws SAXException {
       System.err.println("warning: " + e);
     }
