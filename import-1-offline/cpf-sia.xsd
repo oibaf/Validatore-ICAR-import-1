@@ -94,6 +94,14 @@ For Saxon, the @message attribute has to belong to the http://saxon.sf.net/ name
       <xs:attribute ref="xml:id"/>
       <xs:attribute ref="xml:lang"/>
       <xs:attribute ref="xml:base"/>
+      
+      <xs:assert xpathDefaultNamespace="urn:isbn:1-931666-33-4"
+       xao:message="&#160;&#xa; eac-cpf 0030 0034 0044 0056 0063&#xa; riferimenti in @vocabularySource senza corrispondeza univoca in control/conventionDeclaration/citation"
+       test="
+         every $v in (cpfDescription/description/((place/placeRole)|(localDescription/term))/@vocabularySource) satisfies
+         count(control/conventionDeclaration/citation[normalize-space(lower-case($v))=normalize-space(lower-case(.))])=1
+       "/>
+
     </xs:complexType>
   </xs:element>
   <xs:element name="cpfDescription">
@@ -107,12 +115,97 @@ For Saxon, the @message attribute has to belong to the http://saxon.sf.net/ name
       <xs:attribute ref="xml:id"/>
       <xs:attribute ref="xml:lang"/>
       <xs:attribute ref="xml:base"/>
-      
-      <!-- 0025 0036 0047 built in? l'obbligatorietà è su entityType -->
+
       <xs:assert xpathDefaultNamespace="urn:isbn:1-931666-33-4"
-       xao:message="&#160;&#xa; eac-cpf 0025 0036 0047&#xa; identity/@localType&#xa; 'Tipologia entità' è richiesto"
+       xao:message="&#160;&#xa; eac-cpf 0034&#xa; identity/entityType[.='corporateBody'] ammette in cpfDescription/description/localDescription/@localType il valore:&#xa;
+tipologiaEnte."
+       test="
+        not(normalize-space(lower-case(identity/entityType)) = 'corporatebody')
+        or
+        (
+         every $v in (description/localDescription/@localType) satisfies
+         (
+          normalize-space(lower-case($v))='tipologiaente'
+         )
+        )
+       "/>
+
+      <xs:assert xpathDefaultNamespace="urn:isbn:1-931666-33-4"
+       xao:message="&#160;&#xa; eac-cpf 0034&#xa; identity/entityType[.='family'] ammette in cpfDescription/description/localDescription/@localType il valore:&#xa;
+titoli."
+       test="
+        not(normalize-space(lower-case(identity/entityType)) = 'family')
+        or
+        (
+         every $v in (description/localDescription/@localType) satisfies
+         (
+          normalize-space(lower-case($v))='titoli'
+         )
+        )
+       "/>
+      
+      <xs:assert xpathDefaultNamespace="urn:isbn:1-931666-33-4"
+       xao:message="&#160;&#xa; eac-cpf 0054 0063&#xa; identity/entityType[.='person'] ammette in cpfDescription/description/localDescription/@localType i valori:&#xa;
+genere,
+professione,
+titoloNobiliare."
+       test="
+        not(normalize-space(lower-case(identity/entityType)) = 'person')
+        or
+        (
+         every $v in (description/localDescription/@localType) satisfies
+         (
+             normalize-space(lower-case($v))='genere'
+          or normalize-space(lower-case($v))='professione'
+          or normalize-space(lower-case($v))='titolonobiliare'
+         )
+        )
+       "/>
+
+      <xs:assert xpathDefaultNamespace="urn:isbn:1-931666-33-4"
+       xao:message="&#160;&#xa; eac-cpf 0054&#xa; cpfDescription/description/localDescription[@localType='genere']/term&#xa; 'Sesso' non è ripetibile"
+       test="
+        not(normalize-space(lower-case(identity/entityType)) = 'person')
+        or
+        count(description/localDescription[@localType='genere']/term) = 1
+       "/>
+
+      <xs:assert xpathDefaultNamespace="urn:isbn:1-931666-33-4"
+       xao:message="&#160;&#xa; eac-cpf 0054&#xa; cpfDescription/description/localDescription[@localType='genere']/term&#xa; 'Sesso' lista chiusa con valori:&#xa;
+maschile,
+femminile."
+       test="
+        not(normalize-space(lower-case(identity/entityType)) = 'person')
+        or
+        count(description/localDescription[@localType='genere']/term) = 0
+        or
+        (
+         count(description/localDescription[@localType='genere']/term) = 1
+         and
+         (
+          every $v in (description/localDescription[@localType='genere']/term) satisfies
+          (
+              normalize-space(lower-case($v))='maschile'
+           or normalize-space(lower-case($v))='femminile'
+          )
+         )
+        )
+       "/>
+      
+      <!-- 0025 0036 0047 built in? l'obbligatorietà su entityType è imposta dallo schema con la terna di valori corporateBody, family, person -->
+      <xs:assert xpathDefaultNamespace="urn:isbn:1-931666-33-4"
+       xao:message="&#160;&#xa; eac-cpf 0025 0036 0047&#xa; identity/entityType&#xa;La tipologia di scheda va dichiarata in identity/@localType con valore: soggettoProduttore."
        test="
         string-length(normalize-space(identity/@localType))>0
+        and
+        (
+         every $v in (identity/entityType) satisfies
+         (
+              normalize-space(lower-case($v))='corporatebody'
+          or (normalize-space(lower-case($v))='family' and normalize-space(lower-case($v/../@localType))='soggettoproduttore')
+          or (normalize-space(lower-case($v))='person' and normalize-space(lower-case($v/../@localType))='soggettoproduttore')
+         )
+        )
        "/>
       <!-- 0025 con identity[entityType.='corporateBody'] identity/@localType può valere soggettoProduttore profiloIstituzionale contestoStoricoIstituzionale -->
       <xs:assert xpathDefaultNamespace="urn:isbn:1-931666-33-4"
@@ -372,7 +465,7 @@ contestoStoricoIstituzionale."
           <xs:attribute ref="xml:id"/>
           <!-- 0023 xs:enumeration value="unknown" -->
           <xs:assert xpathDefaultNamespace="urn:isbn:1-931666-33-4"
-           xao:message="&#160;&#xa; eac-cpf 0023&#xa; eac-cpf/control/maintenanceHistory/maintenanceEvent/agentType&#xa; 'Tipologia dell'agente' lista chiusa con valori:&#xa;
+           xao:message="&#160;&#xa; eac-cpf 0023&#xa; control/maintenanceHistory/maintenanceEvent/agentType&#xa; 'Tipologia dell'agente' lista chiusa con valori:&#xa;
 human,
 machine."
            test="
@@ -529,6 +622,71 @@ machine."
           </xs:restriction>
         </xs:simpleType>
       </xs:attribute>
+      
+      <xs:assert xpathDefaultNamespace="urn:isbn:1-931666-33-4"
+       xao:message="&#160;&#xa; eac-cpf 0028 0029&#xa; identity/entityType[.='corporateBody'] ammette in identity/nameEntry/@localType i valori:&#xa;
+altraDenominazione,
+intestazione."
+       test="
+        not(normalize-space(lower-case(entityType)) = 'corporatebody')
+        or
+        (
+         every $v in (nameEntry/@localType) satisfies
+         (
+             normalize-space(lower-case($v))='altradenominazione'
+          or normalize-space(lower-case($v))='intestazione'
+         )
+        )
+       "/>
+
+      <xs:assert xpathDefaultNamespace="urn:isbn:1-931666-33-4"
+       xao:message="&#160;&#xa; eac-cpf 0037 0039 0040&#xa; identity/entityType[.='family'] ammette in identity/nameEntry/part/@localType i valori:&#xa;
+denominazione,
+altraDenominazione,
+intestazioneParallela,
+intestazione."
+       test="
+        not(normalize-space(lower-case(entityType)) = 'family')
+        or
+        (
+         every $v in (nameEntry/part/@localType) satisfies
+         (
+             normalize-space(lower-case($v))='denominazione'
+          or normalize-space(lower-case($v))='altradenominazione'
+          or normalize-space(lower-case($v))='intestazioneparallela'
+          or normalize-space(lower-case($v))='intestazione'
+         )
+        )
+       "/>
+       
+      <xs:assert xpathDefaultNamespace="urn:isbn:1-931666-33-4"
+       xao:message="&#160;&#xa; eac-cpf 0049 0050 0051 0052 0053&#xa; identity/entityType[.='person'] ammette in identity/nameEntry/part/@localType i valori:&#xa;
+cognome,
+nome,
+patronimico,
+provenienza,
+soprannome,
+pseudonimo,
+intestazioneParallela,
+intestazione."
+       test="
+        not(normalize-space(lower-case(entityType)) = 'person')
+        or
+        (
+         every $v in (nameEntry/part/@localType) satisfies
+         (
+             normalize-space(lower-case($v))='cognome'
+          or normalize-space(lower-case($v))='nome'
+          or normalize-space(lower-case($v))='patronimico'
+          or normalize-space(lower-case($v))='provenienza'
+          or normalize-space(lower-case($v))='soprannome'
+          or normalize-space(lower-case($v))='pseudonimo'
+          or normalize-space(lower-case($v))='intestazione'
+          or normalize-space(lower-case($v))='intestazioneparallela'
+         )
+        )
+       "/>
+
     </xs:complexType>
   </xs:element>
   <xs:element name="entityId">
@@ -665,6 +823,123 @@ machine."
       <xs:attribute ref="xml:id"/>
       <xs:attribute ref="xml:lang"/>
       <xs:attribute name="localType" type="xs:anyURI"/>
+
+      <xs:assert xpathDefaultNamespace="urn:isbn:1-931666-33-4"
+       xao:message="&#160;&#xa; eac-cpf 0041&#xa; identity/entityType[.='family'] ammette in cpfDescription/description/existDates/(dateRange|date|(dateSet/date)|(dateSet/dateRange))/@localType i valori univoci:&#xa;
+dataRemota,
+dataRecente,
+secoloRemoto,
+secoloRecente."
+       test="
+        not(normalize-space(lower-case(../../identity/entityType)) = 'family')
+        or
+        (
+         (
+          every $v in ((dateRange|date|(dateSet/date)|(dateSet/dateRange))/@localType) satisfies
+          (
+              normalize-space(lower-case($v))='dataremota'
+           or normalize-space(lower-case($v))='datarecente'
+           or normalize-space(lower-case($v))='secoloremoto'
+           or normalize-space(lower-case($v))='secolorecente'
+          )
+         )
+         and
+         (
+              count((dateRange|date|(dateSet/date)|(dateSet/dateRange))/@localType[normalize-space(lower-case(.))='dataremota'   ]) &lt;=1
+          and count((dateRange|date|(dateSet/date)|(dateSet/dateRange))/@localType[normalize-space(lower-case(.))='datarecente'  ]) &lt;=1
+          and count((dateRange|date|(dateSet/date)|(dateSet/dateRange))/@localType[normalize-space(lower-case(.))='secoloremoto' ]) &lt;=1
+          and count((dateRange|date|(dateSet/date)|(dateSet/dateRange))/@localType[normalize-space(lower-case(.))='secolorecente']) &lt;=1
+         )
+        )
+       "/>
+
+      <xs:assert xpathDefaultNamespace="urn:isbn:1-931666-33-4"
+       xao:message="&#160;&#xa; eac-cpf 0061 0062&#xa; identity/entityType[.='family'] ammette in cpfDescription/description/existDates/descriptiveNote/p/span/@localType i valori univoci:&#xa;
+specificaSecoloRemoto,
+specificaSecoloRecente,
+validitaSecoloRemoto,
+validitaSecoloRecente."
+       test="
+        not(normalize-space(lower-case(../../identity/entityType)) = 'family')
+        or
+        (
+         (
+          every $v in (descriptiveNote/p/span/@localType) satisfies
+          (
+              normalize-space(lower-case($v))='specificasecoloremoto'
+           or normalize-space(lower-case($v))='specificasecolorecente'
+           or normalize-space(lower-case($v))='validitasecoloremoto'
+           or normalize-space(lower-case($v))='validitasecolorecente'
+          )
+         )
+         and
+         (
+              count(descriptiveNote/p/span/@localType[normalize-space(lower-case(.))='specificasecoloremoto' ]) &lt;=1
+          and count(descriptiveNote/p/span/@localType[normalize-space(lower-case(.))='specificasecolorecente']) &lt;=1
+          and count(descriptiveNote/p/span/@localType[normalize-space(lower-case(.))='validitasecoloremoto'  ]) &lt;=1
+          and count(descriptiveNote/p/span/@localType[normalize-space(lower-case(.))='validitasecolorecente' ]) &lt;=1
+         )
+        )
+       "/>
+
+      <xs:assert xpathDefaultNamespace="urn:isbn:1-931666-33-4"
+       xao:message="&#160;&#xa; eac-cpf 0058 0059&#xa; identity/entityType[.='person'] ammette in cpfDescription/description/existDates/(dateRange|date|(dateSet/date)|(dateSet/dateRange))/@localType i valori univoci:&#xa;
+dataDiNascita,
+dataDiMorte,
+secoloDiNascita,
+secoloDiMorte."
+       test="
+        not(normalize-space(lower-case(../../identity/entityType)) = 'person')
+        or
+        (
+         (
+          every $v in ((dateRange|date|(dateSet/date)|(dateSet/dateRange))/@localType) satisfies
+          (
+              normalize-space(lower-case($v))='datadinascita'
+           or normalize-space(lower-case($v))='datadimorte'
+           or normalize-space(lower-case($v))='secolodinascita'
+           or normalize-space(lower-case($v))='secolodimorte'
+          )
+         )
+         and
+         (
+              count((dateRange|date|(dateSet/date)|(dateSet/dateRange))/@localType[normalize-space(lower-case(.))='datadinascita'  ]) &lt;=1
+          and count((dateRange|date|(dateSet/date)|(dateSet/dateRange))/@localType[normalize-space(lower-case(.))='datadimorte'    ]) &lt;=1
+          and count((dateRange|date|(dateSet/date)|(dateSet/dateRange))/@localType[normalize-space(lower-case(.))='secolodinascita']) &lt;=1
+          and count((dateRange|date|(dateSet/date)|(dateSet/dateRange))/@localType[normalize-space(lower-case(.))='secolodimorte'  ]) &lt;=1
+         )
+        )
+       "/>
+      
+      <xs:assert xpathDefaultNamespace="urn:isbn:1-931666-33-4"
+       xao:message="&#160;&#xa; eac-cpf 0061 0062&#xa; identity/entityType[.='person'] ammette in cpfDescription/description/existDates/descriptiveNote/p/span/@localType i valori univoci:&#xa;
+specificaDataNascita,
+specificaDataMorte,
+validitaDataNascita,
+validitaDataMorte."
+       test="
+        not(normalize-space(lower-case(../../identity/entityType)) = 'person')
+        or
+        (
+         (
+          every $v in (descriptiveNote/p/span/@localType) satisfies
+          (
+              normalize-space(lower-case($v))='specificadatanascita'
+           or normalize-space(lower-case($v))='specificadatamorte'
+           or normalize-space(lower-case($v))='validitadatanascita'
+           or normalize-space(lower-case($v))='validitadatamorte'
+          )
+         )
+         and
+         (
+              count(descriptiveNote/p/span/@localType[normalize-space(lower-case(.))='specificadatanascita']) &lt;=1
+          and count(descriptiveNote/p/span/@localType[normalize-space(lower-case(.))='specificadatamorte'  ]) &lt;=1
+          and count(descriptiveNote/p/span/@localType[normalize-space(lower-case(.))='validitadatanascita' ]) &lt;=1
+          and count(descriptiveNote/p/span/@localType[normalize-space(lower-case(.))='validitadatamorte'   ]) &lt;=1
+         )
+        )
+       "/>
+
     </xs:complexType>
   </xs:element>
   <xs:element name="places">
@@ -821,6 +1096,19 @@ machine."
       <xs:attribute name="longitude" type="xs:NMTOKEN"/>
       <xs:attribute name="latitude" type="xs:NMTOKEN"/>
       <xs:attribute name="altitude" type="xs:NMTOKEN"/>
+      
+      <xs:assert xpathDefaultNamespace="urn:isbn:1-931666-33-4"
+       xao:message="&#160;&#xa; eac-cpf 0030 0044 0056&#xa; cpfDescription/description/place/placeEntry/@localType ammette i valori:&#xa;
+historicalName,
+presentName."
+       test="
+         every $v in @localType satisfies
+         (
+             normalize-space(lower-case($v))='historicalname'
+          or normalize-space(lower-case($v))='presentname'
+         )
+       "/>
+      
     </xs:complexType>
   </xs:element>
   <xs:element name="localDescription">
@@ -1024,6 +1312,61 @@ machine."
               </xs:restriction>
             </xs:simpleType>
           </xs:attribute>
+
+          <xs:assert xpathDefaultNamespace="urn:isbn:1-931666-33-4"
+           xao:message="&#160;&#xa; eac-cpf 0067 0068 0069&#xa; relations/cpfRelation[@cpfRelationType='identity'] ammette in relationEntry/@localType i valori:&#xa;
+profiloIstituzionale,
+contestoStoricoIstituzionale,
+soggettoProduttore."
+           test="
+             (not(@cpfRelationType) or not(@cpfRelationType='identity'))
+             or
+             (
+              every $v in relationEntry/@localType satisfies
+              (
+                  normalize-space(lower-case($v))='profiloistituzionale'
+               or normalize-space(lower-case($v))='contestostoricoistituzionale'
+               or normalize-space(lower-case($v))='soggettoproduttore'
+              )
+             )
+           "/>
+
+          <xs:assert xpathDefaultNamespace="urn:isbn:1-931666-33-4"
+           xao:message="&#160;&#xa; eac-cpf 0069&#xa; relations/cpfRelation[not(@cpfRelationType='identity')] ammette in relationEntry/@localType il valore:&#xa;
+soggettoProduttore."
+           test="
+             (not(@cpfRelationType) or @cpfRelationType='identity')
+             or
+             (
+              every $v in relationEntry/@localType satisfies
+              (
+               normalize-space(lower-case($v))='soggettoproduttore'
+              )
+             )
+           "/>
+
+          <xs:assert xpathDefaultNamespace="urn:isbn:1-931666-33-4"
+           xao:message="&#160;&#xa; eac-cpf 0069&#xa; relations/cpfRelation[@cpfRelationType]/relationEntry[@localType='soggettoProduttore'] richiede contenuto e ../@xlink:href"
+           test="
+              every $v in relationEntry[normalize-space(lower-case(@localType))='soggettoproduttore'] satisfies
+              (
+               string-length(normalize-space($v)) &gt;0 and string-length(normalize-space($v/../@cpfRelationType)) &gt;0 and string-length(normalize-space($v/../@xlink:href)) &gt;0
+              )
+           "/>
+
+          <xs:assert xpathDefaultNamespace="urn:isbn:1-931666-33-4"
+           xao:message="&#160;&#xa; eac-cpf 0067 0068&#xa; relations/cpfRelation[@cpfRelationType='identity']/relationEntry[@localType='profiloIstituzionale' or @localType='contestoStoricoIstituzionale'] richiede contenuto e ../@xlink:href"
+           test="
+             (not(@cpfRelationType) or not(@cpfRelationType='identity'))
+             or
+             (
+              every $v in relationEntry[normalize-space(lower-case(@localType))='profiloistituzionale' or normalize-space(lower-case(@localType))='contestostoricoistituzionale'] satisfies
+              (
+               string-length(normalize-space($v)) &gt;0 and string-length(normalize-space($v/../@xlink:href)) &gt;0
+              )
+             )
+           "/>
+
         </xs:extension>
       </xs:complexContent>
     </xs:complexType>
@@ -1043,6 +1386,98 @@ machine."
               </xs:restriction>
             </xs:simpleType>
           </xs:attribute>
+          
+          <xs:assert xpathDefaultNamespace="urn:isbn:1-931666-33-4"
+           xao:message="&#160;&#xa; eac-cpf 0065&#xa; relations/resourceRelation[@resourceRelationType='creatorOf'] ammette in relationEntry/@localType il valore:&#xa;
+complesso."
+           test="
+             (not(@resourceRelationType) or not(@resourceRelationType='creatorOf'))
+             or
+              (
+              every $v in relationEntry/@localType satisfies
+              (
+               normalize-space(lower-case($v))='complesso'
+              )
+             )
+           "/>
+
+          <xs:assert xpathDefaultNamespace="urn:isbn:1-931666-33-4"
+           xao:message="&#160;&#xa; eac-cpf 0066 0070 0071 0072 0073 0075 0076&#xa; relations/resourceRelation[@resourceRelationType='other'] ammette in relationEntry/@localType i valori:&#xa;
+anagrafica,
+ambitoTerritoriale,
+BIBID,
+BIBTEXT,
+BIBURI,
+BIBSBN,
+FONTEID,
+FONTETEXT,
+FONTEURI,
+URL,
+TEMAURI,
+TEMA,
+SOGGETTO."
+           test="
+             (not(@resourceRelationType) or not(@resourceRelationType='other'))
+             or
+             (
+              every $v in relationEntry/@localType satisfies
+              (
+                  normalize-space(lower-case($v))='anagrafica'
+               or normalize-space(lower-case($v))='ambitoterritoriale'
+               or normalize-space(lower-case($v))='bibid'
+               or normalize-space(lower-case($v))='bibtext'
+               or normalize-space(lower-case($v))='biburi'
+               or normalize-space(lower-case($v))='bibsbn'
+               or normalize-space(lower-case($v))='fonteid'
+               or normalize-space(lower-case($v))='fontetext'
+               or normalize-space(lower-case($v))='fonteuri'
+               or normalize-space(lower-case($v))='url'
+               or normalize-space(lower-case($v))='temauri'
+               or normalize-space(lower-case($v))='tema'
+               or normalize-space(lower-case($v))='soggetto'
+              )
+             )
+           "/>
+
+          <xs:assert xpathDefaultNamespace="urn:isbn:1-931666-33-4"
+           xao:message="&#160;&#xa; eac-cpf 0066 0071 0072 0073 0075 0076&#xa; relations/resourceRelation[@resourceRelationType='creatorOf']/relationEntry[@localType='complesso'] richiede contenuto e ../@xlink:href"
+           test="
+             (not(@resourceRelationType) or not(@resourceRelationType='creatorOf'))
+             or
+             (
+              every $v in relationEntry[normalize-space(lower-case(@localType))='complesso'] satisfies
+              (
+               string-length(normalize-space($v)) &gt;0 and string-length(normalize-space($v/../@xlink:href)) &gt;0
+              )
+             )
+           "/>
+
+          <xs:assert xpathDefaultNamespace="urn:isbn:1-931666-33-4"
+           xao:message="&#160;&#xa; eac-cpf 0071 0072 0075&#xa; relations/resourceRelation[@resourceRelationType='other']/relationEntry[@localType='FONTEID' or @localType='FONTETEXT' or @localType='BIBID' or @localType='BIBTEXT' or @localType='TEMA'] richiede contenuto"
+           test="
+             (not(@resourceRelationType) or not(@resourceRelationType='other'))
+             or
+             (
+              every $v in relationEntry[normalize-space(lower-case(@localType))='fonteid' or normalize-space(lower-case(@localType))='fontetext' or normalize-space(lower-case(@localType))='bibid' or normalize-space(lower-case(@localType))='bibtext' or normalize-space(lower-case(@localType))='tema'] satisfies
+              (
+               string-length(normalize-space($v)) &gt;0
+              )
+             )
+           "/>
+
+          <xs:assert xpathDefaultNamespace="urn:isbn:1-931666-33-4"
+           xao:message="&#160;&#xa; eac-cpf 0066 0071 0072 0073 0075 0076&#xa; relations/resourceRelation[@resourceRelationType='other']/relationEntry[@localType='URL' or @localType='FONTEURI' or @localType='BIBURI' or @localType='BIBSBN' or @localType='TEMAURI' or @localType='SOGGETTO' or @localType='ANAGRAFICA'] richiede contenuto e ../@xlink:href"
+           test="
+             (not(@resourceRelationType) or not(@resourceRelationType='other'))
+             or
+             (
+              every $v in relationEntry[normalize-space(lower-case(@localType))='url' or normalize-space(lower-case(@localType))='fonteuri' or normalize-space(lower-case(@localType))='biburi' or normalize-space(lower-case(@localType))='bibsbn' or normalize-space(lower-case(@localType))='temauri' or normalize-space(lower-case(@localType))='soggetto' or normalize-space(lower-case(@localType))='anagrafica'] satisfies
+              (
+               string-length(normalize-space($v)) &gt;0 and string-length(normalize-space($v/../@xlink:href)) &gt;0
+              )
+             )
+           "/>
+
         </xs:extension>
       </xs:complexContent>
     </xs:complexType>
