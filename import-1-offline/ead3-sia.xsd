@@ -1079,13 +1079,15 @@ M076: &lt;notestmt> può contenere al massimo un unico &lt;controlnote> privo di
         xpathDefaultNamespace="##targetNamespace" 
         test="1 >= count(controlnote[not(@localtype)])"/>
     <xs:assert xa:message="[&#x0a;&#x0a;
-M082: eventuali &lt;controlnote>, figli di &lt;notestmt>, se hanno @localtype,&#x0a;
-      questo può essere pari solamente a &quot;descrizioneIntrinseca&quot;
+M082: eventuali &lt;controlnote>, figli di &lt;notestmt>, devono avere @localtype&#x0a;
+      e il valore dell'attributo deve essere o &quot;noteStoriche&quot;,&#x0a;
+      o &quot;descrizioneIntrinseca&quot;, o &quot;descrizioneEstrinseca&quot;
       &#x0a;&#x0a;]"
         xpathDefaultNamespace="##targetNamespace" 
-        test="every $note in controlnote[@localtype]
+        test="every $note in controlnote
               satisfies $note/@localtype = ('noteStoriche',
-                                            'descrizioneIntrinseca')"/>
+                                            'descrizioneIntrinseca',
+                                            'descrizioneEstrinseca')"/>
   </xs:complexType>
   <xs:complexType name="maintenancestatus" mixed="true">
     <!-- M269: rimossa la definizione degli attributi non utilizzati
