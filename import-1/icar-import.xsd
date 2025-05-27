@@ -23,8 +23,8 @@
   <!--
   <xs:import namespace="http://ead3.archivists.org/schema/" schemaLocation="https://www.loc.gov/ead/ead3.xsd"/>
   -->
-	<xs:import namespace="http://www.san.beniculturali.it/scons2" schemaLocation="https://san.beniculturali.it/tracciato/scons2.xsd"/>
-	<xs:import namespace="http://purl.org/dc/elements/1.1/"	schemaLocation="https://dublincore.org/schemas/xmls/simpledc20021212.xsd"/>
+	<xs:import namespace="http://www.san.beniculturali.it/scons2" schemaLocation="http://san.beniculturali.it/tracciato/scons2.xsd"/>
+	<xs:import namespace="http://purl.org/dc/elements/1.1/"	schemaLocation="https://www.dublincore.org/schemas/xmls/simpledc20021212.xsd"/>
 	
 	<xs:simpleType name="emailAddress">
 		<xs:restriction base="xs:string">
