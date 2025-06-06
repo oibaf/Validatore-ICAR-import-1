@@ -1,5 +1,5 @@
 # Validatore-ICAR-import-1
-Strumenti e schemi per validare file in formato XML conformi ai tracciati [ICAR Import 1.0](https://icar.cultura.gov.it/attivita-e-progetti/progetti-icar-1/interoperabilita-fra-sistemi-archivistici-tracciati-ead3-eac-cpf-scons2-1-1)
+Strumenti e schemi per validare file in formato XML conformi ai tracciati [ICAR Import 1.1](https://icar.cultura.gov.it/attivita-e-progetti/progetti-icar-1/interoperabilita-fra-sistemi-archivistici-tracciati-ead3-eac-cpf-scons2-1-1)
 
 
 ## Utilizzo standard
