@@ -740,13 +740,13 @@ intestazione."
       <xs:attribute ref="xml:base"/>
       
       <xs:assert xpathDefaultNamespace="urn:isbn:1-931666-33-4"
-       xao:message="&#xa; eac-cpf 0034&#xa; identity/entityType[.='corporateBody'] ammette in cpfDescription/description/localDescription/@localType il valore:&#xa;
+       xao:message="&#xa; eac-cpf 0034&#xa; identity/entityType[.='corporateBody'] ammette in cpfDescription/description/(.|localDescriptions)/localDescription/@localType i valori:&#xa;
 tipologiaEnte."
        test="
         not(normalize-space(lower-case(../identity/entityType)) = 'corporatebody')
         or
         (
-         every $v in (localDescription/@localType) satisfies
+         every $v in ((.|localDescriptions)/localDescription/@localType) satisfies
          (
           normalize-space(lower-case($v))='tipologiaente'
          )
@@ -754,13 +754,13 @@ tipologiaEnte."
        "/>
 
       <xs:assert xpathDefaultNamespace="urn:isbn:1-931666-33-4"
-       xao:message="&#xa; eac-cpf 0034&#xa; identity/entityType[.='family'] ammette in cpfDescription/description/localDescription/@localType il valore:&#xa;
+       xao:message="&#xa; eac-cpf 0034&#xa; identity/entityType[.='family'] ammette in cpfDescription/description/(.|localDescriptions)/localDescription/@localType i valori:&#xa;
 titoli."
        test="
         not(normalize-space(lower-case(../identity/entityType)) = 'family')
         or
         (
-         every $v in (localDescription/@localType) satisfies
+         every $v in ((.|localDescriptions)/localDescription/@localType) satisfies
          (
           normalize-space(lower-case($v))='titoli'
          )
@@ -768,7 +768,7 @@ titoli."
        "/>
       
       <xs:assert xpathDefaultNamespace="urn:isbn:1-931666-33-4"
-       xao:message="&#xa; eac-cpf 0054 0063&#xa; identity/entityType[.='person'] ammette in cpfDescription/description/localDescription/@localType i valori:&#xa;
+       xao:message="&#xa; eac-cpf 0054 0063&#xa; identity/entityType[.='person'] ammette in cpfDescription/description/(.|localDescriptions)/localDescription/@localType i valori:&#xa;
 genere,
 professione,
 titoloNobiliare."
@@ -776,7 +776,7 @@ titoloNobiliare."
         not(normalize-space(lower-case(../identity/entityType)) = 'person')
         or
         (
-         every $v in (localDescription/@localType) satisfies
+         every $v in ((.|localDescriptions)/localDescription/@localType) satisfies
          (
              normalize-space(lower-case($v))='genere'
           or normalize-space(lower-case($v))='professione'
@@ -786,33 +786,27 @@ titoloNobiliare."
        "/>
 
       <xs:assert xpathDefaultNamespace="urn:isbn:1-931666-33-4"
-       xao:message="&#xa; eac-cpf 0054&#xa; cpfDescription/description/localDescription[@localType='genere']/term&#xa; 'Sesso' non è ripetibile"
-       test="
-        not(normalize-space(lower-case(../identity/entityType)) = 'person')
-        or
-        count(localDescription[@localType='genere']/term) = 1
-       "/>
-
-      <xs:assert xpathDefaultNamespace="urn:isbn:1-931666-33-4"
-       xao:message="&#xa; eac-cpf 0054&#xa; cpfDescription/description/localDescription[@localType='genere']/term&#xa; 'Sesso' lista chiusa con valori:&#xa;
+       xao:message="&#xa; eac-cpf 0054&#xa; cpfDescription/description/(.|localDescriptions)/localDescription[@localType='genere']/term&#xa; 'Sesso' lista chiusa con valori:&#xa;
 maschile,
 femminile."
        test="
         not(normalize-space(lower-case(../identity/entityType)) = 'person')
         or
-        count(localDescription[@localType='genere']/term) = 0
-        or
         (
-         count(localDescription[@localType='genere']/term) = 1
-         and
+         every $v in ((.|localDescriptions)/localDescription[@localType='genere']/term) satisfies
          (
-          every $v in (localDescription[@localType='genere']/term) satisfies
-          (
-              normalize-space(lower-case($v))='maschile'
-           or normalize-space(lower-case($v))='femminile'
-          )
+             normalize-space(lower-case($v))='maschile'
+          or normalize-space(lower-case($v))='femminile'
          )
         )
+       "/>
+
+      <xs:assert xpathDefaultNamespace="urn:isbn:1-931666-33-4"
+       xao:message="&#xa; eac-cpf 0054&#xa; cpfDescription/description/(.|localDescriptions)/localDescription[@localType='genere']/term&#xa; 'Sesso' non è ripetibile"
+       test="
+        not(normalize-space(lower-case(../identity/entityType)) = 'person')
+        or
+        count((.|localDescriptions)/localDescription[@localType='genere']/term) &lt;= 1
        "/>
 
     </xs:complexType>
@@ -1348,7 +1342,27 @@ soggettoProduttore."
               )
              )
            "/>
-
+          <xs:assert xpathDefaultNamespace="urn:isbn:1-931666-33-4"
+           xao:message="&#xa; eac-cpf 0069&#xa; relations/cpfRelation[@cpfRelationType]/relationEntry[@localType='soggettoProduttore'] richiede contenuto e tipo relazione"
+           test="
+              every $v in relationEntry[normalize-space(lower-case(@localType))='soggettoproduttore'] satisfies
+              (
+               string-length(normalize-space($v)) &gt;0 and string-length(normalize-space($v/../@cpfRelationType)) &gt;0
+              )
+           "/>
+          <xs:assert xpathDefaultNamespace="urn:isbn:1-931666-33-4"
+           xao:message="&#xa; eac-cpf 0067 0068&#xa; relations/cpfRelation[@cpfRelationType='identity']/relationEntry[@localType='profiloIstituzionale' or @localType='contestoStoricoIstituzionale'] richiede contenuto"
+           test="
+             (not(@cpfRelationType) or not(@cpfRelationType='identity'))
+             or
+             (
+              every $v in relationEntry[normalize-space(lower-case(@localType))='profiloistituzionale' or normalize-space(lower-case(@localType))='contestostoricoistituzionale'] satisfies
+              (
+               string-length(normalize-space($v)) &gt;0
+              )
+             )
+           "/>
+          <!--  rimossa obbligatorietà @xlink:href
           <xs:assert xpathDefaultNamespace="urn:isbn:1-931666-33-4"
            xao:message="&#xa; eac-cpf 0069&#xa; relations/cpfRelation[@cpfRelationType]/relationEntry[@localType='soggettoProduttore'] richiede contenuto e ../@xlink:href"
            test="
@@ -1357,7 +1371,6 @@ soggettoProduttore."
                string-length(normalize-space($v)) &gt;0 and string-length(normalize-space($v/../@cpfRelationType)) &gt;0 and string-length(normalize-space($v/../@xlink:href)) &gt;0
               )
            "/>
-
           <xs:assert xpathDefaultNamespace="urn:isbn:1-931666-33-4"
            xao:message="&#xa; eac-cpf 0067 0068&#xa; relations/cpfRelation[@cpfRelationType='identity']/relationEntry[@localType='profiloIstituzionale' or @localType='contestoStoricoIstituzionale'] richiede contenuto e ../@xlink:href"
            test="
@@ -1370,7 +1383,7 @@ soggettoProduttore."
               )
              )
            "/>
-
+           -->
         </xs:extension>
       </xs:complexContent>
     </xs:complexType>
@@ -1407,8 +1420,8 @@ complesso."
 
           <xs:assert xpathDefaultNamespace="urn:isbn:1-931666-33-4"
            xao:message="&#xa; eac-cpf 0066 0070 0071 0072 0073 0075 0076&#xa; relations/resourceRelation[@resourceRelationType='other'] ammette in relationEntry/@localType i valori:&#xa;
-anagrafica,
-ambitoTerritoriale,
+ANAGRAFICA,
+AMBITOTERRITORIALE,
 BIBID,
 BIBTEXT,
 BIBURI,
@@ -1457,31 +1470,85 @@ SOGGETTO."
            "/>
 
           <xs:assert xpathDefaultNamespace="urn:isbn:1-931666-33-4"
-           xao:message="&#xa; eac-cpf 0066 0071 0072 0075 0076&#xa; relations/resourceRelation[@resourceRelationType='other']/relationEntry[@localType='FONTEID' or @localType='FONTETEXT' or @localType='BIBID' or @localType='BIBTEXT' or @localType='TEMA' or @localType='SOGGETTO' or @localType='ANAGRAFICA'] richiede contenuto"
+           xao:message="&#xa; eac-cpf 0066 0071 0072 0075 0076&#xa; relations/resourceRelation[@resourceRelationType='other'] richiede contenuto per relationEntry/@localType
+ANAGRAFICA,
+AMBITOTERRITORIALE,
+BIBID,
+BIBTEXT,
+BIBURI,
+BIBSBN,
+FONTEID,
+FONTETEXT,
+FONTEURI,
+URL,
+TEMAURI,
+TEMA,
+SOGGETTO."
            test="
              (not(@resourceRelationType) or not(@resourceRelationType='other'))
              or
              (
-              every $v in relationEntry[normalize-space(lower-case(@localType))='fonteid' or normalize-space(lower-case(@localType))='fontetext' or normalize-space(lower-case(@localType))='bibid' or normalize-space(lower-case(@localType))='bibtext' or normalize-space(lower-case(@localType))='tema' or normalize-space(lower-case(@localType))='soggetto' or normalize-space(lower-case(@localType))='anagrafica'] satisfies
+              every $v in relationEntry[
+                  normalize-space(lower-case(@localType))='anagrafica'
+               or normalize-space(lower-case(@localType))='ambitoterritoriale'
+               or normalize-space(lower-case(@localType))='bibid'
+               or normalize-space(lower-case(@localType))='bibtext'
+               or normalize-space(lower-case(@localType))='biburi'
+               or normalize-space(lower-case(@localType))='bibsbn'
+               or normalize-space(lower-case(@localType))='fonteid'
+               or normalize-space(lower-case(@localType))='fontetext'
+               or normalize-space(lower-case(@localType))='fonteuri'
+               or normalize-space(lower-case(@localType))='url'
+               or normalize-space(lower-case(@localType))='temauri'
+               or normalize-space(lower-case(@localType))='tema'
+               or normalize-space(lower-case(@localType))='soggetto'
+              ] satisfies
               (
                string-length(normalize-space($v)) &gt;0
               )
              )
            "/>
-
+          <!-- rimossa obbligatorietà @xlink:href
+          <xs:assert xpathDefaultNamespace="urn:isbn:1-931666-33-4"
+           xao:message="&#xa; eac-cpf 0066 0071 0072 0075 0076&#xa; relations/resourceRelation[@resourceRelationType='other']/relationEntry[@localType='FONTEID' or @localType='FONTETEXT' or @localType='BIBID' or @localType='BIBTEXT' or @localType='TEMA' or @localType='SOGGETTO' or @localType='ANAGRAFICA' or @localType='AMBITOTERRITORIALE'] richiede contenuto"
+           test="
+             (not(@resourceRelationType) or not(@resourceRelationType='other'))
+             or
+             (
+              every $v in relationEntry[
+                  normalize-space(lower-case(@localType))='fonteid'
+               or normalize-space(lower-case(@localType))='fontetext'
+               or normalize-space(lower-case(@localType))='bibid'
+               or normalize-space(lower-case(@localType))='bibtext'
+               or normalize-space(lower-case(@localType))='tema'
+               or normalize-space(lower-case(@localType))='soggetto'
+               or normalize-space(lower-case(@localType))='anagrafica'
+               or normalize-space(lower-case(@localType))='ambitoterritoriale'
+              ] satisfies
+              (
+               string-length(normalize-space($v)) &gt;0
+              )
+             )
+           "/>
           <xs:assert xpathDefaultNamespace="urn:isbn:1-931666-33-4"
            xao:message="&#xa; eac-cpf 0071 0072 0073 0075&#xa; relations/resourceRelation[@resourceRelationType='other']/relationEntry[@localType='URL' or @localType='FONTEURI' or @localType='BIBURI' or @localType='BIBSBN' or @localType='TEMAURI'] richiede contenuto e ../@xlink:href"
            test="
              (not(@resourceRelationType) or not(@resourceRelationType='other'))
              or
              (
-              every $v in relationEntry[normalize-space(lower-case(@localType))='url' or normalize-space(lower-case(@localType))='fonteuri' or normalize-space(lower-case(@localType))='biburi' or normalize-space(lower-case(@localType))='bibsbn' or normalize-space(lower-case(@localType))='temauri'] satisfies
+              every $v in relationEntry[
+                  normalize-space(lower-case(@localType))='url'
+               or normalize-space(lower-case(@localType))='fonteuri'
+               or normalize-space(lower-case(@localType))='biburi'
+               or normalize-space(lower-case(@localType))='bibsbn'
+               or normalize-space(lower-case(@localType))='temauri'
+              ] satisfies
               (
                string-length(normalize-space($v)) &gt;0 and string-length(normalize-space($v/../@xlink:href)) &gt;0
               )
              )
            "/>
-
+           -->
         </xs:extension>
       </xs:complexContent>
     </xs:complexType>
