@@ -1481,9 +1481,15 @@ M043: in &lt;dao>, se @daotype vale &quot;otherdaotype&quot;, allora deve essere
   <!-- M280: rimossa la definizione degli attributi non utilizzati
              (tutti: "am.common", @localtype, @label ed @encodinganalog);
              l'elemento "physdesc" risulta quindi un simpleType -->
-  <xs:simpleType name="physdesc">
-    <xs:restriction base="xs:string"/>
-  </xs:simpleType>
+  <!-- M362: reintrodotto @localtype -->
+  <xs:complexType name="physdesc">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="localtype" type="xs:token">
+        </xs:attribute>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
   <!-- M138: riscritto in tipo "physloc" in forma semplificata -->
   <xs:complexType name="physloc" mixed="true">
     <xs:sequence>
