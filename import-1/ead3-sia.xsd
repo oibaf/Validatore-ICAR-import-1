@@ -328,21 +328,21 @@ M044: in &lt;c>, nel caso rappresenti un'unità archivistica, eventuali&#x0a;
                 satisfies $id/text() != ''"/>
         <xs:assert xa:message="[&#x0a;&#x0a;
 M046: in &lt;c>, nel caso rappresenti un'unità archivistica, deve essere&#x0a;
-      presente un did/unittitle dove @loclatype in &lt;uintitle> vale &quot;titolo&quot; o&#x0a;
+      presente un did/unittitle dove @localtype in &lt;unittitle> vale &quot;titolo&quot; o&#x0a;
       &quot;titoloAttribuito&quot;
       &#x0a;&#x0a;]"
           xpathDefaultNamespace="##targetNamespace" 
           test="did/unittitle[@localtype = ('titolo', 'titoloAttribuito')]"/>
         <xs:assert xa:message="[&#x0a;&#x0a;
 M047: in &lt;c>, nel caso rappresenti un'unità archivistica, non può essere&#x0a;
-      presente più di un did/unittitle dove @loclatype in &lt;uintitle> vale&#x0a;
+      presente più di un did/unittitle dove @localtype in &lt;unittitle> vale&#x0a;
       &quot;titolo&quot;
       &#x0a;&#x0a;]"
           xpathDefaultNamespace="##targetNamespace" 
           test="1 >= count(did/unittitle[@localtype = 'titolo'])"/>
         <xs:assert xa:message="[&#x0a;&#x0a;
 M048: in &lt;c>, nel caso rappresenti un'unità archivistica, non può essere&#x0a;
-      presente più di un did/unittitle dove @loclatype in &lt;uintitle> vale&#x0a;
+      presente più di un did/unittitle dove @localtype in &lt;unittitle> vale&#x0a;
       &quot;titoloAttribuito&quot;
       &#x0a;&#x0a;]"
           xpathDefaultNamespace="##targetNamespace" 
@@ -378,21 +378,21 @@ M044: in &lt;c>, nel caso rappresenti un'unità documentale, eventuali&#x0a;
                 satisfies $id/text() != ''"/>
         <xs:assert xa:message="[&#x0a;&#x0a;
 M046: in &lt;c>, nel caso rappresenti un'unità documentale, deve essere&#x0a;
-      presente un did/unittitle dove @loclatype in &lt;uintitle> vale &quot;titolo&quot; o&#x0a;
+      presente un did/unittitle dove @localtype in &lt;unittitle> vale &quot;titolo&quot; o&#x0a;
       &quot;titoloAttribuito&quot;
       &#x0a;&#x0a;]"
           xpathDefaultNamespace="##targetNamespace" 
           test="did/unittitle[@localtype = ('titolo', 'titoloAttribuito')]"/>
         <xs:assert xa:message="[&#x0a;&#x0a;
 M047: in &lt;c>, nel caso rappresenti un'unità documentale, non può essere&#x0a;
-      presente più di un did/unittitle dove @loclatype in &lt;uintitle> vale&#x0a;
+      presente più di un did/unittitle dove @localtype in &lt;unittitle> vale&#x0a;
       &quot;titolo&quot;
       &#x0a;&#x0a;]"
           xpathDefaultNamespace="##targetNamespace" 
           test="1 >= count(did/unittitle[@localtype = 'titolo'])"/>
         <xs:assert xa:message="[&#x0a;&#x0a;
 M048: in &lt;c>, nel caso rappresenti un'unità documentale, non può essere&#x0a;
-      presente più di un did/unittitle dove @loclatype in &lt;uintitle> vale&#x0a;
+      presente più di un did/unittitle dove @localtype in &lt;unittitle> vale&#x0a;
       &quot;titoloAttribuito&quot;
       &#x0a;&#x0a;]"
           xpathDefaultNamespace="##targetNamespace" 
