@@ -2076,6 +2076,13 @@ M361: In &lt;datesingle> il valore di @notafter, se presente, non può valere&#x
       &#x0a;&#x0a;]"
           xpathDefaultNamespace="##targetNamespace" 
           test="not(@notafter) or (@notafter != '0000')"/>
+        <xs:assert xa:message="[&#x0a;&#x0a;
+MR364 in &lt;datesingle>, nel caso @altrender sia presente, il suo valore deve&#x0a;
+      essere compreso in una ben precisa lista chiusa di valori ammissibili
+          &#x0a;&#x0a;]"
+          test="   not(@altrender)
+                or (@altrender = ('Data approssimativa', 'Data attribuita', 'Data incerta',
+                                  'Data ante quem', 'Data post quem', 'Data incerta e attribuita'))"/>
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
@@ -2162,6 +2169,13 @@ M361: In &lt;fromdate> il valore di @notafter, se presente, non può valere &quo
       &#x0a;&#x0a;]"
           xpathDefaultNamespace="##targetNamespace" 
           test="not(@notafter) or (@notafter != '0000')"/>
+        <xs:assert xa:message="[&#x0a;&#x0a;
+MR364 in &lt;fromdate>, nel caso @altrender sia presente, il suo valore deve&#x0a;
+      essere compreso in una ben precisa lista chiusa di valori ammissibili
+          &#x0a;&#x0a;]"
+          test="   not(@altrender)
+                or (@altrender = ('Data approssimativa', 'Data attribuita', 'Data incerta',
+                                  'Data ante quem', 'Data post quem', 'Data incerta e attribuita'))"/>
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
@@ -2240,6 +2254,13 @@ M361: In &lt;todate> il valore di @notafter, se presente, non può valere &quot;
       &#x0a;&#x0a;]"
           xpathDefaultNamespace="##targetNamespace" 
           test="not(@notafter) or (@notafter != '0000')"/>
+        <xs:assert xa:message="[&#x0a;&#x0a;
+MR364 in &lt;todate>, nel caso @altrender sia presente, il suo valore deve&#x0a;
+      essere compreso in una ben precisa lista chiusa di valori ammissibili
+          &#x0a;&#x0a;]"
+          test="   not(@altrender)
+                or (@altrender = ('Data approssimativa', 'Data attribuita', 'Data incerta',
+                                  'Data ante quem', 'Data post quem', 'Data incerta e attribuita'))"/>
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
@@ -2264,9 +2285,18 @@ M361: In &lt;todate> il valore di @notafter, se presente, non può valere &quot;
     <!-- M238: rimossa la definizione degli attributi non utilizzati
                ("am.common", "am.dates.era", "am.dates.calendar" ed
                @encodinganalog) -->
+    <!-- M363: reintrodotto @altrender -->
     <xs:attribute name="localtype" type="xs:token"/>
+    <xs:attribute name="altrender" type="xs:token"/>
     <xs:attributeGroup ref="am.date.normal"/>
     <xs:attribute name="certainty" type="xs:NMTOKEN"/>
+    <xs:assert xa:message="[&#x0a;&#x0a;
+MR364 in &lt;date>, nel caso @altrender sia presente, il suo valore deve&#x0a;
+      essere compreso in una ben precisa lista chiusa di valori ammissibili
+      &#x0a;&#x0a;]"
+      test="   not(@altrender)
+            or (@altrender = ('Data approssimativa', 'Data attribuita', 'Data incerta',
+                              'Data ante quem', 'Data post quem', 'Data incerta e attribuita'))"/>
   </xs:complexType>
   <!-- M156: rimosso il tipo "emph" -->
   <!-- M159: rimosso il tipo "expan" -->
@@ -2424,9 +2454,11 @@ M028: in &lt;relation>, se @relationtype è pari a &quot;resourcerelation&quot;,
              semplificata come gruppo di soli attributi ed eliminando
              la dipendenza da "m.mixed.basic" -->
   <xs:complexType name="m.datesingle" mixed="true">
+    <!-- M363: reintrodotto @altrender -->
     <xs:attribute name="standarddate" type="xs:token"/>
     <xs:attribute name="notbefore" type="xs:token"/>
     <xs:attribute name="notafter" type="xs:token"/>
+    <xs:attribute name="altrender" type="xs:token"/>
   </xs:complexType>
   <xs:group name="m.desc.base">
     <xs:choice>
