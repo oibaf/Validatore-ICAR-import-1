@@ -855,8 +855,8 @@ secoloRecente."
        xao:message="&#xa; eac-cpf 0061 0062&#xa; identity/entityType[.='family'] ammette in cpfDescription/description/existDates/descriptiveNote/p/span/@localType i valori univoci:&#xa;
 specificaSecoloRemoto,
 specificaSecoloRecente,
-validitaSecoloRemoto,
-validitaSecoloRecente."
+validitaEstremoRemoto,
+validitaEstremoRecente."
        test="
         not(normalize-space(lower-case(../../identity/entityType)) = 'family')
         or
@@ -866,16 +866,16 @@ validitaSecoloRecente."
           (
               normalize-space(lower-case($v))='specificasecoloremoto'
            or normalize-space(lower-case($v))='specificasecolorecente'
-           or normalize-space(lower-case($v))='validitasecoloremoto'
-           or normalize-space(lower-case($v))='validitasecolorecente'
+           or normalize-space(lower-case($v))='validitaestremoremoto'
+           or normalize-space(lower-case($v))='validitaestremorecente'
           )
          )
          and
          (
               count(descriptiveNote/p/span/@localType[normalize-space(lower-case(.))='specificasecoloremoto' ]) &lt;=1
           and count(descriptiveNote/p/span/@localType[normalize-space(lower-case(.))='specificasecolorecente']) &lt;=1
-          and count(descriptiveNote/p/span/@localType[normalize-space(lower-case(.))='validitasecoloremoto'  ]) &lt;=1
-          and count(descriptiveNote/p/span/@localType[normalize-space(lower-case(.))='validitasecolorecente' ]) &lt;=1
+          and count(descriptiveNote/p/span/@localType[normalize-space(lower-case(.))='validitaestremoremoto'  ]) &lt;=1
+          and count(descriptiveNote/p/span/@localType[normalize-space(lower-case(.))='validitaestremorecente' ]) &lt;=1
          )
         )
        "/>
@@ -1342,6 +1342,7 @@ soggettoProduttore."
               )
              )
            "/>
+          <!--  rimossa obbligatorietà @xlink:href -->
           <xs:assert xpathDefaultNamespace="urn:isbn:1-931666-33-4"
            xao:message="&#xa; eac-cpf 0069&#xa; relations/cpfRelation[@cpfRelationType]/relationEntry[@localType='soggettoProduttore'] richiede contenuto e tipo relazione"
            test="
@@ -1362,7 +1363,7 @@ soggettoProduttore."
               )
              )
            "/>
-          <!--  rimossa obbligatorietà @xlink:href
+          <!--  obbligatorietà @xlink:href
           <xs:assert xpathDefaultNamespace="urn:isbn:1-931666-33-4"
            xao:message="&#xa; eac-cpf 0069&#xa; relations/cpfRelation[@cpfRelationType]/relationEntry[@localType='soggettoProduttore'] richiede contenuto e ../@xlink:href"
            test="
@@ -1455,7 +1456,7 @@ SOGGETTO."
               )
              )
            "/>
-
+          <!--  rimossa obbligatorietà @xlink:href -->
           <xs:assert xpathDefaultNamespace="urn:isbn:1-931666-33-4"
            xao:message="&#xa; eac-cpf 0065&#xa; relations/resourceRelation[@resourceRelationType='creatorOf']/relationEntry[@localType='complesso'] richiede contenuto"
            test="
@@ -1468,7 +1469,7 @@ SOGGETTO."
               )
              )
            "/>
-
+          <!--  rimossa obbligatorietà @xlink:href -->
           <xs:assert xpathDefaultNamespace="urn:isbn:1-931666-33-4"
            xao:message="&#xa; eac-cpf 0066 0071 0072 0075 0076&#xa; relations/resourceRelation[@resourceRelationType='other'] richiede contenuto per relationEntry/@localType
 ANAGRAFICA,
@@ -1508,7 +1509,7 @@ SOGGETTO."
               )
              )
            "/>
-          <!-- rimossa obbligatorietà @xlink:href
+          <!-- obbligatorietà @xlink:href
           <xs:assert xpathDefaultNamespace="urn:isbn:1-931666-33-4"
            xao:message="&#xa; eac-cpf 0066 0071 0072 0075 0076&#xa; relations/resourceRelation[@resourceRelationType='other']/relationEntry[@localType='FONTEID' or @localType='FONTETEXT' or @localType='BIBID' or @localType='BIBTEXT' or @localType='TEMA' or @localType='SOGGETTO' or @localType='ANAGRAFICA' or @localType='AMBITOTERRITORIALE'] richiede contenuto"
            test="
